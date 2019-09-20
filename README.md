@@ -8,14 +8,14 @@ Requires at least Python 3.5.
 What's in npuff?
 ----------------
 
-## `npuff.logfactorial`
+### `npuff.logfactorial`
 
 * Computes the natural logarithm of the factorial of the integer x.
 
 * This is a fairly standard implementation of a NumPy ufunc.
 
 
-## `npuff.ufunc_inspector`
+### `npuff.ufunc_inspector`
 
 * Print information about a NumPy ufunc.
 
