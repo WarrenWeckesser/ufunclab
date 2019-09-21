@@ -30,6 +30,9 @@ ufunc_inspector(PyObject *self, PyObject *arg)
 
     printf("nin = %d, nout = %d, ntypes = %d\n", ufunc->nin, ufunc->nout, ufunc->ntypes);
 
+    if (ufunc->ntypes > 0) {
+        printf("loop types:\n");
+    }
     for (int i = 0; i < ufunc->ntypes; ++i) {
         // XXX I'm not sure all the existing generic loops are checked for...
         #define CHECKFOR(sig)                               \
@@ -62,7 +65,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
         }
         else if (ufunc->nin == 2 && ufunc->nout == 1) {
             printf("%3d: (%3d, %3d) -> %3d  ",
-                   i, ufunc->types[3*i], ufunc->types[3*i+1], ufunc->types[3*i+1]);
+                   i, ufunc->types[3*i], ufunc->types[3*i+1], ufunc->types[3*i+2]);
             printf("(%c%c->%c)  ",
                    PyArray_DescrFromType(ufunc->types[3*i])->type,
                    PyArray_DescrFromType(ufunc->types[3*i+1])->type,
@@ -83,6 +86,17 @@ ufunc_inspector(PyObject *self, PyObject *arg)
             else {
                 printf("not generic (or not in the checked generics)\n");
             }
+        }
+        else if (ufunc->nin == 3 && ufunc->nout == 1) {
+            printf("%3d: (%3d, %3d, %3d) -> %3d  ", i,
+                   ufunc->types[4*i], ufunc->types[4*i+1], ufunc->types[4*i+2],
+                   ufunc->types[4*i+3]);
+            printf("(%c%c%c->%c)  ",
+                   PyArray_DescrFromType(ufunc->types[4*i])->type,
+                   PyArray_DescrFromType(ufunc->types[4*i+1])->type,
+                   PyArray_DescrFromType(ufunc->types[4*i+2])->type,
+                   PyArray_DescrFromType(ufunc->types[4*i+3])->type);
+            printf("\n");
         }
     }
 
