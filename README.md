@@ -1,20 +1,20 @@
-npuff
-=====
+ufunclab
+========
 
 Some NumPy `ufuncs`, and some related tools.
 
 Requires at least Python 3.5.
 
-What's in npuff?
-----------------
+What's in ufunclab?
+-------------------
 
-### `npuff.logfactorial`
+### `ufunclab.logfactorial`
 
 * Computes the natural logarithm of the factorial of the integer x.
 
 * This is a fairly standard implementation of a NumPy ufunc.
 
-### `npuff.peaktopeak`
+### `ufunclab.peaktopeak`
 
 * A `gufunc` that computes the peak-to-peak range of a NumPy array.
   It is like the `ptp` method of a NumPy array, but when the input
@@ -41,7 +41,7 @@ What's in npuff?
   numpy.int8
   ```
 
-### `npuff.ufunc_inspector`
+### `ufunclab.ufunc_inspector`
 
 * Print information about a NumPy ufunc.
 
@@ -50,7 +50,7 @@ What's in npuff?
   ```
   In [10]: import numpy as np
 
-  In [11]: from npuff import ufunc_inspector
+  In [11]: from ufunclab import ufunc_inspector
 
   In [12]: ufunc_inspector(np.hypot)
   'hypot' is a ufunc.

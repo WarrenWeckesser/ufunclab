@@ -6,15 +6,15 @@ def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
 
     config = Configuration(None, parent_package, top_path)
-    config.add_subpackage('npuff')
-    config.add_extension('npuff._logfact',
+    config.add_subpackage('ufunclab')
+    config.add_extension('ufunclab._logfact',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'logfactorial', 'logfactorial.c'),
                                   join('src', 'logfactorial', 'logfactorial_ufunc.c')])
-    config.add_extension('npuff._peaktopeak',
+    config.add_extension('ufunclab._peaktopeak',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'peaktopeak', 'peaktopeak_gufunc.c.src')])
-    config.add_extension('npuff._ufunc_inspector',
+    config.add_extension('ufunclab._ufunc_inspector',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'ufunc-inspector', 'ufunc_inspector.c')])
     return config
@@ -22,6 +22,6 @@ def configuration(parent_package='', top_path=None):
 
 if __name__ == "__main__":
     from numpy.distutils.core import setup
-    setup(name='npuff',
+    setup(name='ufunclab',
           version='0.0.1',
           configuration=configuration)
