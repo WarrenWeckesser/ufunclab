@@ -11,6 +11,9 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'logfactorial', 'logfactorial.c'),
                                   join('src', 'logfactorial', 'logfactorial_ufunc.c')])
+    config.add_extension('npuff._peaktopeak',
+                         extra_compile_args=['-std=c99'],
+                         sources=[join('src', 'peaktopeak', 'peaktopeak_gufunc.c.src')])
     config.add_extension('npuff._ufunc_inspector',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'ufunc-inspector', 'ufunc_inspector.c')])

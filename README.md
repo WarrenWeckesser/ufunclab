@@ -14,6 +14,32 @@ What's in npuff?
 
 * This is a fairly standard implementation of a NumPy ufunc.
 
+### `npuff.peaktopeak`
+
+* A `gufunc` that computes the peak-to-peak range of a NumPy array.
+  It is like the `ptp` method of a NumPy array, but when the input
+  is signed integers, the output is an unsigned integer with the
+  same bit width:
+
+  ```
+  >>> x = np.array([85, 125, 0, -75, -50], dtype=np.int8)
+  >>> p = peaktopeak(x)
+  >>> p
+  200
+  >>> type(p)
+  numpy.uint8
+  ```
+
+  Compare that to the `ptp` method, which returns a value with the
+  same data type as the input:
+
+  ```
+  >>> q = x.ptp()
+  >>> q
+  -56
+  >>> type(q)
+  numpy.int8
+  ```
 
 ### `npuff.ufunc_inspector`
 
