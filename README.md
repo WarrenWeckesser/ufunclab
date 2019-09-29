@@ -117,3 +117,19 @@ What's in npuff?
   Let's try calling the inner loop function.
   x =   3.000000, y =   4.000000, z =   7.000000
   ```
+
+Rsources for learning about the C API for ufuncs
+------------------------------------------------
+* [Universal functions (ufunc)](https://numpy.org/devdocs/reference/ufuncs.html)
+* [UFunc API](https://numpy.org/devdocs/reference/c-api/ufunc.html)
+* [NEP 5 — Generalized Universal Functions](https://numpy.org/neps/nep-0005-generalized-ufuncs.html)
+* When implementing inner loops for many NumPy dtypes, the
+  [NumPy distutils](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html)
+  [template preprocessor](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html#conversion-of-src-files-using-templates)
+  is a useful tool. (See the ["Other files"](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html#other-files)
+  section for the syntax that would be used in, say, a C file.)
+* Some relevant NumPy source code, if you want to dive deep:
+  * `PyUFuncObject` along with related C types and macros are defined in
+   [`numpy/numpy/core/include/numpy/ufuncobject.h`](https://github.com/numpy/numpy/blob/7214ca4688545b432c45287195e2f46c5e418ce8/numpy/core/include/numpy/ufuncobject.h).
+  * `PyUFunc_FromFuncAndData` and `PyUFunc_FromFuncAndDataAndSignatureAndIdentity`
+    are defined in the file [`numpy/numpy/core/src/umath/ufunc_object.c`](https://github.com/numpy/numpy/blob/7214ca4688545b432c45287195e2f46c5e418ce8/numpy/core/src/umath/ufunc_object.c).
