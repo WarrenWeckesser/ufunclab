@@ -122,6 +122,7 @@ Resources for learning about the C API for ufuncs
 ------------------------------------------------
 * [Universal functions (ufunc)](https://numpy.org/devdocs/reference/ufuncs.html)
 * [UFunc API](https://numpy.org/devdocs/reference/c-api/ufunc.html)
+* [Generalized Universal Function API](https://numpy.org/devdocs/reference/c-api/generalized-ufuncs.html)
 * [NEP 5 — Generalized Universal Functions](https://numpy.org/neps/nep-0005-generalized-ufuncs.html)
 * [NEP 20 — Expansion of Generalized Universal Function Signatures](https://numpy.org/neps/nep-0020-gufunc-signature-enhancement.html)
 * When implementing inner loops for many NumPy dtypes, the
