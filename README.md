@@ -127,6 +127,9 @@ Resources for learning about the C API for ufuncs
 * [NEP 20 — Expansion of Generalized Universal Function Signatures](https://numpy.org/neps/nep-0020-gufunc-signature-enhancement.html)
 * [Universal functions](https://numpy.org/devdocs/reference/internals.code-explanations.html#universal-functions),
   part of the [NumPy C Code Explanations](https://numpy.org/devdocs/reference/internals.code-explanations.html)
+  * In particular, the section
+    ["Function call"](https://numpy.org/devdocs/reference/internals.code-explanations.html#function-call)
+    explains when the GIL is released.
 * When implementing inner loops for many NumPy dtypes, the
   [NumPy distutils](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html)
   [template preprocessor](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html#conversion-of-src-files-using-templates)
