@@ -12,11 +12,11 @@
 
 #include "logfactorial.h"
 
-
-static PyMethodDef LogFactorialMethods[] = {
-        {NULL, NULL, 0, NULL}
-};
-
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// The ufunc "inner loop".  For this example, we implement just one inner
+// loop.  This is the 'l->d' loop (64 bit integer input, double precision
+// floating point output).
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 static void logfactorial_loop(char **args, npy_intp *dimensions,
                               npy_intp* steps, void* data)
@@ -37,6 +37,10 @@ static void logfactorial_loop(char **args, npy_intp *dimensions,
     }
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 PyUFuncGenericFunction funcs[1] = {&logfactorial_loop};
 
 // These are the input and return dtypes of logfactorial.
@@ -44,6 +48,14 @@ static char types[2] = {NPY_INT64, NPY_DOUBLE};
 
 static void *data[1] = {NULL};
 
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef LogFactorialMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
