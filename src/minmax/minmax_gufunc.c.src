@@ -30,7 +30,8 @@ static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
     char *out = args[1];
     npy_intp in_step = steps[0];
     npy_intp out_step = steps[1];
-    npy_intp inner_step = steps[2];
+    npy_intp core_in_step = steps[2];
+    npy_intp core_out_step = steps[3];
 
     if (dimensions[1] == 0) {
         NPY_ALLOW_C_API_DEF
@@ -45,8 +46,8 @@ static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
         char *inner = in;
         @ctype@ xmin = *(@ctype@ *) inner;
         @ctype@ xmax = xmin;
-        inner += inner_step;
-        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += inner_step) {
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
             @ctype@ x = *(@ctype@ *)inner;
             if (x < xmin) {
                 xmin = x;
@@ -55,8 +56,8 @@ static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
                 xmax = x;
             }
         }
-        ((@ctype@ *) out)[0] = xmin;
-        ((@ctype@ *) out)[1] = xmax;
+        *((@ctype@ *) out) = xmin;
+        *((@ctype@ *) (out + core_out_step)) = xmax;
     }
 }
 /**end repeat**/
