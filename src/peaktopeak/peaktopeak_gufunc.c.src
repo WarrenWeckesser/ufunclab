@@ -113,7 +113,7 @@ PyUFuncGenericFunction funcs[] = {
     &peaktopeak_longdouble_loop
 };
 
-static void *data[] = {NULL, NULL, NULL, NULL, NULL, NULL};
+static void *data[sizeof(funcs)/sizeof(funcs[0])];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
