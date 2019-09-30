@@ -23,8 +23,9 @@ What's in ufunclab?
 
   Only the standard integer and floating point types are implemented;
   the function will not accept complex arrays, nor arrays with the data
-  types `datetime64`, `timedelta64` or `object`.
-
+  types `datetime64`, `timedelta64` or `object`.  Also, the function
+  does not implement any special handling of `nan`, so the behavior of
+  this function with arrays containing `nan` is *undefined*.
 
   ```
   >>> x = np.array([85, 125, 0, -75, -50], dtype=np.int8)
@@ -53,7 +54,9 @@ What's in ufunclab?
 
   Only the standard integer and floating point types are implemented;
   the function will not accept complex arrays, nor arrays with the data
-  types `datetime64`, `timedelta64` or `object`.
+  types `datetime64`, `timedelta64` or `object`.  Also, the function
+  does not implement any special handling of `nan`, so the behavior of
+  this function with arrays containing `nan` is *undefined*.
 
   For an input with more than one dimension, `minmax` is applied to the
   last axis.  For example, if `a` has shape (L, M, N), then `minmax(a)` has
