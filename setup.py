@@ -14,6 +14,9 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._peaktopeak',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'peaktopeak', 'peaktopeak_gufunc.c.src')])
+    config.add_extension('ufunclab._minmax',
+                         extra_compile_args=['-std=c99'],
+                         sources=[join('src', 'minmax', 'minmax_gufunc.c.src')])
     config.add_extension('ufunclab._ufunc_inspector',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'ufunc-inspector', 'ufunc_inspector.c')])
@@ -23,5 +26,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.1',
+          version='0.0.1.dev0',
           configuration=configuration)

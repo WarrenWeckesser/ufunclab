@@ -41,6 +41,53 @@ What's in ufunclab?
   numpy.int8
   ```
 
+### `ufunclab.minmax`
+
+* A `gufunc` that simultaneously computes the minimum and maximum of a NumPy
+  array.  (The ufunc signature is '(i)->(2)'.)  For an input with more than
+  one dimension, `minmax` is applied to the last axis.  For example, if `a`
+  has shape (L, M, N), then `minmax(a)` has shape (L, M, 2).
+
+  ```
+  >>> x = np.array([5, -10, -25, 99, 100, 10], dtype=np.int8)
+  >>> minmax(x)
+  array([-25, 100], dtype=int8)
+
+  >>> np.random.seed(12345)
+  >>> y = np.random.randint(-1000, 1000, size=(3, 3, 5)).astype(np.float32)
+  >>> y
+  array([[[-518.,  509.,  309., -871.,  444.],
+          [ 449., -618.,  381., -454.,  565.],
+          [-231.,  142.,  393.,  339., -346.]],
+
+         [[-895.,  115., -241.,  398.,  232.],
+          [-118., -287., -733.,  101.,  674.],
+          [-919.,  746., -834., -737., -957.]],
+
+         [[-769., -977.,   53.,  -48.,  463.],
+          [ 311., -299., -647.,  883., -145.],
+          [-964., -424., -613., -236.,  148.]]], dtype=float32)
+
+  >>> mm = minmax(y)
+  >>> mm
+  array([[[-871.,  509.],
+          [-618.,  565.],
+          [-346.,  393.]],
+
+         [[-895.,  398.],
+          [-733.,  674.],
+          [-957.,  746.]],
+
+         [[-977.,  463.],
+          [-647.,  883.],
+          [-964.,  148.]]], dtype=float32)
+
+  >>> mm.shape
+  (3, 3, 2)
+
+  ```
+
+
 ### `ufunclab.ufunc_inspector`
 
 * Print information about a NumPy ufunc.

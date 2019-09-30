@@ -1,0 +1,150 @@
+//
+// minmax_gufunc.c
+//
+
+#include <stdio.h>
+#include <stdint.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+#include "math.h"
+#include "numpy/ndarraytypes.h"
+#include "numpy/ufuncobject.h"
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for integer and floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename = int8,    int16,    int32,    int64,     uint8,   uint16,   uint32,   uint64,   float, double, longdouble#
+ * #ctype    = int8_t,  int16_t,  int32_t,  int64_t,   uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
+ */
+
+static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
+                                   npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp inner_step = steps[2];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "minmax requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        char *inner = in;
+        @ctype@ xmin = *(@ctype@ *) inner;
+        @ctype@ xmax = xmin;
+        inner += inner_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += inner_step) {
+            @ctype@ x = *(@ctype@ *)inner;
+            if (x < xmin) {
+                xmin = x;
+            }
+            else if (x > xmax) {
+                xmax = x;
+            }
+        }
+        ((@ctype@ *) out)[0] = xmin;
+        ((@ctype@ *) out)[1] = xmax;
+    }
+}
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static char types[] = {
+    NPY_INT8, NPY_INT8,
+    NPY_UINT8, NPY_UINT8,
+    NPY_INT16, NPY_INT16,
+    NPY_UINT16, NPY_UINT16,
+    NPY_INT32, NPY_INT32,
+    NPY_UINT32, NPY_UINT32,
+    NPY_INT64, NPY_INT64,
+    NPY_UINT64, NPY_UINT64,
+    NPY_FLOAT, NPY_FLOAT,
+    NPY_DOUBLE, NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE
+};
+
+PyUFuncGenericFunction funcs[] = {
+    &minmax_int8_loop,
+    &minmax_uint8_loop,
+    &minmax_int16_loop,
+    &minmax_uint16_loop,
+    &minmax_int32_loop,
+    &minmax_uint32_loop,
+    &minmax_int64_loop,
+    &minmax_uint64_loop,
+    &minmax_float_loop,
+    &minmax_double_loop,
+    &minmax_longdouble_loop
+};
+
+static void *data[sizeof(funcs)/sizeof(funcs[0])];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef MinMaxMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_minmax",
+    .m_doc = "Module that defines the minmax function.",
+    .m_size = -1,
+    .m_methods = MinMaxMethods
+};
+
+#define MINMAX_DOCSTRING "Compute minimum and maximum of the input.\n"
+
+PyMODINIT_FUNC PyInit__minmax(void)
+{
+    PyObject *m;
+    PyObject *minmax_gufunc;
+    PyObject *d;
+    size_t ntypes;
+    int nin, nout;
+
+    m = PyModule_Create(&moduledef);
+    if (!m) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the minmax ufunc.
+
+    ntypes = sizeof(funcs) / sizeof(funcs[0]);
+    nin = 1;
+    nout = 1;
+    minmax_gufunc = PyUFunc_FromFuncAndDataAndSignature(
+                            funcs, data, types, ntypes, nin, nout,
+                            PyUFunc_None, "minmax",
+                            MINMAX_DOCSTRING, 0,
+                            "(i)->(2)");
+
+    d = PyModule_GetDict(m);
+    PyDict_SetItemString(d, "minmax", minmax_gufunc);
+    Py_DECREF(minmax_gufunc);
+
+    return m;
+}
