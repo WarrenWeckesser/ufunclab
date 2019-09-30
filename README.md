@@ -19,7 +19,12 @@ What's in ufunclab?
 * A `gufunc` that computes the peak-to-peak range of a NumPy array.
   It is like the `ptp` method of a NumPy array, but when the input
   is signed integers, the output is an unsigned integer with the
-  same bit width:
+  same bit width.
+
+  Only the standard integer and floating point types are implemented;
+  the function will not accept complex arrays, nor arrays with the data
+  types `datetime64`, `timedelta64` or `object`.
+
 
   ```
   >>> x = np.array([85, 125, 0, -75, -50], dtype=np.int8)
@@ -44,9 +49,15 @@ What's in ufunclab?
 ### `ufunclab.minmax`
 
 * A `gufunc` that simultaneously computes the minimum and maximum of a NumPy
-  array.  (The ufunc signature is '(i)->(2)'.)  For an input with more than
-  one dimension, `minmax` is applied to the last axis.  For example, if `a`
-  has shape (L, M, N), then `minmax(a)` has shape (L, M, 2).
+  array.  (The ufunc signature is '(i)->(2)'.)
+
+  Only the standard integer and floating point types are implemented;
+  the function will not accept complex arrays, nor arrays with the data
+  types `datetime64`, `timedelta64` or `object`.
+
+  For an input with more than one dimension, `minmax` is applied to the
+  last axis.  For example, if `a` has shape (L, M, N), then `minmax(a)` has
+  shape (L, M, 2).
 
   ```
   >>> x = np.array([5, -10, -25, 99, 100, 10], dtype=np.int8)
