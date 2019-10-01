@@ -70,6 +70,60 @@ static void peaktopeak_@typename@_loop(char **args, npy_intp *dimensions,
 }
 /**end repeat**/
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loop for object arrays.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static void peaktopeak_object_loop(char **args, npy_intp *dimensions,
+                                   npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp core_in_step = steps[2];
+
+    if (dimensions[1] == 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "peaktopeak requires an input with length at least 1.");
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        char *inner = in;
+        PyObject *xmin = *(PyObject **) inner;
+        PyObject *xmax = xmin;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            PyObject *x = *(PyObject **) inner;
+            int lt = PyObject_RichCompareBool(x, xmin, Py_LT);
+            if (lt == -1) {
+                return;
+            }
+            if (lt == 1) {
+                xmin = x;
+            }
+            else {
+                int gt = PyObject_RichCompareBool(x, xmax, Py_GT);
+                if (gt == -1) {
+                    return;
+                }
+                if (gt == 1) {
+                    xmax = x;
+                }
+            }
+        }
+        Py_INCREF(xmin);
+        Py_INCREF(xmax);
+        PyObject *diff = PyNumber_Subtract(xmax, xmin);
+        Py_DECREF(xmin);
+        Py_DECREF(xmax);
+        if (diff == NULL) {
+            return;
+        }
+        *((PyObject **) out) = diff;
+    }
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
@@ -96,7 +150,8 @@ static char types[] = {
     NPY_UINT64, NPY_UINT64,
     NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE,
-    NPY_LONGDOUBLE, NPY_LONGDOUBLE
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+    NPY_OBJECT, NPY_OBJECT
 };
 
 PyUFuncGenericFunction funcs[] = {
@@ -110,7 +165,8 @@ PyUFuncGenericFunction funcs[] = {
     &peaktopeak_uint64_loop,
     &peaktopeak_float_loop,
     &peaktopeak_double_loop,
-    &peaktopeak_longdouble_loop
+    &peaktopeak_longdouble_loop,
+    &peaktopeak_object_loop
 };
 
 static void *data[sizeof(funcs)/sizeof(funcs[0])];

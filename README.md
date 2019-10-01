@@ -21,11 +21,11 @@ What's in ufunclab?
   is signed integers, the output is an unsigned integer with the
   same bit width.
 
-  Only the standard integer and floating point types are implemented;
-  the function will not accept complex arrays, nor arrays with the data
-  types `datetime64`, `timedelta64` or `object`.  Also, the function
-  does not implement any special handling of `nan`, so the behavior of
-  this function with arrays containing `nan` is *undefined*.
+  The function handles the standard integer and floating point types, and
+  object arrays. The function will not accept complex arrays, nor arrays with
+  the data types `datetime64` or `timedelta64`.  Also, the function does not
+  implement any special handling of `nan`, so the behavior of this function
+  with arrays containing `nan` is *undefined*.
 
   ```
   >>> x = np.array([85, 125, 0, -75, -50], dtype=np.int8)
@@ -45,6 +45,20 @@ What's in ufunclab?
   -56
   >>> type(q)
   numpy.int8
+
+  ```
+
+  `f` is an object array of `Fraction`s and has shape (2, 4).
+
+  ```
+  >>> from fractions import Fraction
+  >>> f = np.array([[Fraction(1, 3), Fraction(3, 5),
+  ...                Fraction(22, 7), Fraction(5, 2)],
+  ...               [Fraction(-2, 9), Fraction(1, 3),
+  ...                Fraction(2, 3), Fraction(5, 9)]], dtype=object)
+  >>> peaktopeak(x)
+  array([Fraction(59, 21), Fraction(8, 9)], dtype=object)
+
   ```
 
 ### `ufunclab.minmax`
