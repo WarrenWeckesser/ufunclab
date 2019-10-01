@@ -52,11 +52,11 @@ What's in ufunclab?
 * A `gufunc` that simultaneously computes the minimum and maximum of a NumPy
   array.  (The ufunc signature is '(i)->(2)'.)
 
-  Only the standard integer and floating point types are implemented;
-  the function will not accept complex arrays, nor arrays with the data
-  types `datetime64`, `timedelta64` or `object`.  Also, the function
-  does not implement any special handling of `nan`, so the behavior of
-  this function with arrays containing `nan` is *undefined*.
+  The function handles the standard integer and floating point types, and
+  object arrays. The function will not accept complex arrays, nor arrays with
+  the data types `datetime64` or `timedelta64`.  Also, the function does not
+  implement any special handling of `nan`, so the behavior of this function
+  with arrays containing `nan` is *undefined*.
 
   For an input with more than one dimension, `minmax` is applied to the
   last axis.  For example, if `a` has shape (L, M, N), then `minmax(a)` has
@@ -98,6 +98,16 @@ What's in ufunclab?
 
   >>> mm.shape
   (3, 3, 2)
+
+  >>> z = np.array(['foo', 'xyz', 'bar', 'abc', 'def'], dtype=object)
+  >>> minmax(z)
+  array(['abc', 'xyz'], dtype=object)
+
+  >>> from fractions import Fraction
+  >>> f = np.array([Fraction(1, 3), Fraction(3, 5),
+  ...               Fraction(22, 7), Fraction(5, 2)], dtype=object)
+  >>> minmax(f)
+  array([Fraction(1, 3), Fraction(22, 7)], dtype=object)
 
   ```
 

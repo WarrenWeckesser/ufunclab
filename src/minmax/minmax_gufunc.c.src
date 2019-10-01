@@ -64,6 +64,58 @@ static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loop for object arrays.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static void minmax_object_loop(char **args, npy_intp *dimensions,
+                               npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp core_in_step = steps[2];
+    npy_intp core_out_step = steps[3];
+
+    if (dimensions[1] == 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "minmax requires an input with length at least 1.");
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        char *inner = in;
+        PyObject *xmin = *(PyObject **) inner;
+        PyObject *xmax = xmin;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            PyObject *x = *(PyObject **) inner;
+            int lt = PyObject_RichCompareBool(x, xmin, Py_LT);
+            if (lt == -1) {
+                return;
+            }
+            if (lt == 1) {
+                xmin = x;
+            }
+            else {
+                int gt = PyObject_RichCompareBool(x, xmax, Py_GT);
+                if (gt == -1) {
+                    return;
+                }
+                if (gt == 1) {
+                    xmax = x;
+                }
+            }
+        }
+        Py_INCREF(xmin);
+        Py_INCREF(xmax);
+        *((PyObject **) out) = xmin;
+        *((PyObject **) (out + core_out_step)) = xmax;
+    }
+}
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -78,7 +130,8 @@ static char types[] = {
     NPY_UINT64, NPY_UINT64,
     NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE,
-    NPY_LONGDOUBLE, NPY_LONGDOUBLE
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+    NPY_OBJECT, NPY_OBJECT
 };
 
 PyUFuncGenericFunction funcs[] = {
@@ -92,7 +145,8 @@ PyUFuncGenericFunction funcs[] = {
     &minmax_uint64_loop,
     &minmax_float_loop,
     &minmax_double_loop,
-    &minmax_longdouble_loop
+    &minmax_longdouble_loop,
+    &minmax_object_loop
 };
 
 static void *data[sizeof(funcs)/sizeof(funcs[0])];
