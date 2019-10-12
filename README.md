@@ -130,6 +130,7 @@ What's in ufunclab?
 * A `gufunc` that simultaneously computes the `argmin` and `argmax` of a NumPy
   array.  (The ufunc signature is '(i)->(2)'.)
 
+  ```
   >>> np.random.seed(12345)
   >>> y = np.random.randint(-1000, 1000, size=(3, 8)).astype(np.float32)
   >>> y
@@ -141,7 +142,7 @@ What's in ufunclab?
   array([[3, 1],
          [7, 1],
          [6, 2]])
-
+  ```
 
 ### `ufunclab.ufunc_inspector`
 
