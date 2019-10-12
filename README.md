@@ -8,6 +8,17 @@ Requires at least Python 3.5.
 What's in ufunclab?
 -------------------
 
+`ufunclab` defines these functions:
+
+* `logfactorial`
+* `peaktopeak`
+* `minmax`
+* `argminmax`
+* `ufunc_inspector`
+
+Details follow.
+
+
 ### `ufunclab.logfactorial`
 
 * Computes the natural logarithm of the factorial of the integer x.
