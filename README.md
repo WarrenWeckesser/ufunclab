@@ -125,6 +125,23 @@ What's in ufunclab?
 
   ```
 
+### `ufunclab.argminmax`
+
+* A `gufunc` that simultaneously computes the `argmin` and `argmax` of a NumPy
+  array.  (The ufunc signature is '(i)->(2)'.)
+
+  >>> np.random.seed(12345)
+  >>> y = np.random.randint(-1000, 1000, size=(3, 8)).astype(np.float32)
+  >>> y
+  array([[-518.,  509.,  309., -871.,  444.,  449., -618.,  381.],
+         [-454.,  565., -231.,  142.,  393.,  339., -346., -895.],
+         [ 115., -241.,  398.,  232., -118., -287., -733.,  101.]],
+        dtype=float32)
+  >>> argminmax(y)
+  array([[3, 1],
+         [7, 1],
+         [6, 2]])
+
 
 ### `ufunclab.ufunc_inspector`
 

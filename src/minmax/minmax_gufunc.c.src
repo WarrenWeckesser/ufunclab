@@ -60,6 +60,49 @@ static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
         *((@ctype@ *) (out + core_out_step)) = xmax;
     }
 }
+
+static void argminmax_@typename@_loop(char **args, npy_intp *dimensions,
+                                      npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp core_in_step = steps[2];
+    npy_intp core_out_step = steps[3];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "argminmax requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        char *inner = in;
+        @ctype@ xmin = *(@ctype@ *) inner;
+        npy_intp xmin_index = 0;
+        @ctype@ xmax = xmin;
+        npy_intp xmax_index = 0;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            @ctype@ x = *(@ctype@ *)inner;
+            if (x < xmin) {
+                xmin = x;
+                xmin_index = k;
+            }
+            else if (x > xmax) {
+                xmax = x;
+                xmax_index = k;
+            }
+        }
+        *((npy_intp *) out) = xmin_index;
+        *((npy_intp *) (out + core_out_step)) = xmax_index;
+    }
+}
+
 /**end repeat**/
 
 
@@ -115,11 +158,61 @@ static void minmax_object_loop(char **args, npy_intp *dimensions,
 }
 
 
+static void argminmax_object_loop(char **args, npy_intp *dimensions,
+                               npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp core_in_step = steps[2];
+    npy_intp core_out_step = steps[3];
+
+    if (dimensions[1] == 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "argminmax requires an input with length at least 1.");
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        char *inner = in;
+        PyObject *xmin = *(PyObject **) inner;
+        npy_intp xmin_index = 0;
+        PyObject *xmax = xmin;
+        npy_intp xmax_index = 0;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            PyObject *x = *(PyObject **) inner;
+            int lt = PyObject_RichCompareBool(x, xmin, Py_LT);
+            if (lt == -1) {
+                return;
+            }
+            if (lt == 1) {
+                xmin = x;
+                xmin_index = k;
+            }
+            else {
+                int gt = PyObject_RichCompareBool(x, xmax, Py_GT);
+                if (gt == -1) {
+                    return;
+                }
+                if (gt == 1) {
+                    xmax = x;
+                    xmax_index = k;
+                }
+            }
+        }
+        *((npy_intp *) out) = xmin_index;
+        *((npy_intp *) (out + core_out_step)) = xmax_index;
+    }
+}
+
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static char types[] = {
+static char minmax_types[] = {
     NPY_INT8, NPY_INT8,
     NPY_UINT8, NPY_UINT8,
     NPY_INT16, NPY_INT16,
@@ -134,7 +227,7 @@ static char types[] = {
     NPY_OBJECT, NPY_OBJECT
 };
 
-PyUFuncGenericFunction funcs[] = {
+PyUFuncGenericFunction minmax_funcs[] = {
     &minmax_int8_loop,
     &minmax_uint8_loop,
     &minmax_int16_loop,
@@ -149,8 +242,39 @@ PyUFuncGenericFunction funcs[] = {
     &minmax_object_loop
 };
 
-static void *data[sizeof(funcs)/sizeof(funcs[0])];
+static void *minmax_data[sizeof(minmax_funcs)/sizeof(minmax_funcs[0])];
 
+static char argminmax_types[] = {
+    NPY_INT8, NPY_INTP,
+    NPY_UINT8, NPY_INTP,
+    NPY_INT16, NPY_INTP,
+    NPY_UINT16, NPY_INTP,
+    NPY_INT32, NPY_INTP,
+    NPY_UINT32, NPY_INTP,
+    NPY_INT64, NPY_INTP,
+    NPY_UINT64, NPY_INTP,
+    NPY_FLOAT, NPY_INTP,
+    NPY_DOUBLE, NPY_INTP,
+    NPY_LONGDOUBLE, NPY_INTP,
+    NPY_OBJECT, NPY_INTP
+};
+
+PyUFuncGenericFunction argminmax_funcs[] = {
+    &argminmax_int8_loop,
+    &argminmax_uint8_loop,
+    &argminmax_int16_loop,
+    &argminmax_uint16_loop,
+    &argminmax_int32_loop,
+    &argminmax_uint32_loop,
+    &argminmax_int64_loop,
+    &argminmax_uint64_loop,
+    &argminmax_float_loop,
+    &argminmax_double_loop,
+    &argminmax_longdouble_loop,
+    &argminmax_object_loop
+};
+
+static void *argminmax_data[sizeof(argminmax_funcs)/sizeof(argminmax_funcs[0])];
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Python extension module definitions.
@@ -163,17 +287,19 @@ static PyMethodDef MinMaxMethods[] = {
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_minmax",
-    .m_doc = "Module that defines the minmax function.",
+    .m_doc = "Module that defines the minmax and argminmax functions.",
     .m_size = -1,
     .m_methods = MinMaxMethods
 };
 
 #define MINMAX_DOCSTRING "Compute minimum and maximum of the input.\n"
+#define ARGMINMAX_DOCSTRING "Compute indices of the minimum and maximum of the input.\n"
 
 PyMODINIT_FUNC PyInit__minmax(void)
 {
     PyObject *m;
     PyObject *minmax_gufunc;
+    PyObject *argminmax_gufunc;
     PyObject *d;
     size_t ntypes;
     int nin, nout;
@@ -186,20 +312,37 @@ PyMODINIT_FUNC PyInit__minmax(void)
     import_array();
     import_umath();
 
+    d = PyModule_GetDict(m);
+
     // Create the minmax ufunc.
 
-    ntypes = sizeof(funcs) / sizeof(funcs[0]);
+    ntypes = sizeof(minmax_funcs) / sizeof(minmax_funcs[0]);
     nin = 1;
     nout = 1;
     minmax_gufunc = PyUFunc_FromFuncAndDataAndSignature(
-                            funcs, data, types, ntypes, nin, nout,
+                            minmax_funcs, minmax_data,
+                            minmax_types, ntypes, nin, nout,
                             PyUFunc_None, "minmax",
                             MINMAX_DOCSTRING, 0,
                             "(i)->(2)");
 
-    d = PyModule_GetDict(m);
     PyDict_SetItemString(d, "minmax", minmax_gufunc);
     Py_DECREF(minmax_gufunc);
+
+    // Create the argminmax ufunc.
+
+    ntypes = sizeof(argminmax_funcs) / sizeof(argminmax_funcs[0]);
+    nin = 1;
+    nout = 1;
+    argminmax_gufunc = PyUFunc_FromFuncAndDataAndSignature(
+                            argminmax_funcs, argminmax_data,
+                            argminmax_types, ntypes, nin, nout,
+                            PyUFunc_None, "argminmax",
+                            ARGMINMAX_DOCSTRING, 0,
+                            "(i)->(2)");
+
+    PyDict_SetItemString(d, "argminmax", argminmax_gufunc);
+    Py_DECREF(argminmax_gufunc);
 
     return m;
 }
