@@ -101,9 +101,32 @@ ufunc_inspector(PyObject *self, PyObject *arg)
     }
 
     if (ufunc->userloops != NULL) {
-        printf("userloops is not NULL\n");
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+
+        printf("Registered user loops:\n");
+        while (PyDict_Next(ufunc->userloops, &pos, &key, &value)) {
+            PyUFunc_Loop1d *current, *prev = NULL;
+            // value is a PyCapsule
+            printf("  key: ");
+            PyObject_Print(key, stdout, 0);
+            printf("\n");
+            current = (PyUFunc_Loop1d *) PyCapsule_GetPointer(value, NULL);
+            while (current != NULL) {
+                printf("      arg_types:  in:");
+                for (int i = 0; i < ufunc->nin + ufunc->nout; ++i) {
+                    if (i == ufunc->nin) {
+                        printf("   out:");
+                    }
+                    printf(" %d", current->arg_types[i]);
+                }
+                printf("\n");
+                current = current->next;
+            }
+        }
         return_value = ufunc->userloops;
     }
+/*
     // Some experiments...
     if (ufunc->nin == 2 && ufunc->nout == 1) {
         // look for dd->d
@@ -127,7 +150,9 @@ ufunc_inspector(PyObject *self, PyObject *arg)
             k += 3;
         }
     }
+*/
 
+/*
     // Another experiment: look for PyUFunc_dd_d
     for (int i = 0; i < ufunc->ntypes; ++i) {
         if (ufunc->functions[i] == PyUFunc_dd_d) {
@@ -140,6 +165,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
             printf("x = %10.6f, y = %10.6f, z = %10.6f\n", x, y, z);
         }
     }
+*/
 
     if (return_value == NULL) {
         Py_INCREF(Py_None);
