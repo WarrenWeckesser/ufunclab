@@ -92,6 +92,16 @@ Details follow.
   303.9199189814815
   ```
 
+  Casting works when the `out` argument is an array with dtype `timedelta64`.
+  For example,
+
+  ```
+  >>> out = np.empty((), dtype='timedelta64[D]')
+  >>> peaktopeak(dates, out=out)
+  array(303, dtype='timedelta64[D]')
+
+  ```
+
 ### `ufunclab.minmax`
 
 * A `gufunc` that simultaneously computes the minimum and maximum of a NumPy

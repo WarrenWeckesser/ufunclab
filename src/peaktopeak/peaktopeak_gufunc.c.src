@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
@@ -11,6 +12,7 @@
 #include "Python.h"
 #include "math.h"
 #include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
 
@@ -277,6 +279,21 @@ timedelta_dtype_with_copied_meta(PyArray_Descr *dtype)
 }
 
 
+static inline bool
+dtype_is_unitless_timedelta(PyArrayObject *op)
+{
+    if (op != NULL) {
+        PyArray_Descr *dtype = PyArray_DESCR(op);
+        if (dtype->type_num == NPY_TIMEDELTA) {
+            PyArray_DatetimeDTypeMetaData *cmeta =
+                (PyArray_DatetimeDTypeMetaData *) (dtype->c_metadata);
+            return cmeta->meta.base == NPY_FR_GENERIC;
+        }
+    }
+    return false;
+}
+
+
 static int
 PeakToPeakTypeResolver(PyUFuncObject *ufunc,
                        NPY_CASTING casting,
@@ -301,7 +318,13 @@ PeakToPeakTypeResolver(PyUFuncObject *ufunc,
         if (out_dtypes[0] == NULL) {
             return -1;
         }
-        out_dtypes[1] = out_dtypes[0];
+        if (dtype_is_unitless_timedelta(operands[1])) {
+            // `out` was given, and it has a unitless timedelta dtype.
+            out_dtypes[1] = PyArray_DESCR(operands[1]);
+        }
+        else {
+            out_dtypes[1] = out_dtypes[0];
+        }
         Py_INCREF(out_dtypes[1]);
     }
     else if (type_num == NPY_DATETIME) {
@@ -309,11 +332,18 @@ PeakToPeakTypeResolver(PyUFuncObject *ufunc,
         if (out_dtypes[0] == NULL) {
             return -1;
         }
-        /* Make a new NPY_TIMEDELTA, and copy type1's metadata */
-        out_dtypes[1] = timedelta_dtype_with_copied_meta(out_dtypes[0]);
-        if (out_dtypes[1] == NULL) {
-            Py_DECREF(out_dtypes[0]);
-            return -1;
+        if (dtype_is_unitless_timedelta(operands[1])) {
+            // `out` was given, and it has a unitless timedelta dtype.
+            out_dtypes[1] = PyArray_DESCR(operands[1]);
+            Py_INCREF(out_dtypes[1]);
+        }
+        else {
+            /* Make a new NPY_TIMEDELTA, and copy type1's metadata */
+            out_dtypes[1] = timedelta_dtype_with_copied_meta(out_dtypes[0]);
+            if (out_dtypes[1] == NULL) {
+                Py_DECREF(out_dtypes[0]);
+                return -1;
+            }
         }
     }
 
