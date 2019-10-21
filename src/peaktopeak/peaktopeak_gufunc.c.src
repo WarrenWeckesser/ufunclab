@@ -21,11 +21,13 @@
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**begin repeat
- * #typename  = int8,    int16,    int32,    int64,     uint8,   uint16,   uint32,   uint64,   float, double, longdouble#
- * #ctype_in  = int8_t,  int16_t,  int32_t,  int64_t,   uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
- * #ctype_out = uint8_t, uint16_t, uint32_t, uint64_t,  uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
+ * #typename      = int8,    int16,    int32,    int64,     uint8,   uint16,   uint32,   uint64,   float, double, longdouble#
+ * #ctype_in      = int8_t,  int16_t,  int32_t,  int64_t,   uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
+ * #ctype_out     = uint8_t, uint16_t, uint32_t, uint64_t,  uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
+ * #is_signed_int = 1,       1,        1,        1,         0,       0,        0,        0,        0,     0,      0#
  */
 
+#if @is_signed_int@
 static inline @ctype_out@ max_diff_@typename@(@ctype_in@ xmax, @ctype_in@ xmin) {
     if ((xmax > 0 && xmin > 0) || (xmax <= 0 && xmin <= 0)) {
         return xmax - xmin;
@@ -34,6 +36,7 @@ static inline @ctype_out@ max_diff_@typename@(@ctype_in@ xmax, @ctype_in@ xmin) 
         return xmax + (@ctype_out@) (-xmin);
     }
 }
+#endif
 
 static void peaktopeak_@typename@_loop(char **args, npy_intp *dimensions,
                                        npy_intp* steps, void* data)
@@ -67,7 +70,11 @@ static void peaktopeak_@typename@_loop(char **args, npy_intp *dimensions,
                 xmax = x;
             }
         }
+#if @is_signed_int@
         *(@ctype_out@ *) out = max_diff_@typename@(xmax, xmin);
+#else
+        *(@ctype_out@ *) out = xmax - xmin;
+#endif
     }
 }
 /**end repeat**/
