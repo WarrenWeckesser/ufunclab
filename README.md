@@ -226,35 +226,25 @@ Details follow.
     2: ( 12,  12) ->  12  (dd->d)  PyUFunc_dd_d
     3: ( 13,  13) ->  13  (gg->g)  PyUFunc_gg_g
     4: ( 17,  17) ->  17  (OO->O)  PyUFunc_OO_O_method
-  Found type dd->d
-  Let's try calling the inner loop function.
-  x =   3.000000, y =   4.000000, z =   5.000000
-
-  Found PyUFunc_dd_d
-  Let's try calling ufunc->data[i]
-  x =   3.000000, y =   4.000000, z =   5.000000
   ```
-  The output will certainly change as the code develops.  The output
-  starting with `Found type...` is part of an experiment, and will
-  eventually be removed.
+  (The output will likely change as the code develops.)
 
   ```
-  In [16]: ufunc_inspector(np.sqrt)                                                                                                 
+  In [16]: ufunc_inspector(np.sqrt)
   'sqrt' is a ufunc.
   nin = 1, nout = 1, ntypes = 11
     0:   23 ->  23  (e->e)  PyUFunc_e_e_As_f_f
     1:   11 ->  11  (f->f)  not generic (or not in the checked generics)
     2:   12 ->  12  (d->d)  not generic (or not in the checked generics)
-    3:   23 ->  23  (e->e)  PyUFunc_e_e_As_f_f
-    4:   11 ->  11  (f->f)  PyUFunc_f_f
-    5:   12 ->  12  (d->d)  PyUFunc_d_d
-    6:   13 ->  13  (g->g)  PyUFunc_g_g
-    7:   14 ->  14  (F->F)  PyUFunc_F_F
-    8:   15 ->  15  (D->D)  PyUFunc_D_D
-    9:   16 ->  16  (G->G)  PyUFunc_G_G
-   10:   17 ->  17  (O->O)  PyUFunc_O_O_method
+    3:   11 ->  11  (f->f)  PyUFunc_f_f
+    4:   12 ->  12  (d->d)  PyUFunc_d_d
+    5:   13 ->  13  (g->g)  PyUFunc_g_g
+    6:   14 ->  14  (F->F)  PyUFunc_F_F
+    7:   15 ->  15  (D->D)  PyUFunc_D_D
+    8:   16 ->  16  (G->G)  PyUFunc_G_G
+    9:   17 ->  17  (O->O)  PyUFunc_O_O_method
 
-  In [17]: ufunc_inspector(np.add)                                                                                                  
+  In [17]: ufunc_inspector(np.add)
   'add' is a ufunc.
   nin = 2, nout = 1, ntypes = 22
     0: (  0,   0) ->   0  (??->?)  not generic (or not in the checked generics)
@@ -279,9 +269,6 @@ Details follow.
    19: ( 22,  22) ->  22  (mm->m)  not generic (or not in the checked generics)
    20: ( 22,  21) ->  21  (mM->M)  not generic (or not in the checked generics)
    21: ( 17,  17) ->  17  (OO->O)  PyUFunc_OO_O
-  Found type dd->d
-  Let's try calling the inner loop function.
-  x =   3.000000, y =   4.000000, z =   7.000000
   ```
 
 Resources for learning about the C API for ufuncs
