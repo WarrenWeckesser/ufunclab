@@ -14,6 +14,7 @@ What's in ufunclab?
 * `peaktopeak`
 * `minmax`
 * `argminmax`
+* `min_argmin` and `max_argmax`
 * `ufunc_inspector`
 
 Details follow.
@@ -183,6 +184,27 @@ Details follow.
   array([[3, 1],
          [7, 1],
          [6, 2]])
+  ```
+
+### `ufunclab.min_argmin` and `ufunclab.max_argmax`
+
+* These functions return both the extreme value and the index of the extreme
+  value.  (The ufunc signature of these functions is '(i)->(),()'.)
+
+  ```
+  >>> np.random.seed(123456)
+  >>> x = np.random.randint(0, 20, size=(3, 5))
+  >>> x
+  array([[ 1, 10, 18, 17, 11],
+         [15, 11,  0,  4,  8],
+         [10, 10, 12, 11, 11]])
+  >>> min_argmin(x, axis=1)
+  (array([ 1,  0, 10]), array([0, 2, 0]))
+
+  >>> from fractions import Fraction as F
+  >>> y = np.array([F(2, 3), F(3, 4), F(2, 7), F(2, 5)])
+  >>> max_argmax(y)
+  (Fraction(3, 4), 1)
   ```
 
 ### `ufunclab.ufunc_inspector`

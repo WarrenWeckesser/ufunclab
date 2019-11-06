@@ -103,6 +103,50 @@ static void argminmax_@typename@_loop(char **args, npy_intp *dimensions,
     }
 }
 
+/**begin repeat1
+ *
+ * #op = min, max#
+ * #cmp = <, >#
+ */
+static void @op@_arg@op@_@typename@_loop(char **args, npy_intp *dimensions,
+                                         npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out1 = args[1];
+    char *out2 = args[2];
+    npy_intp in_step = steps[0];
+    npy_intp out1_step = steps[1];
+    npy_intp out2_step = steps[2];
+    npy_intp core_in_step = steps[3];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "@op@_arg@op@ requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0];
+             ++i, in += in_step, out1 += out1_step, out2 += out2_step) {
+        char *inner = in;
+        @ctype@ x_extreme = *(@ctype@ *) inner;
+        npy_intp x_index = 0;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            @ctype@ x = *(@ctype@ *)inner;
+            if (x @cmp@ x_extreme) {
+                x_extreme = x;
+                x_index = k;
+            }
+        }
+        *((@ctype@ *) out1) = x_extreme;
+        *((npy_intp *) out2) = x_index;
+    }
+}
+/**end repeat1**/
+
 /**end repeat**/
 
 
@@ -159,7 +203,7 @@ static void minmax_object_loop(char **args, npy_intp *dimensions,
 
 
 static void argminmax_object_loop(char **args, npy_intp *dimensions,
-                               npy_intp* steps, void* data)
+                                  npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -207,6 +251,54 @@ static void argminmax_object_loop(char **args, npy_intp *dimensions,
     }
 }
 
+/**begin repeat
+ *
+ * #op = min, max#
+ * #cmp = Py_LT, Py_GT#
+ */
+
+static void @op@_arg@op@_object_loop(char **args, npy_intp *dimensions,
+                                     npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out1 = args[1];
+    char *out2 = args[2];
+    npy_intp in_step = steps[0];
+    npy_intp out1_step = steps[1];
+    npy_intp out2_step = steps[2];
+    npy_intp core_in_step = steps[3];
+
+
+    if (dimensions[1] == 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "@op@_arg@op@ requires an input with length at least 1.");
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0];
+             ++i, in += in_step, out1 += out1_step, out2 += out2_step) {
+        char *inner = in;
+        PyObject *x_extreme = *(PyObject **) inner;
+        npy_intp x_index = 0;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            PyObject *x = *(PyObject **) inner;
+            int test = PyObject_RichCompareBool(x, x_extreme, @cmp@);
+            if (test == -1) {
+                return;
+            }
+            if (test == 1) {
+                x_extreme = x;
+                x_index = k;
+            }
+        }
+        Py_INCREF(x_extreme);
+        *((PyObject **) out1) = x_extreme;
+        *((npy_intp *) out2) = x_index;
+    }
+}
+
+/**end repeat**/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
@@ -276,6 +368,46 @@ PyUFuncGenericFunction argminmax_funcs[] = {
 
 static void *argminmax_data[sizeof(argminmax_funcs)/sizeof(argminmax_funcs[0])];
 
+
+/**begin repeat
+ *
+ * #op = min, max#
+ */
+
+static char @op@_arg@op@_types[] = {
+    NPY_INT8, NPY_INT8, NPY_INTP,
+    NPY_UINT8, NPY_UINT8, NPY_INTP,
+    NPY_INT16, NPY_INT16, NPY_INTP,
+    NPY_UINT16, NPY_UINT16, NPY_INTP,
+    NPY_INT32, NPY_INT32, NPY_INTP,
+    NPY_UINT32, NPY_UINT32, NPY_INTP,
+    NPY_INT64, NPY_INT64, NPY_INTP,
+    NPY_UINT64, NPY_UINT64, NPY_INTP,
+    NPY_FLOAT, NPY_FLOAT, NPY_INTP,
+    NPY_DOUBLE, NPY_DOUBLE, NPY_INTP,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_INTP,
+    NPY_OBJECT, NPY_OBJECT, NPY_INTP
+};
+
+PyUFuncGenericFunction @op@_arg@op@_funcs[] = {
+    &@op@_arg@op@_int8_loop,
+    &@op@_arg@op@_uint8_loop,
+    &@op@_arg@op@_int16_loop,
+    &@op@_arg@op@_uint16_loop,
+    &@op@_arg@op@_int32_loop,
+    &@op@_arg@op@_uint32_loop,
+    &@op@_arg@op@_int64_loop,
+    &@op@_arg@op@_uint64_loop,
+    &@op@_arg@op@_float_loop,
+    &@op@_arg@op@_double_loop,
+    &@op@_arg@op@_longdouble_loop,
+    &@op@_arg@op@_object_loop
+};
+
+static void *@op@_arg@op@_data[sizeof(@op@_arg@op@_funcs)/sizeof(@op@_arg@op@_funcs[0])];
+
+/**end repeat**/
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Python extension module definitions.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -294,12 +426,16 @@ static struct PyModuleDef moduledef = {
 
 #define MINMAX_DOCSTRING "Compute minimum and maximum of the input.\n"
 #define ARGMINMAX_DOCSTRING "Compute indices of the minimum and maximum of the input.\n"
+#define MIN_ARGMIN_DOCSTRING "Compute the minimum and index of the minimum of the input.\n"
+#define MAX_ARGMAX_DOCSTRING "Compute the maximum and index of the maximum of the input.\n"
 
 PyMODINIT_FUNC PyInit__minmax(void)
 {
     PyObject *m;
     PyObject *minmax_gufunc;
     PyObject *argminmax_gufunc;
+    PyObject *min_argmin_gufunc;
+    PyObject *max_argmax_gufunc;
     PyObject *d;
     size_t ntypes;
     int nin, nout;
@@ -343,6 +479,28 @@ PyMODINIT_FUNC PyInit__minmax(void)
 
     PyDict_SetItemString(d, "argminmax", argminmax_gufunc);
     Py_DECREF(argminmax_gufunc);
+
+/**begin repeat
+ *
+ * #op = min, max#
+ * #OP = MIN, MAX#
+ */
+    // Create the @op@_arg@op@ ufunc.
+
+    ntypes = sizeof(@op@_arg@op@_funcs) / sizeof(@op@_arg@op@_funcs[0]);
+    nin = 1;
+    nout = 2;
+    @op@_arg@op@_gufunc = PyUFunc_FromFuncAndDataAndSignature(
+                            @op@_arg@op@_funcs, @op@_arg@op@_data,
+                            @op@_arg@op@_types, ntypes, nin, nout,
+                            PyUFunc_None, "@op@_arg@op@",
+                            @OP@_ARG@OP@_DOCSTRING, 0,
+                            "(i)->(),()");
+
+    PyDict_SetItemString(d, "@op@_arg@op@", @op@_arg@op@_gufunc);
+    Py_DECREF(@op@_arg@op@_gufunc);
+
+/**end repeat**/
 
     return m;
 }
