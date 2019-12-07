@@ -15,6 +15,7 @@ What's in ufunclab?
 * `minmax`
 * `argminmax`
 * `min_argmin` and `max_argmax`
+* `gmean` (geometric mean) and `hmean` (harmonic mean)
 * `ufunc_inspector`
 
 Details follow.
@@ -205,6 +206,46 @@ Details follow.
   >>> y = np.array([F(2, 3), F(3, 4), F(2, 7), F(2, 5)])
   >>> max_argmax(y)
   (Fraction(3, 4), 1)
+  ```
+
+### `ufunclab.gmean` and `ufunclab.hmean`
+
+* These gufuncs compute the geometric and harmonic means, respectively.
+
+  For example,
+
+  ```
+  In [25]: import numpy as np
+
+  In [26]: from ufunclab import gmean, hmean
+
+  In [27]: x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
+
+  In [28]: hmean(x)
+  Out[28]: 2.316602316602317
+
+  In [29]: gmean(x)
+  Out[29]: 2.992555739477689
+
+  In [30]: np.mean(x)
+  Out[30]: 3.8
+
+  In [31]: y = np.arange(1, 16).reshape(3, 5)
+
+  In [32]: y
+  Out[32]:
+  array([[ 1,  2,  3,  4,  5],
+         [ 6,  7,  8,  9, 10],
+         [11, 12, 13, 14, 15]])
+
+  In [33]: hmean(y, axis=1)
+  Out[33]: array([ 2.18978102,  7.74431469, 12.84486077])
+
+  In [34]: gmean(y, axis=1)
+  Out[34]: array([ 2.60517108,  7.87256685, 12.92252305])
+
+  In [35]: np.mean(y, axis=1)
+  Out[35]: array([ 3.,  8., 13.])
   ```
 
 ### `ufunclab.ufunc_inspector`

@@ -1,0 +1,227 @@
+//
+// means_gufuncs.c.src
+//
+// gufunc implementations of:
+//     gmean : geometric mean
+//     hmean : harmonic mean
+//
+
+
+//
+// int8    float64
+// int16   float64
+// int32   float64
+// int64   float64
+// uint8   float64
+// uint16  float64
+// uint32  float64
+// uint64  float64
+// float32 float32
+// float64 float64
+// floatXX floatXX
+
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+#include "math.h"
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for integer and floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = int8,    int16,    int32,    int64,     uint8,   uint16,   uint32,   uint64,   float, double, longdouble#
+ * #ctype_in      = int8_t,  int16_t,  int32_t,  int64_t,   uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
+ * #ctype_out     = double*8, float, double, long double#
+ * #funcsuffix    = ,,,,,,,, f, , l#
+ */
+
+static void gmean_@typename@_loop(char **args, npy_intp *dimensions,
+                                  npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp inner_step = steps[2];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "gmean requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        @ctype_out@ sumlog = 0;
+        char *inner = in;
+        for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
+            @ctype_in@ x = *(@ctype_in@ *)inner;
+            @ctype_out@ logx = log@funcsuffix@(x);
+            sumlog += logx;
+        }
+        *(@ctype_out@ *) out = exp@funcsuffix@(sumlog/dimensions[1]);
+    }
+}
+
+static void hmean_@typename@_loop(char **args, npy_intp *dimensions,
+                                  npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp inner_step = steps[2];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "hmean requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        @ctype_out@ sumrecip = 0;
+        char *inner = in;
+        for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
+            @ctype_in@ x = *(@ctype_in@ *)inner;
+            sumrecip += 1.0L / x;
+        }
+        *(@ctype_out@ *) out = dimensions[1] / sumrecip;
+    }
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of gmean and hmean.
+static char types[] = {
+    NPY_INT8,       NPY_DOUBLE,
+    NPY_UINT8,      NPY_DOUBLE,
+    NPY_INT16,      NPY_DOUBLE,
+    NPY_UINT16,     NPY_DOUBLE,
+    NPY_INT32,      NPY_DOUBLE,
+    NPY_UINT32,     NPY_DOUBLE,
+    NPY_INT64,      NPY_DOUBLE,
+    NPY_UINT64,     NPY_DOUBLE,
+    NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+};
+
+PyUFuncGenericFunction gmean_funcs[] = {
+    &gmean_int8_loop,
+    &gmean_uint8_loop,
+    &gmean_int16_loop,
+    &gmean_uint16_loop,
+    &gmean_int32_loop,
+    &gmean_uint32_loop,
+    &gmean_int64_loop,
+    &gmean_uint64_loop,
+    &gmean_float_loop,
+    &gmean_double_loop,
+    &gmean_longdouble_loop
+};
+
+static void *gmean_data[sizeof(gmean_funcs)/sizeof(gmean_funcs[0])];
+
+PyUFuncGenericFunction hmean_funcs[] = {
+    &hmean_int8_loop,
+    &hmean_uint8_loop,
+    &hmean_int16_loop,
+    &hmean_uint16_loop,
+    &hmean_int32_loop,
+    &hmean_uint32_loop,
+    &hmean_int64_loop,
+    &hmean_uint64_loop,
+    &hmean_float_loop,
+    &hmean_double_loop,
+    &hmean_longdouble_loop
+};
+
+static void *hmean_data[sizeof(hmean_funcs)/sizeof(hmean_funcs[0])];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef MeanMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_means",
+    .m_doc = "Module that defines the gmean and hmean functions.",
+    .m_size = -1,
+    .m_methods = MeanMethods
+};
+
+
+#define GMEAN_DOCSTRING  "Geometric mean (WIP: argument validation incomplete)"
+#define HMEAN_DOCSTRING  "Harmonic mean (WIP: argument validation incomplete)"
+
+PyMODINIT_FUNC PyInit__means(void)
+{
+    PyObject *m;
+    PyUFuncObject *gmean_gufunc;
+    PyUFuncObject *hmean_gufunc;
+    PyObject *d;
+    size_t ntypes;
+    int nin, nout;
+
+    m = PyModule_Create(&moduledef);
+    if (!m) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the gmean ufunc.
+    ntypes = sizeof(gmean_funcs) / sizeof(gmean_funcs[0]);
+    nin = 1;
+    nout = 1;
+    gmean_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            gmean_funcs, gmean_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "gmean",
+                            GMEAN_DOCSTRING, 0,
+                            "(i)->()");
+
+    // Create the hmean ufunc.
+    ntypes = sizeof(hmean_funcs) / sizeof(hmean_funcs[0]);
+    nin = 1;
+    nout = 1;
+    hmean_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            hmean_funcs, hmean_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "gmean",
+                            HMEAN_DOCSTRING, 0,
+                            "(i)->()");
+
+    d = PyModule_GetDict(m);
+    PyDict_SetItemString(d, "gmean", (PyObject *) gmean_gufunc);
+    Py_DECREF(gmean_gufunc);
+    PyDict_SetItemString(d, "hmean", (PyObject *) hmean_gufunc);
+    Py_DECREF(hmean_gufunc);
+
+    return m;
+}
