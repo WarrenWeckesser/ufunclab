@@ -15,6 +15,7 @@ What's in ufunclab?
 * `minmax`
 * `argminmax`
 * `min_argmin` and `max_argmax`
+* `all_same`
 * `gmean` (geometric mean) and `hmean` (harmonic mean)
 * `ufunc_inspector`
 
@@ -206,6 +207,39 @@ Details follow.
   >>> y = np.array([F(2, 3), F(3, 4), F(2, 7), F(2, 5)])
   >>> max_argmax(y)
   (Fraction(3, 4), 1)
+  ```
+
+### `all_same`
+
+* Test that all the values in the array along the given axis are the same.
+  (Note: handling of `datetime64`, `timedelta64` and complex data types
+  are not implemented yet.  Also, `axis=None` is not accepted.)
+
+  ```
+  >>> rng = np.random.Generator(np.random.PCG64(8675309))
+  >>> x = rng.integers(1, 4, size=(3, 9))
+  >>> x
+  array([[3, 2, 2, 3, 2, 2, 2, 3, 3],
+         [1, 2, 2, 2, 2, 2, 2, 3, 1],
+         [2, 3, 3, 1, 2, 3, 2, 1, 2]])
+
+  >>> all_same(x, axis=0)
+  array([False, False, False, False,  True, False,  True, False, False])
+
+  >>> all_same(x, axis=1)
+  array([False, False, False])
+  ```
+
+  Object arrays are handled.
+
+  ```
+  >>> a = np.array([[None, "foo", 99], [None, "bar", "abc"]])
+  >>> a
+  array([[None, 'foo', 99],
+         [None, 'bar', 'abc']], dtype=object)
+
+  >>> all_same(a, axis=0)
+  array([ True, False, False])
   ```
 
 ### `ufunclab.gmean` and `ufunclab.hmean`

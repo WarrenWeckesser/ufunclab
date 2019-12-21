@@ -20,6 +20,9 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._means',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'means', 'means_gufunc.c.src')])
+    config.add_extension('ufunclab._all_same',
+                         extra_compile_args=['-std=c99'],
+                         sources=[join('src', 'all_same', 'all_same_gufunc.c.src')])
     config.add_extension('ufunclab._ufunc_inspector',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'ufunc-inspector', 'ufunc_inspector.c')])
