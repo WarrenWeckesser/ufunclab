@@ -20,6 +20,9 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._means',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'means', 'means_gufunc.c.src')])
+    config.add_extension('ufunclab._backlash',
+                         extra_compile_args=['-std=c99'],
+                         sources=[join('src', 'backlash', 'backlash_gufunc.c.src')])
     config.add_extension('ufunclab._all_same',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'all_same', 'all_same_gufunc.c.src')])

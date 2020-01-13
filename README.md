@@ -17,6 +17,7 @@ What's in ufunclab?
 * `min_argmin` and `max_argmax`
 * `all_same`
 * `gmean` (geometric mean) and `hmean` (harmonic mean)
+* `backlash`
 * `ufunc_inspector`
 
 Details follow.
@@ -280,6 +281,26 @@ Details follow.
 
   In [35]: np.mean(y, axis=1)
   Out[35]: array([ 3.,  8., 13.])
+  ```
+
+### `backlash`
+
+* `backlash(x, deadband, initial)`, a gufunc with signature `(i),(),()->(i)`,
+  computes the "backlash" response of a signal;
+  see https://en.wikipedia.org/wiki/Backlash_(engineering).
+  The function emulates the Backlash block of Matlab's Simulink library.
+
+  For example,
+
+  ```
+   In [52]: x = np.array([0, 0.5, 1, 1.1, 1.0, 1.5, 1.4, 1.2, 0.5])
+
+   In [53]: deadband = 0.4
+
+   In [54]: initial = 0
+
+   In [55]: backlash(x, deadband, initial)
+   Out[55]: array([0. , 0.3, 0.8, 0.9, 0.9, 1.3, 1.3, 1.3, 0.7])
   ```
 
 ### `ufunclab.ufunc_inspector`

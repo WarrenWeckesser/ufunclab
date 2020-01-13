@@ -1,0 +1,165 @@
+//
+// backlash_gufunc.c.src
+//
+// gufunc implementations of backlash(x, deadband, initial)
+//
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+#include "math.h"
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = float, double, longdouble#
+ * #ctype         = float, double, long double#
+ */
+
+static void backlash_@typename@_loop(char **args, npy_intp *dimensions,
+                                     npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array step
+    // steps[1]:  deaband array step
+    // steps[2]:  initial array step
+    // steps[3]:  output array step
+    // steps[4]:  inner x array step
+    // steps[5]:  inner output array step
+    char *px = args[0];
+    char *pdeadband = args[1];
+    char *pinitial = args[2];
+    char *pout = args[3];
+    npy_intp nloops = dimensions[0];
+
+    for (int j = 0; j < nloops; ++j, px += steps[0], pdeadband += steps[1],
+                                     pinitial += steps[2], pout += steps[3]) {
+        @ctype@ halfband = *((@ctype@ *) pdeadband) / 2;
+        @ctype@ current_y = *((@ctype@ *) pinitial);
+        for (int k = 0; k < dimensions[1]; ++k) {
+            @ctype@ current_x = ((@ctype@ *) px)[k];
+            @ctype@ xminus = current_x - halfband;
+            if (xminus > current_y) {
+                current_y = xminus;
+            }
+            else {
+                @ctype@ xplus = current_x + halfband;
+                if (xplus < current_y) {
+                    current_y = xplus;
+                }
+            }
+            ((@ctype@ *) pout)[k] = current_y;
+        }
+    }
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of gmean and hmean.
+static char types[] = {
+    NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
+    NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
+};
+
+PyUFuncGenericFunction backlash_funcs[] = {
+    &backlash_float_loop,
+    &backlash_double_loop,
+    &backlash_longdouble_loop
+};
+
+static void *backlash_data[sizeof(backlash_funcs)/sizeof(backlash_funcs[0])];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef BacklashMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_backlash",
+    .m_doc = "Module that defines the backlash function.",
+    .m_size = -1,
+    .m_methods = BacklashMethods
+};
+
+
+#define BACKLASH_DOCSTRING \
+"backlash(x, deadband, initial)\n"                          \
+"\n"                                                        \
+"Compute the backlash signal of the input signal x.\n"      \
+"\n"                                                        \
+"Parameters\n"                                              \
+"----------\n"                                              \
+"x : array_like\n"                                          \
+"    Input signal\n"                                        \
+"deadband : scalar\n"                                       \
+"    Width of the deadband of the backlash process.\n"      \
+"initial : scalar\n"                                        \
+"    Initial state of the output.\n"                        \
+"\n"                                                        \
+"Returns\n"                                                 \
+"-------\n"                                                 \
+"out : ndarray\n"                                           \
+"    Output of the backlash process.\n"                     \
+"\n"                                                        \
+"Examples\n"                                                \
+"--------\n"                                                \
+">>> x = np.array([0, 1, 1.1, 1.0, 1.5, 1.4, 1.2, 0.5])\n"  \
+">>> backlash(x, 0.4, 0.0)\n"                               \
+"array([0. , 0.8, 0.9, 0.9, 1.3, 1.3, 1.3, 0.7])\n"         \
+"\n"
+
+PyMODINIT_FUNC PyInit__backlash(void)
+{
+    PyObject *m;
+    PyUFuncObject *backlash_gufunc;
+    PyObject *d;
+    size_t ntypes;
+    int nin, nout;
+
+    m = PyModule_Create(&moduledef);
+    if (!m) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the backlash ufunc.
+    ntypes = sizeof(backlash_funcs) / sizeof(backlash_funcs[0]);
+    nin = 3;
+    nout = 1;
+    backlash_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            backlash_funcs, backlash_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "backlash",
+                            BACKLASH_DOCSTRING, 0,
+                            "(i),(),()->(i)");
+
+    d = PyModule_GetDict(m);
+    PyDict_SetItemString(d, "backlash", (PyObject *) backlash_gufunc);
+    Py_DECREF(backlash_gufunc);
+
+    return m;
+}
