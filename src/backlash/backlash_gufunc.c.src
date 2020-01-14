@@ -1,7 +1,7 @@
 //
 // backlash_gufunc.c.src
 //
-// gufunc implementations of backlash(x, deadband, initial)
+// gufunc implementation of backlash(x, deadband, initial)
 //
 
 #include <stdio.h>
@@ -33,7 +33,7 @@ static void backlash_@typename@_loop(char **args, npy_intp *dimensions,
     // dimensions[0]: Number of input arrays
     // dimensions[1]: Length of each array
     // steps[0]:  x array step
-    // steps[1]:  deaband array step
+    // steps[1]:  deadband array step
     // steps[2]:  initial array step
     // steps[3]:  output array step
     // steps[4]:  inner x array step
@@ -72,7 +72,7 @@ static void backlash_@typename@_loop(char **args, npy_intp *dimensions,
 // ufunc configuration data.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-// These are the input and return dtypes of gmean and hmean.
+// These are the input and return dtypes of backlash.
 static char types[] = {
     NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
