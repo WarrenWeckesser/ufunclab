@@ -306,9 +306,7 @@ Details follow.
   The script `backlash_demo.py` in the `examples` directory generates
   the plot
 
-.. image:: https://raw.githubusercontent.com/WarrenWeckesser/ufunclab/master/examples/backlash_demo.png
-   :alt: Backlash demo
-   :align: center
+  ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/backlash_demo.png)
 
 ### `ufunclab.ufunc_inspector`
 
