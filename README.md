@@ -303,6 +303,13 @@ Details follow.
    Out[55]: array([0. , 0.3, 0.8, 0.9, 0.9, 1.3, 1.3, 1.3, 0.7])
   ```
 
+  The script `backlash_demo.py` in the `examples` directory generates
+  the plot
+
+.. image:: https://raw.githubusercontent.com/WarrenWeckesser/ufunclab/master/examples/backlash_demo.png
+   :alt: Backlash demo
+   :align: center
+
 ### `ufunclab.ufunc_inspector`
 
 * Print information about a NumPy ufunc.
