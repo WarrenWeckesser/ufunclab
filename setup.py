@@ -6,6 +6,7 @@ def configuration(parent_package='', top_path=None):
 
     config = Configuration(None, parent_package, top_path)
     config.add_subpackage('ufunclab')
+    config.add_subpackage('ufunclab/tests')
     config.add_extension('ufunclab._logfact',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'logfactorial',
