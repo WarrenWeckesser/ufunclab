@@ -5,6 +5,8 @@ Some NumPy `ufuncs`, and some related tools.
 
 Requires at least Python 3.5.
 
+The unit tests require pytest.
+
 What's in ufunclab?
 -------------------
 
