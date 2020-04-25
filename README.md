@@ -385,14 +385,14 @@ Resources for learning about the C API for ufuncs
     ["Function call"](https://numpy.org/devdocs/reference/internals.code-explanations.html#function-call)
     explains when the GIL is released.
 * When implementing inner loops for many NumPy dtypes, the
-  [NumPy distutils](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html)
-  [template preprocessor](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html#conversion-of-src-files-using-templates)
-  is a useful tool. (See the ["Other files"](https://docs.scipy.org/doc/numpy/reference/distutils_guide.html#other-files)
+  [NumPy distutils](https://numpy.org/doc/stable/reference/distutils_guide.html)
+  [template preprocessor](https://numpy.org/doc/stable/reference/distutils_guide.html#conversion-of-src-files-using-templates)
+  is a useful tool. (See the ["Other files"](https://numpy.org/doc/stable/reference/distutils_guide.html#other-files)
   section for the syntax that would be used in, say, a C file.)
 * Some relevant NumPy source code, if you want to dive deep:
   * `PyUFuncObject` along with related C types and macros are defined in
    [`numpy/numpy/core/include/numpy/ufuncobject.h`](https://github.com/numpy/numpy/blob/7214ca4688545b432c45287195e2f46c5e418ce8/numpy/core/include/numpy/ufuncobject.h).
   * `PyUFunc_FromFuncAndData` and `PyUFunc_FromFuncAndDataAndSignatureAndIdentity`
     are defined in the file [`numpy/numpy/core/src/umath/ufunc_object.c`](https://github.com/numpy/numpy/blob/7214ca4688545b432c45287195e2f46c5e418ce8/numpy/core/src/umath/ufunc_object.c).
-* [Data Type API](https://docs.scipy.org/doc/numpy/reference/c-api.dtype.html) --
+* [Data Type API](https://numpy.org/doc/stable/reference/c-api/dtype.html) --
   a handy reference.
