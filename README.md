@@ -396,5 +396,7 @@ Resources for learning about the C API for ufuncs
    [`numpy/numpy/core/include/numpy/ufuncobject.h`](https://github.com/numpy/numpy/blob/7214ca4688545b432c45287195e2f46c5e418ce8/numpy/core/include/numpy/ufuncobject.h).
   * `PyUFunc_FromFuncAndData` and `PyUFunc_FromFuncAndDataAndSignatureAndIdentity`
     are defined in the file [`numpy/numpy/core/src/umath/ufunc_object.c`](https://github.com/numpy/numpy/blob/7214ca4688545b432c45287195e2f46c5e418ce8/numpy/core/src/umath/ufunc_object.c).
+* Section of the [SciPy Lecture Notes](https://scipy-lectures.org/index.html) on ufuncs:
+  * [2.2.2 Universal Functions](https://scipy-lectures.org/advanced/advanced_numpy/index.html#universal-functions)
 * [Data Type API](https://numpy.org/doc/stable/reference/c-api/dtype.html) --
   a handy reference.
