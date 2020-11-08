@@ -19,6 +19,8 @@ What's in ufunclab?
 * `min_argmin` and `max_argmax`
 * `all_same`
 * `gmean` (geometric mean) and `hmean` (harmonic mean)
+* `mad`, `mad1`, `rmad` and `rmad1` (mean absolute difference and
+  relative mean absolute differene)
 * `backlash`
 * `ufunc_inspector`
 
@@ -284,6 +286,18 @@ Details follow.
   In [35]: np.mean(y, axis=1)
   Out[35]: array([ 3.,  8., 13.])
   ```
+
+### `mad`, `mad1`, `rmad` and `rmad1`
+
+* `mad` and `mad1` compute the mean absolute difference of a 1-d array
+  (gufunc signature is `(i)->()`).  `mad` is the standard calculation
+  (sum of the absolute differences divided by `n**2`), and `mad1` is
+  the unbiased estimator (sum of the absolute differences divided by
+  `n*(n-1)`).
+* `rmad` and `rmad1` compute the relative mean absolute difference.
+  `rmad` is the standard calculation and `rmad1` uses the unbiased
+  estimator of the mead absolute difference to compute the relative
+  mean absolute difference.
 
 ### `backlash`
 

@@ -24,6 +24,9 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._means',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'means', 'means_gufunc.c.src')])
+    config.add_extension('ufunclab._mad',
+                         extra_compile_args=['-std=c99'],
+                         sources=[join('src', 'mad', 'mad_gufunc.c.src')])
     config.add_extension('ufunclab._backlash',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'backlash',
@@ -42,5 +45,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.1.dev0',
+          version='0.0.2.dev0',
           configuration=configuration)

@@ -1,0 +1,420 @@
+//
+// mad_gufuncs.c.src
+//
+// gufunc implementations of:
+//     mad : mean absolute difference
+//     mad1 : unbiased estimator of the mean absolute difference
+//     rmad : relative mean absolute difference
+//
+
+
+//
+// int8    float64
+// int16   float64
+// int32   float64
+// int64   float64
+// uint8   float64
+// uint16  float64
+// uint32  float64
+// uint64  float64
+// float32 float32
+// float64 float64
+// floatXX floatXX
+
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+#include "math.h"
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for integer and floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = int8,    int16,    int32,    int64,     uint8,   uint16,   uint32,   uint64,   float, double, longdouble#
+ * #ctype_in      = int8_t,  int16_t,  int32_t,  int64_t,   uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
+ * #ctype_out     = double*8, float, double, long double#
+ * #funcsuffix    = ,,,,,,,, f, , l#
+ */
+
+static void mad_@typename@_loop(char **args, npy_intp *dimensions,
+                                npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp inner_step = steps[2];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "mad requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        @ctype_out@ sad = 0;
+        char *inner0 = in;
+        for (npy_intp j = 0; j < dimensions[1]-1; ++j, inner0 += inner_step) {
+            @ctype_out@ x = (@ctype_out@) *(@ctype_in@ *)inner0;
+            char *inner1 = in + (j + 1)*inner_step;
+            for (npy_intp k = j + 1; k < dimensions[1]; ++k, inner1 += inner_step) {
+                @ctype_out@ y = (@ctype_out@) *(@ctype_in@ *)inner1;
+                if (x < y) {
+                    sad += y - x;
+                }
+                else {
+                    sad += x - y;
+                }
+            }
+        }
+        *(@ctype_out@ *) out = 2 * sad / dimensions[1] / dimensions[1];
+    }
+}
+
+
+static void mad1_@typename@_loop(char **args, npy_intp *dimensions,
+                                 npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp inner_step = steps[2];
+
+    if (dimensions[1] < 2) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "mad1 requires an input with length at least 2.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        @ctype_out@ sad = 0;
+        char *inner0 = in;
+        for (npy_intp j = 0; j < dimensions[1]-1; ++j, inner0 += inner_step) {
+            @ctype_out@ x = (@ctype_out@) *(@ctype_in@ *)inner0;
+            char *inner1 = in + (j + 1)*inner_step;
+            for (npy_intp k = j + 1; k < dimensions[1]; ++k, inner1 += inner_step) {
+                @ctype_out@ y = (@ctype_out@) *(@ctype_in@ *)inner1;
+                if (x < y) {
+                    sad += y - x;
+                }
+                else {
+                    sad += x - y;
+                }
+            }
+        }
+        *(@ctype_out@ *) out = 2 * sad / dimensions[1] / (dimensions[1] - 1);
+    }
+}
+
+static void rmad_@typename@_loop(char **args, npy_intp *dimensions,
+                                 npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp inner_step = steps[2];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "rmad requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        @ctype_out@ sum = 0;
+        @ctype_out@ sad = 0;
+        char *inner0 = in;
+        for (npy_intp j = 0; j < dimensions[1]; ++j, inner0 += inner_step) {
+            @ctype_out@ x = (@ctype_out@) *(@ctype_in@ *)inner0;
+            sum += x;
+            if (j == dimensions[1] - 1) {
+                continue;
+            }
+            char *inner1 = in + (j + 1)*inner_step;
+            for (npy_intp k = j + 1; k < dimensions[1]; ++k, inner1 += inner_step) {
+                @ctype_out@ y = (@ctype_out@) *(@ctype_in@ *)inner1;
+                if (x < y) {
+                    sad += y - x;
+                }
+                else {
+                    sad += x - y;
+                }
+            }
+        }
+        if (sum == 0) {
+            if (sad == 0) {
+                *(@ctype_out@ *) out = NAN;
+            }
+            else {
+                *(@ctype_out@ *) out = INFINITY;
+            }
+        }
+        else {
+            *(@ctype_out@ *) out = 2 * sad / sum / dimensions[1];
+        }
+    }
+}
+
+
+
+static void rmad1_@typename@_loop(char **args, npy_intp *dimensions,
+                                  npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp inner_step = steps[2];
+
+    if (dimensions[1] < 2) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "rmad1 requires an input with length at least 2.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        @ctype_out@ sum = 0;
+        @ctype_out@ sad = 0;
+        char *inner0 = in;
+        for (npy_intp j = 0; j < dimensions[1]; ++j, inner0 += inner_step) {
+            @ctype_out@ x = (@ctype_out@) *(@ctype_in@ *)inner0;
+            sum += x;
+            if (j == dimensions[1] - 1) {
+                continue;
+            }
+            char *inner1 = in + (j + 1)*inner_step;
+            for (npy_intp k = j + 1; k < dimensions[1]; ++k, inner1 += inner_step) {
+                @ctype_out@ y = (@ctype_out@) *(@ctype_in@ *)inner1;
+                if (x < y) {
+                    sad += y - x;
+                }
+                else {
+                    sad += x - y;
+                }
+            }
+        }
+        if (sum == 0) {
+            if (sad == 0) {
+                *(@ctype_out@ *) out = NAN;
+            }
+            else {
+                *(@ctype_out@ *) out = INFINITY;
+            }
+        }
+        else {
+            *(@ctype_out@ *) out = 2 * sad / sum / (dimensions[1] - 1);
+        }
+    }
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of mad and rmad.
+static char types[] = {
+    NPY_INT8,       NPY_DOUBLE,
+    NPY_UINT8,      NPY_DOUBLE,
+    NPY_INT16,      NPY_DOUBLE,
+    NPY_UINT16,     NPY_DOUBLE,
+    NPY_INT32,      NPY_DOUBLE,
+    NPY_UINT32,     NPY_DOUBLE,
+    NPY_INT64,      NPY_DOUBLE,
+    NPY_UINT64,     NPY_DOUBLE,
+    NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+};
+
+
+PyUFuncGenericFunction mad_funcs[] = {
+    &mad_int8_loop,
+    &mad_uint8_loop,
+    &mad_int16_loop,
+    &mad_uint16_loop,
+    &mad_int32_loop,
+    &mad_uint32_loop,
+    &mad_int64_loop,
+    &mad_uint64_loop,
+    &mad_float_loop,
+    &mad_double_loop,
+    &mad_longdouble_loop
+};
+
+static void *mad_data[sizeof(mad_funcs)/sizeof(mad_funcs[0])];
+
+
+PyUFuncGenericFunction mad1_funcs[] = {
+    &mad1_int8_loop,
+    &mad1_uint8_loop,
+    &mad1_int16_loop,
+    &mad1_uint16_loop,
+    &mad1_int32_loop,
+    &mad1_uint32_loop,
+    &mad1_int64_loop,
+    &mad1_uint64_loop,
+    &mad1_float_loop,
+    &mad1_double_loop,
+    &mad1_longdouble_loop
+};
+
+static void *mad1_data[sizeof(mad1_funcs)/sizeof(mad1_funcs[0])];
+
+
+PyUFuncGenericFunction rmad_funcs[] = {
+    &rmad_int8_loop,
+    &rmad_uint8_loop,
+    &rmad_int16_loop,
+    &rmad_uint16_loop,
+    &rmad_int32_loop,
+    &rmad_uint32_loop,
+    &rmad_int64_loop,
+    &rmad_uint64_loop,
+    &rmad_float_loop,
+    &rmad_double_loop,
+    &rmad_longdouble_loop
+};
+
+static void *rmad_data[sizeof(rmad_funcs)/sizeof(rmad_funcs[0])];
+
+
+PyUFuncGenericFunction rmad1_funcs[] = {
+    &rmad1_int8_loop,
+    &rmad1_uint8_loop,
+    &rmad1_int16_loop,
+    &rmad1_uint16_loop,
+    &rmad1_int32_loop,
+    &rmad1_uint32_loop,
+    &rmad1_int64_loop,
+    &rmad1_uint64_loop,
+    &rmad1_float_loop,
+    &rmad1_double_loop,
+    &rmad1_longdouble_loop
+};
+
+static void *rmad1_data[sizeof(rmad1_funcs)/sizeof(rmad1_funcs[0])];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef MADMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_mad",
+    .m_doc = "Module that defines mad, mad1, rmad and rmad1.",
+    .m_size = -1,
+    .m_methods = MADMethods
+};
+
+
+#define MAD_DOCSTRING   "Mean absolute difference."
+#define MAD1_DOCSTRING  "Unbiased estimator of the mean absolute difference."
+#define RMAD_DOCSTRING  "Relative mean absolute difference."
+#define RMAD1_DOCSTRING  \
+"Estimator of the relative mean absolute difference.\n\n"                \
+"The unbiased estimator of the mean absolute difference is used\n"      \
+"to compute this estimator of the relative mean absolute difference.\n"
+
+PyMODINIT_FUNC PyInit__mad(void)
+{
+    PyObject *m;
+    PyUFuncObject *mad_gufunc;
+    PyUFuncObject *mad1_gufunc;
+    PyUFuncObject *rmad_gufunc;
+    PyUFuncObject *rmad1_gufunc;
+    PyObject *d;
+    size_t ntypes;
+    int nin, nout;
+
+    m = PyModule_Create(&moduledef);
+    if (!m) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the mad ufunc.
+    ntypes = sizeof(mad_funcs) / sizeof(mad_funcs[0]);
+    nin = 1;
+    nout = 1;
+    mad_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            mad_funcs, mad_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "mad",
+                            MAD_DOCSTRING, 0,
+                            "(i)->()");
+
+    // Create the mad1 ufunc.
+    ntypes = sizeof(mad1_funcs) / sizeof(mad1_funcs[0]);
+    nin = 1;
+    nout = 1;
+    mad1_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            mad1_funcs, mad1_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "mad1",
+                            MAD1_DOCSTRING, 0,
+                            "(i)->()");
+
+    // Create the rmad ufunc.
+    ntypes = sizeof(rmad_funcs) / sizeof(rmad_funcs[0]);
+    nin = 1;
+    nout = 1;
+    rmad_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            rmad_funcs, rmad_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "rmad",
+                            RMAD_DOCSTRING, 0,
+                            "(i)->()");
+
+    // Create the rmad1 ufunc.
+    ntypes = sizeof(rmad1_funcs) / sizeof(rmad1_funcs[0]);
+    nin = 1;
+    nout = 1;
+    rmad1_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            rmad1_funcs, rmad1_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "rmad1",
+                            RMAD1_DOCSTRING, 0,
+                            "(i)->()");
+
+    d = PyModule_GetDict(m);
+    PyDict_SetItemString(d, "mad", (PyObject *) mad_gufunc);
+    Py_DECREF(mad_gufunc);
+    PyDict_SetItemString(d, "mad1", (PyObject *) mad1_gufunc);
+    Py_DECREF(mad1_gufunc);
+    PyDict_SetItemString(d, "rmad", (PyObject *) rmad_gufunc);
+    Py_DECREF(rmad_gufunc);
+    PyDict_SetItemString(d, "rmad1", (PyObject *) rmad1_gufunc);
+    Py_DECREF(rmad1_gufunc);
+
+    return m;
+}
