@@ -20,7 +20,7 @@ What's in ufunclab?
 * `all_same`
 * `gmean` (geometric mean) and `hmean` (harmonic mean)
 * `mad`, `mad1`, `rmad` and `rmad1` (mean absolute difference and
-  relative mean absolute differene)
+  relative mean absolute difference)
 * `backlash`
 * `ufunc_inspector`
 
