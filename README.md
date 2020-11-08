@@ -296,8 +296,10 @@ Details follow.
   `n*(n-1)`).
 * `rmad` and `rmad1` compute the relative mean absolute difference.
   `rmad` is the standard calculation and `rmad1` uses the unbiased
-  estimator of the mead absolute difference to compute the relative
+  estimator of the mean absolute difference to compute the relative
   mean absolute difference.
+
+  `rmad` is twice the Gini coefficient.
 
 ### `backlash`
 
