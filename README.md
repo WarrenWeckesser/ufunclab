@@ -25,8 +25,8 @@ What's in ufunclab?
 | [`hmean`](#hmean)               | Harmonic mean                            |
 | [`mad`](#mad)                   | Mean absolute difference (MAD)           |
 | [`mad1`](#mad1)                 | Unbiased estimator of the MAD            |
-| [`rmad`](#mad)                  | Relative mean absolute difference (RMAD) |
-| [`rmad1`](#mad)                 | RMAD based on unbiased MAD               |
+| [`rmad`](#rmad)                 | Relative mean absolute difference (RMAD) |
+| [`rmad1`](#rmad1)               | RMAD based on unbiased MAD               |
 | [`backlash`](#backlash)         | Backlash operator                        |
 | [`ufunc_inspector`](#ufunc_inspector) | Display ufunc information          |
 
