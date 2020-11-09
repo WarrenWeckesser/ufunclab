@@ -12,28 +12,30 @@ What's in ufunclab?
 
 `ufunclab` defines these functions:
 
-* `logfactorial`
-* `peaktopeak`
-* `minmax`
-* `argminmax`
-* `min_argmin` and `max_argmax`
-* `all_same`
-* `gmean` (geometric mean) and `hmean` (harmonic mean)
+* [`logfactorial`](#logfactorial)
+* [`peaktopeak`](#peaktopeak)
+* [`minmax`](#minmax)
+* [`argminmax`](#argminmax)
+* [`min_argmin`](#min_argmin)
+* [`max_argmax`](#max_argmax)
+* [`all_same`](#all_same)
+* [`gmean`](#gmean) (geometric mean)
+* [`hmean`](#hmean) (harmonic mean)
 * `mad`, `mad1`, `rmad` and `rmad1` (mean absolute difference and
   relative mean absolute difference)
-* `backlash`
-* `ufunc_inspector`
+* [`backlash`](#backlash)
+* [`ufunc_inspector`](#ufunc_inspector)
 
 Details follow.
 
 
-### `ufunclab.logfactorial`
+### `logfactorial`
 
 * Computes the natural logarithm of the factorial of the integer x.
 
 * This is a fairly standard implementation of a NumPy ufunc.
 
-### `ufunclab.peaktopeak`
+### `peaktopeak`
 
 * A `gufunc` that computes the peak-to-peak range of a NumPy array.
   It is like the `ptp` method of a NumPy array, but when the input
@@ -110,7 +112,7 @@ Details follow.
 
   ```
 
-### `ufunclab.minmax`
+### `minmax`
 
 * A `gufunc` that simultaneously computes the minimum and maximum of a NumPy
   array.  (The ufunc signature is '(i)->(2)'.)
@@ -174,7 +176,7 @@ Details follow.
 
   ```
 
-### `ufunclab.argminmax`
+### `argminmax`
 
 * A `gufunc` that simultaneously computes the `argmin` and `argmax` of a NumPy
   array.  (The ufunc signature is '(i)->(2)'.)
@@ -193,10 +195,10 @@ Details follow.
          [6, 2]])
   ```
 
-### `ufunclab.min_argmin` and `ufunclab.max_argmax`
+### `min_argmin`
 
-* These functions return both the extreme value and the index of the extreme
-  value.  (The ufunc signature of these functions is '(i)->(),()'.)
+* Returns both the extreme value and the index of the extreme
+  value.  (The ufunc signature  is '(i)->(),()'.)
 
   ```
   >>> np.random.seed(123456)
@@ -207,7 +209,14 @@ Details follow.
          [10, 10, 12, 11, 11]])
   >>> min_argmin(x, axis=1)
   (array([ 1,  0, 10]), array([0, 2, 0]))
+  ```
 
+### `max_argmax`
+
+* Returns both the extreme value and the index of the extreme
+  value.  (The ufunc signature is '(i)->(),()'.)
+
+  ```
   >>> from fractions import Fraction as F
   >>> y = np.array([F(2, 3), F(3, 4), F(2, 7), F(2, 5)])
   >>> max_argmax(y)
@@ -247,44 +256,60 @@ Details follow.
   array([ True, False, False])
   ```
 
-### `ufunclab.gmean` and `ufunclab.hmean`
+### `gmean`
 
-* These gufuncs compute the geometric and harmonic means, respectively.
+* Compute the geometric mean.
 
   For example,
 
   ```
   In [25]: import numpy as np
 
-  In [26]: from ufunclab import gmean, hmean
+  In [26]: from ufunclab import gmean
+
+  In [27]: x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
+
+  In [28]: gmean(x)
+  Out[28]: 2.992555739477689
+
+  In [29]: y = np.arange(1, 16).reshape(3, 5)
+
+  In [30]: y
+  Out[30]:
+  array([[ 1,  2,  3,  4,  5],
+         [ 6,  7,  8,  9, 10],
+         [11, 12, 13, 14, 15]])
+
+  In [31]: gmean(y, axis=1)
+  Out[31]: array([ 2.60517108,  7.87256685, 12.92252305])
+  ```
+
+### `hmean`
+
+* Compute the harmonic means.
+
+  For example,
+
+  ```
+  In [25]: import numpy as np
+
+  In [26]: from ufunclab import hmean
 
   In [27]: x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
 
   In [28]: hmean(x)
   Out[28]: 2.316602316602317
 
-  In [29]: gmean(x)
-  Out[29]: 2.992555739477689
+  In [29]: y = np.arange(1, 16).reshape(3, 5)
 
-  In [30]: np.mean(x)
-  Out[30]: 3.8
-
-  In [31]: y = np.arange(1, 16).reshape(3, 5)
-
-  In [32]: y
-  Out[32]:
+  In [30]: y
+  Out[30]:
   array([[ 1,  2,  3,  4,  5],
          [ 6,  7,  8,  9, 10],
          [11, 12, 13, 14, 15]])
 
-  In [33]: hmean(y, axis=1)
-  Out[33]: array([ 2.18978102,  7.74431469, 12.84486077])
-
-  In [34]: gmean(y, axis=1)
-  Out[34]: array([ 2.60517108,  7.87256685, 12.92252305])
-
-  In [35]: np.mean(y, axis=1)
-  Out[35]: array([ 3.,  8., 13.])
+  In [31]: hmean(y, axis=1)
+  Out[31]: array([ 2.18978102,  7.74431469, 12.84486077])
   ```
 
 ### `mad`, `mad1`, `rmad` and `rmad1`
@@ -326,7 +351,7 @@ Details follow.
 
   ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/backlash_demo.png)
 
-### `ufunclab.ufunc_inspector`
+### `ufunc_inspector`
 
 * Print information about a NumPy ufunc.
 
