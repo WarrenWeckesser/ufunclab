@@ -12,19 +12,23 @@ What's in ufunclab?
 
 `ufunclab` defines these functions:
 
-* [`logfactorial`](#logfactorial)
-* [`peaktopeak`](#peaktopeak)
-* [`minmax`](#minmax)
-* [`argminmax`](#argminmax)
-* [`min_argmin`](#min_argmin)
-* [`max_argmax`](#max_argmax)
-* [`all_same`](#all_same)
-* [`gmean`](#gmean) (geometric mean)
-* [`hmean`](#hmean) (harmonic mean)
-* `mad`, `mad1`, `rmad` and `rmad1` (mean absolute difference and
-  relative mean absolute difference)
-* [`backlash`](#backlash)
-* [`ufunc_inspector`](#ufunc_inspector)
+| Function                        | Description                              |
+| --------                        | -----------                              |
+| [`logfactorial`](#logfactorial) | Logarithm of the factorial of integers   |
+| [`peaktopeak`](#peaktopeak)     | Alternative to `numpy.ptp`               |
+| [`minmax`](#minmax)             | Minimum and maximum                      |
+| [`argminmax`](#argminmax)       | Indices of the minimum and the maximum   |
+| [`min_argmin`](#min_argmin)     | Minimum value and its index              |
+| [`max_argmax`](#max_argmax)     | Maximum value and its index              |
+| [`all_same`](#all_same)         | Check that all values are the same       |
+| [`gmean`](#gmean)               | Geometric mean                           |
+| [`hmean`](#hmean)               | Harmonic mean                            |
+| [`mad`](#mad)                   | Mean absolute difference (MAD)           |
+| [`mad1`](#mad1)                 | Unbiased estimaor of the MAD             |
+| [`rmad`](#mad)                  | Relative mean absolute difference (RMAD) |
+| [`rmad1`](#mad)                 | RMAD based on unbiased MAD               |
+| [`backlash`](#backlash)         | Backlash operator                        |
+| [`ufunc_inspector`](#ufunc_inspector) | Inspect data associated with a ufunc |
 
 Details follow.
 
@@ -312,19 +316,37 @@ Details follow.
   Out[31]: array([ 2.18978102,  7.74431469, 12.84486077])
   ```
 
-### `mad`, `mad1`, `rmad` and `rmad1`
+### `mad`
 
-* `mad` and `mad1` compute the mean absolute difference of a 1-d array
+* `mad` computes the mean absolute difference of a 1-d array
   (gufunc signature is `(i)->()`).  `mad` is the standard calculation
   (sum of the absolute differences divided by `n**2`), and `mad1` is
   the unbiased estimator (sum of the absolute differences divided by
   `n*(n-1)`).
-* `rmad` and `rmad1` compute the relative mean absolute difference.
+
+### `mad1`
+
+* `mad1` computes the mean absolute difference of a 1-d array
+  (gufunc signature is `(i)->()`).  This version is based on the unbiasd
+  estimator of the mean absolute difference. `mad` is the standard
+  calculation (sum of the absolute differences divided by `n**2`), and
+  `mad1` is the unbiased estimator (sum of the absolute differences
+  divided by `n*(n-1)`).
+
+### `rmad`
+
+* `rmad` computes the relative mean absolute difference.
   `rmad` is the standard calculation and `rmad1` uses the unbiased
   estimator of the mean absolute difference to compute the relative
   mean absolute difference.
 
   `rmad` is twice the Gini coefficient.
+
+### `rmad1`
+
+* `rmad1` computes the relative mean absolute difference. `rmad1` uses
+  the unbiased estimator of the mean absolute difference to compute the
+  relative mean absolute difference.
 
 ### `backlash`
 
