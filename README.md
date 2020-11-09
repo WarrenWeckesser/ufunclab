@@ -351,9 +351,11 @@ Details follow.
 ### `backlash`
 
 * `backlash(x, deadband, initial)`, a gufunc with signature `(i),(),()->(i)`,
-  computes the "backlash" response of a signal;
-  see https://en.wikipedia.org/wiki/Backlash_(engineering).
-  The function emulates the Backlash block of Matlab's Simulink library.
+  computes the "backlash" response of a signal; see
+  https://en.wikipedia.org/wiki/Backlash_(engineering).
+  The function emulates the
+  [Backlash block](https://www.mathworks.com/help/simulink/slref/backlash.html)
+  of Matlab's Simulink library.
 
   For example,
 
