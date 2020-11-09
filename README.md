@@ -7,6 +7,9 @@ Requires at least Python 3.5.
 
 The unit tests require pytest.
 
+Links to reference material related to NumPy's C API for ufuncs
+and gufuncs are given [below](#resources).
+
 What's in ufunclab?
 -------------------
 
@@ -439,8 +442,11 @@ Details follow.
    21: ( 17,  17) ->  17  (OO->O)  PyUFunc_OO_O
   ```
 
-Resources for learning about the C API for ufuncs
-------------------------------------------------
+
+### Resources
+
+Here's a collection of resources for learning about the C API for ufuncs.
+
 * [Universal functions (ufunc)](https://numpy.org/devdocs/reference/ufuncs.html)
 * [UFunc API](https://numpy.org/devdocs/reference/c-api/ufunc.html)
 * [Generalized Universal Function API](https://numpy.org/devdocs/reference/c-api/generalized-ufuncs.html)
