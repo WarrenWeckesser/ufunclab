@@ -382,11 +382,14 @@ Details follow.
 ### `deadzone`
 
 * `deadzone(x, low, high)`, a gufunc with signature `(i),(),()->(i)`,
-  computes the "deadzone" response of a signal; see
-  https://en.wikipedia.org/wiki/Backlash_(engineering).
-  The function is similar to the
+  computes the "deadzone" response of a signal. The function is similar to the
   [deadzone block](https://www.mathworks.com/help/simulink/slref/deadzone.html)
   of Matlab's Simulink library.
+
+  The script `deadzone_demo.py` in the `examples` directory generates
+  the plot
+
+  ![Deadzone plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/deadzone_demo.png)
 
 ### `ufunc_inspector`
 
