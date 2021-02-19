@@ -31,6 +31,7 @@ What's in ufunclab?
 | [`rmad`](#rmad)                 | Relative mean absolute difference (RMAD) |
 | [`rmad1`](#rmad1)               | RMAD based on unbiased MAD               |
 | [`backlash`](#backlash)         | Backlash operator                        |
+| [`deadzone`](#deadzone)         | Deadzone operator                        |
 | [`ufunc_inspector`](#ufunc_inspector) | Display ufunc information          |
 
 Details follow.
@@ -377,6 +378,15 @@ Details follow.
   the plot
 
   ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/backlash_demo.png)
+
+### `deadzone`
+
+* `deadzone(x, low, high)`, a gufunc with signature `(i),(),()->(i)`,
+  computes the "deadzone" response of a signal; see
+  https://en.wikipedia.org/wiki/Backlash_(engineering).
+  The function is similar to the
+  [deadzone block](https://www.mathworks.com/help/simulink/slref/deadzone.html)
+  of Matlab's Simulink library.
 
 ### `ufunc_inspector`
 
