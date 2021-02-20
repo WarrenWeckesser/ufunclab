@@ -15,24 +15,25 @@ What's in ufunclab?
 
 `ufunclab` defines these functions:
 
-| Function                        | Description                              |
-| --------                        | -----------                              |
-| [`logfactorial`](#logfactorial) | Logarithm of the factorial of integers   |
-| [`peaktopeak`](#peaktopeak)     | Alternative to `numpy.ptp`               |
-| [`minmax`](#minmax)             | Minimum and maximum                      |
-| [`argminmax`](#argminmax)       | Indices of the minimum and the maximum   |
-| [`min_argmin`](#min_argmin)     | Minimum value and its index              |
-| [`max_argmax`](#max_argmax)     | Maximum value and its index              |
-| [`all_same`](#all_same)         | Check that all values are the same       |
-| [`gmean`](#gmean)               | Geometric mean                           |
-| [`hmean`](#hmean)               | Harmonic mean                            |
-| [`mad`](#mad)                   | Mean absolute difference (MAD)           |
-| [`mad1`](#mad1)                 | Unbiased estimator of the MAD            |
-| [`rmad`](#rmad)                 | Relative mean absolute difference (RMAD) |
-| [`rmad1`](#rmad1)               | RMAD based on unbiased MAD               |
-| [`backlash`](#backlash)         | Backlash operator                        |
-| [`deadzone`](#deadzone)         | Deadzone operator                        |
-| [`ufunc_inspector`](#ufunc_inspector) | Display ufunc information          |
+| Function                                | Description                      |
+| --------                                | -----------                      |
+| [`logfactorial`](#logfactorial)         | Log of the factorial of integers |
+| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`       |
+| [`minmax`](#minmax)                     | Minimum and maximum              |
+| [`argminmax`](#argminmax)               | Indices of the min and the max   |
+| [`min_argmin`](#min_argmin)             | Minimum value and its index      |
+| [`max_argmax`](#max_argmax)             | Maximum value and its index      |
+| [`all_same`](#all_same)                 | Check all values are the same    |
+| [`gmean`](#gmean)                       | Geometricmean                    |
+| [`hmean`](#hmean)                       | Harmonic mean                    |
+| [`mad`](#mad)                           | Mean absolute difference (MAD)   |
+| [`mad1`](#mad1)                         | Unbiased estimator of the MAD    |
+| [`rmad`](#rmad)                         | Relative mean absolute difference|
+| [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD       |
+| [`backlash`](#backlash)                 | Backlash operator                |
+| [`deadzone`](#deadzone)                 | Deadzone operator                |
+| [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis            |
+| [`ufunc_inspector`](#ufunc_inspector)   | Display ufunc information        |
 
 Details follow.
 
@@ -390,6 +391,19 @@ Details follow.
   the plot
 
   ![Deadzone plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/deadzone_demo.png)
+
+### `hysteresis_relay`
+
+* `hysteresis_relay(x, low_threshold, high_threshold, low_value, high_value, init)`
+  a gufunc with signature `(i),(),(),(),(),()->(i)`, passes `x` through a relay
+  with hysteresis (like a Schmitt trigger). The function is similar to the
+  [relay block](https://www.mathworks.com/help/simulink/slref/relay.html)
+  of Matlab's Simulink library.
+
+  The script `hysteresis_relay_demo.py` in the `examples` directory generates
+  the plot
+
+  ![hysteresis_replay plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/hysteresis_relay_demo.png)
 
 ### `ufunc_inspector`
 

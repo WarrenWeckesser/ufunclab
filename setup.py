@@ -35,6 +35,10 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'deadzone',
                                        'deadzone_gufunc.c.src')])
+    config.add_extension('ufunclab._hysteresis_relay',
+                         extra_compile_args=['-std=c99'],
+                         sources=[join('src', 'hysteresis_relay',
+                                       'hysteresis_relay_gufunc.c.src')])
     config.add_extension('ufunclab._all_same',
                          extra_compile_args=['-std=c99'],
                          sources=[join('src', 'all_same',
