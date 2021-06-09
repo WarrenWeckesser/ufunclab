@@ -24,7 +24,7 @@ What's in ufunclab?
 | [`min_argmin`](#min_argmin)             | Minimum value and its index      |
 | [`max_argmax`](#max_argmax)             | Maximum value and its index      |
 | [`all_same`](#all_same)                 | Check all values are the same    |
-| [`gmean`](#gmean)                       | Geometricmean                    |
+| [`gmean`](#gmean)                       | Geometric mean                   |
 | [`hmean`](#hmean)                       | Harmonic mean                    |
 | [`mad`](#mad)                           | Mean absolute difference (MAD)   |
 | [`mad1`](#mad1)                         | Unbiased estimator of the MAD    |
