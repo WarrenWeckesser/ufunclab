@@ -30,6 +30,7 @@ What's in ufunclab?
 | [`mad1`](#mad1)                         | Unbiased estimator of the MAD    |
 | [`rmad`](#rmad)                         | Relative mean absolute difference|
 | [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD       |
+| [`vnorm`](#vnorm)                       | Vector norm                      |
 | [`backlash`](#backlash)                 | Backlash operator                |
 | [`deadzone`](#deadzone)                 | Deadzone operator                |
 | [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis            |
@@ -352,6 +353,11 @@ Details follow.
 * `rmad1` computes the relative mean absolute difference. `rmad1` uses
   the unbiased estimator of the mean absolute difference to compute the
   relative mean absolute difference.
+
+### `vnorm`
+
+* `vnorm` computes the vector norm of 1D arrays.  It is a gufunc with
+  signatue `(i), () -> ()`.
 
 ### `backlash`
 
