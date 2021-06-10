@@ -77,14 +77,14 @@ static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
                     sum += current_x;
                 }
                 else {
-                    sum += npy_pow@c@(current_x/maxabsx, order);
+                    sum += pow@c@(current_x/maxabsx, order);
                 }
             }
             if (npy_isinf(order) | (order == 1)) {
                 ((@ctype@ *) pout)[0] = sum;
             }
             else {
-                ((@ctype@ *) pout)[0] = maxabsx * npy_pow@c@(sum, 1/order);
+                ((@ctype@ *) pout)[0] = maxabsx * pow@c@(sum, 1/order);
             }
         }
     }
