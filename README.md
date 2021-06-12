@@ -414,7 +414,7 @@ Details follow.
   The script `backlash_demo.py` in the `examples` directory generates
   the plot
 
-  ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/backlash_demo.png)
+  ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/backlash_demo.png)
 
 ### `deadzone`
 
@@ -426,7 +426,7 @@ Details follow.
   The script `deadzone_demo.py` in the `examples` directory generates
   the plot
 
-  ![Deadzone plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/deadzone_demo.png)
+  ![Deadzone plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo.png)
 
 ### `hysteresis_relay`
 
@@ -439,7 +439,7 @@ Details follow.
   The script `hysteresis_relay_demo.py` in the `examples` directory generates
   the plot
 
-  ![hysteresis_replay plot](https://github.com/WarrenWeckesser/ufunclab/blob/master/examples/hysteresis_relay_demo.png)
+  ![hysteresis_replay plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hysteresis_relay_demo.png)
 
 ### `ufunc_inspector`
 
