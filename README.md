@@ -359,6 +359,36 @@ Details follow.
 * `vnorm` computes the vector norm of 1D arrays.  It is a gufunc with
   signatue `(i), () -> ()`.
 
+  For example, the 2-norm of [3, 4] is
+  ```
+  In [28]: vnorm([3, 4], 2)
+  Out[28]: 5.0
+  ```
+
+  Compute the p-norm of [3, 4] for several values of p:
+
+  ```
+  In [29]: vnorm([3, 4], [1, 2, 3, np.inf])
+  Out[29]: array([7.        , 5.        , 4.49794145, 4.        ])
+  ```
+
+  Compute the 2-norm of four 2-d vectors:
+
+  ```
+  In [30]: vnorm([[3, 4], [5, 12], [0, 1], [1, 1]], 2)
+  Out[30]: array([ 5.        , 13.        ,  1.        ,  1.41421356])
+  ```
+
+  For the same vectors, compute the p-norm for p = [1, 2, inf]:
+
+  ```
+  In [31]: vnorm([[3, 4], [5, 12], [0, 1], [1, 1]], [[1], [2], [np.inf]])
+  Out[31]:
+  array([[ 7.        , 17.        ,  1.        ,  2.        ],
+         [ 5.        , 13.        ,  1.        ,  1.41421356],
+         [ 4.        , 12.        ,  1.        ,  1.        ]])
+  ```
+
 ### `backlash`
 
 * `backlash(x, deadband, initial)`, a gufunc with signature `(i),(),()->(i)`,
