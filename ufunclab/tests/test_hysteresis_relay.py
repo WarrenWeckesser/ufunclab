@@ -3,8 +3,6 @@ from numpy.testing import assert_array_equal
 from ufunclab import hysteresis_relay
 
 
-
-
 def test_basic():
     x = np.array([-4, -3, -2, -1, 0, 1, 2, 1, 0, -2])
     y = hysteresis_relay(x, -0.5, 0.5, -1, 1, -1)
