@@ -418,8 +418,14 @@ Details follow.
 
 ### `deadzone`
 
-* `deadzone(x, low, high)`, a gufunc with signature `(i),(),()->(i)`,
-  computes the "deadzone" response of a signal. The function is similar to the
+* `deadzone(x, low, high)` is ufunc with three inputs and one output.
+  It computes the "deadzone" response of a signal::
+
+             { 0         if low <= x <= high
+      f(x) = { x - low   if x < low
+             { x - high  if x > high
+
+  The function is similar to the
   [deadzone block](https://www.mathworks.com/help/simulink/slref/deadzone.html)
   of Matlab's Simulink library.
 

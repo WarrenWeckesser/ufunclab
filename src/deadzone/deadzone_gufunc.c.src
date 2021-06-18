@@ -1,7 +1,7 @@
 //
 // deadzone_gufunc.c.src
 //
-// gufunc implementation of deadzone(x, low, high)
+// ufunc implementation of deadzone(x, low, high)
 //
 
 #include <stdio.h>
@@ -30,35 +30,34 @@
 static void deadzone_@typename@_loop(char **args, npy_intp *dimensions,
                                      npy_intp* steps, void* data)
 {
-    // dimensions[0]: Number of input arrays
-    // dimensions[1]: Length of each array
+    // args[0]: pointer to x array
+    // args[1]: pointer to low array
+    // args[2]: pointer to high array
+    // args[3]: pointer to output array
+    // dimensions[0]: Length of each array
     // steps[0]:  x array step
     // steps[1]:  low array step
     // steps[2]:  high array step
     // steps[3]:  output array step
-    // steps[4]:  inner x array step
-    // steps[5]:  inner output array step
     char *px = args[0];
     char *plow = args[1];
     char *phigh = args[2];
     char *pout = args[3];
-    npy_intp nloops = dimensions[0];
+    npy_intp n = dimensions[0];
 
-    for (int j = 0; j < nloops; ++j, px += steps[0], plow += steps[1],
-                                     phigh += steps[2], pout += steps[3]) {
+    for (int j = 0; j < n; ++j, px += steps[0], plow += steps[1],
+                                phigh += steps[2], pout += steps[3]) {
+        @ctype@ x = *((@ctype@ *) px);
         @ctype@ low = *((@ctype@ *) plow);
         @ctype@ high = *((@ctype@ *) phigh);
-        for (int k = 0; k < dimensions[1]; ++k) {
-            @ctype@ x = ((@ctype@ *) px)[k];
-            if (x < low) {
-                ((@ctype@ *) pout)[k] = x - low;
-            }
-            else if (x > high) {
-                ((@ctype@ *) pout)[k] = x - high;            
-            }
-            else {
-                ((@ctype@ *) pout)[k] = 0;
-            }
+        if (x < low) {
+            *((@ctype@ *) pout) = x - low;
+        }
+        else if (x > high) {
+            *((@ctype@ *) pout) = x - high;
+        }
+        else {
+            *((@ctype@ *) pout) = 0;
         }
     }
 }
@@ -112,9 +111,9 @@ static struct PyModuleDef moduledef = {
 "----------\n"                                              \
 "x : array_like\n"                                          \
 "    Input signal\n"                                        \
-"low : scalar\n"                                            \
+"low : array_like\n"                                        \
 "    Low end of the dead zone.\n"                           \
-"high : scalar\n"                                           \
+"high : array_like\n"                                       \
 "    High end of the dead zone.\n"                          \
 "\n"                                                        \
 "Returns\n"                                                 \
@@ -154,11 +153,10 @@ PyMODINIT_FUNC PyInit__deadzone(void)
     ntypes = sizeof(deadzone_funcs) / sizeof(deadzone_funcs[0]);
     nin = 3;
     nout = 1;
-    deadzone_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+    deadzone_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndData(
                             deadzone_funcs, deadzone_data, types, ntypes, nin, nout,
                             PyUFunc_None, "deadzone",
-                            DEADZONE_DOCSTRING, 0,
-                            "(i),(),()->(i)");
+                            DEADZONE_DOCSTRING, 0);
 
     d = PyModule_GetDict(m);
     PyDict_SetItemString(d, "deadzone", (PyObject *) deadzone_gufunc);
