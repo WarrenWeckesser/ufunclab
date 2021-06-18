@@ -39,7 +39,7 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._deadzone',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'deadzone',
-                                       'deadzone_gufunc.c.src')])
+                                       'deadzone_ufunc.c.src')])
     config.add_extension('ufunclab._hysteresis_relay',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'hysteresis_relay',
