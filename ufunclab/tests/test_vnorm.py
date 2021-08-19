@@ -10,8 +10,25 @@ def test_all_zeros():
     assert_array_equal(nrm, 0.0)
 
 
+def test_all_zeros_complex():
+    z = np.zeros(10, dtype=np.complex128)
+    nrm = vnorm(z, 2)
+    assert_array_equal(nrm, 0.0)
+
+
+@pytest.mark.parametrize('order', [0.25, 1, 2, 2.5, 11, np.inf])
+@pytest.mark.parametrize('dtype', [np.float32, np.float64,
+                                   np.complex64, np.complex128])
+def test_empty(order, dtype):
+    x = np.array([], dtype=dtype)
+    assert vnorm(x, order) == 0.0
+
+
 @pytest.mark.parametrize('x, order, nrm', [([3, 4], 2, 5),
-                                           ([1, 1, 4], 0.5, 16)])
+                                           ([1, 1, 4], 0.5, 16),
+                                           ([3+4j, 0, 3], 1, 8),
+                                           ([3+4j, 0, 3], np.inf, 5),
+                                           ([4-2j, 4, 4, 12], 2, 14)])
 def test_basic(x, order, nrm):
     result = vnorm(x, order)
     assert_allclose(result, nrm, rtol=1e-13)
@@ -40,7 +57,33 @@ def test_big_values_order3():
     assert_allclose(nrm, 2e125, rtol=1e-13)
 
 
+@pytest.mark.parametrize('order, expected', [(1, 20e200),
+                                             (2, 10e200),
+                                             (3, np.cbrt(4)*5e200),
+                                             (np.inf, 5e200)])
+def test_big_complex(order, expected):
+    z = np.array([3e200+4e200j, 4e200-3e200j, -3e200+4e200j, -4e200-3e200j])
+    nrm = vnorm(z, order)
+    assert_allclose(nrm, expected)
+
+
 def test_order_inf():
     x = np.array([-4, 2, -3.5, 0, 1])
     nrm = vnorm(x, np.inf)
     assert_array_equal(nrm, 4.0)
+
+
+@pytest.mark.parametrize('dtype', [np.float32, np.float64])
+def test_axis_a(dtype):
+    a = np.array([[1, 0, 3],
+                  [0, 2, 4]], dtype=dtype)
+    nrm = vnorm(a, 2, axis=0)
+    assert_allclose(nrm, [1, 2, 5])
+
+
+@pytest.mark.parametrize('dtype', [np.complex64, np.complex128])
+def test_axis_z(dtype):
+    z = np.array([[2j, 3+4j, -0j, 14],
+                  [0j, 1-2j, -3j, 2-2j]], dtype=dtype)
+    nrm = vnorm(z, 2, axis=0)
+    assert_allclose(nrm, [2, np.sqrt(30), 3, np.sqrt(204)])

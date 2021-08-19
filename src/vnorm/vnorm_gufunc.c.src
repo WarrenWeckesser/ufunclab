@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <complex.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
@@ -34,9 +35,10 @@ static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
 {
     // dimensions[0]: Number of input arrays
     // dimensions[1]: Length of each array
-    // steps[0]:  x array step
+    // steps[0]:  x array outer step
     // steps[1]:  order array step
     // steps[2]:  output array step
+    // steps[3]:  inner (core) x array step
     char *px = args[0];
     char *porder = args[1];
     char *pout = args[2];
@@ -44,7 +46,6 @@ static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
 
     for (int j = 0; j < nloops; ++j, px += steps[0], porder += steps[1],
                                      pout += steps[2]) {
-        @ctype@ sum = 0;
         @ctype@ maxabsx = 0;
         @ctype@ order = *((@ctype@ *) porder);
         if (order <= 0) {
@@ -65,8 +66,9 @@ static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
             ((@ctype@ *) pout)[0] = 0;
         }
         else {
+            @ctype@ sum = 0;
             for (int k = 0; k < dimensions[1]; ++k) {
-                @ctype@ current_x = ((@ctype@ *) px)[k];
+                @ctype@ current_x = *((@ctype@ *) (px + k*steps[3]));
                 if (current_x < 0) {
                     current_x = -current_x;
                 }
@@ -92,6 +94,77 @@ static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
 
 /**end repeat**/
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for complex floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = cfloat, cdouble, clongdouble#
+ * #crealtype     = float, double, long double#
+ * #ccplxtype     = complex float, complex double, complex long double#
+ * #c             = f,,l#
+ * #C             = F,,L#
+ */
+
+static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
+                                  npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array outer step
+    // steps[1]:  order array step
+    // steps[2]:  output array step
+    // steps[3]:  inner (core) x array step
+    char *px = args[0];
+    char *porder = args[1];
+    char *pout = args[2];
+    npy_intp nloops = dimensions[0];
+
+    for (int j = 0; j < nloops; ++j, px += steps[0], porder += steps[1],
+                                     pout += steps[2]) {
+        @crealtype@ maxmag = 0;
+        @crealtype@ order = *((@crealtype@ *) porder);
+        if (order <= 0) {
+            ((@crealtype@ *) pout)[0] = NPY_NAN;
+            continue;
+        }
+
+        for (int k = 0; k < dimensions[1]; ++k) {
+            @ccplxtype@ current_x = ((@ccplxtype@ *) px)[k];
+            @crealtype@ mag = cabs@c@(current_x);
+            if (mag > maxmag) {
+                maxmag = mag;
+            }
+        }
+        if (maxmag == 0) {
+            ((@ccplxtype@ *) pout)[0] = 0;
+        }
+        else {
+            @crealtype@ sum = 0;
+            for (int k = 0; k < dimensions[1]; ++k) {
+                @ccplxtype@ current_x = *((@ccplxtype@ *) (px + k*steps[3]));
+                @crealtype@ mag = cabs@c@(current_x);
+                if (npy_isinf(order)) {
+                    sum = fmax@c@(sum, mag);
+                }
+                else if (order == 1) {
+                    sum += mag;
+                }
+                else {
+                    sum += pow@c@(mag/maxmag, order);
+                }
+            }
+            if (npy_isinf(order) | (order == 1)) {
+                ((@crealtype@ *) pout)[0] = sum;
+            }
+            else {
+                ((@crealtype@ *) pout)[0] = maxmag * pow@c@(sum, 1/order);
+            }
+        }
+    }
+}
+
+/**end repeat**/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
@@ -101,13 +174,19 @@ static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
 static char types[] = {
     NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
-    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+    NPY_CFLOAT, NPY_FLOAT, NPY_FLOAT,
+    NPY_CDOUBLE, NPY_DOUBLE, NPY_DOUBLE,
+    NPY_CLONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
 };
 
 PyUFuncGenericFunction vnorm_funcs[] = {
     &vnorm_float_loop,
     &vnorm_double_loop,
-    &vnorm_longdouble_loop
+    &vnorm_longdouble_loop,
+    &vnorm_cfloat_loop,
+    &vnorm_cdouble_loop,
+    &vnorm_clongdouble_loop
 };
 
 static void *vnorm_data[sizeof(vnorm_funcs)/sizeof(vnorm_funcs[0])];
@@ -152,8 +231,13 @@ static struct PyModuleDef moduledef = {
 "Examples\n"                                                \
 "--------\n"                                                \
 ">>> x = np.array([30.0, 40.0])\n"                          \
-">>> vnorm(x, 2.0)\n"                                       \
+">>> vnorm(x, 2)\n"                                         \
 "50.0\n"                                                    \
+">>> z = np.array([[-2j, 3+4j, 0, 14], [3, -12j, 3j, 2-2j]])\n" \
+">>> vnorm(z, 2, axis=1)\n"                                     \
+"array([15.        , 13.03840481])\n"                           \
+">>> vnorm(z, 2, axis=0)\n"                                     \
+"array([ 3.60555128, 13.        ,  3.        , 14.28285686])\n" \
 "\n"
 
 PyMODINIT_FUNC PyInit__vnorm(void)
