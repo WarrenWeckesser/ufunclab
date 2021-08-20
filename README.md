@@ -387,10 +387,12 @@ Details follow.
   array([[ 7.        , 17.        ,  1.        ,  2.        ],
          [ 5.        , 13.        ,  1.        ,  1.41421356],
          [ 4.        , 12.        ,  1.        ,  1.        ]])
+  ```
 
   `vnorm` handles complex numbers. Here we compute the norm of `z`
   with orders 1, 2, 3, and inf.  (Note that `abs(z)` is [2, 5, 0, 14].)
 
+  ```
   >>> z = np.array([-2j, 3+4j, 0, 14])
   >>> vnorm(z, [1, 2, 3, np.inf])
   array([21.        , 15.        , 14.22263137, 14.        ])
