@@ -106,6 +106,7 @@ static struct PyModuleDef moduledef = {
 "deadzone(x, low, high)\n"                                  \
 "\n"                                                        \
 "Compute the deadzone transform of the input signal x.\n"   \
+"The function is also known as a soft threshold.\n"         \
 "\n"                                                        \
 "Parameters\n"                                              \
 "----------\n"                                              \
