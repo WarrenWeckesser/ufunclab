@@ -49,7 +49,7 @@ static void backlash_@typename@_loop(char **args, npy_intp *dimensions,
         @ctype@ halfband = *((@ctype@ *) pdeadband) / 2;
         @ctype@ current_y = *((@ctype@ *) pinitial);
         for (int k = 0; k < dimensions[1]; ++k) {
-            @ctype@ current_x = ((@ctype@ *) px)[k];
+            @ctype@ current_x = *((@ctype@ *) (px + k*steps[4]));
             @ctype@ xminus = current_x - halfband;
             if (xminus > current_y) {
                 current_y = xminus;
@@ -60,7 +60,7 @@ static void backlash_@typename@_loop(char **args, npy_intp *dimensions,
                     current_y = xplus;
                 }
             }
-            ((@ctype@ *) pout)[k] = current_y;
+            *((@ctype@ *) (pout + k*steps[5])) = current_y;
         }
     }
 }
