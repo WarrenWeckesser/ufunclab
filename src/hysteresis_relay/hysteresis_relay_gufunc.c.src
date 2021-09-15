@@ -154,12 +154,21 @@ static struct PyModuleDef moduledef = {
 "Notes\n"                                                   \
 "-----\n"                                                   \
 "The function expects ``low_threshold <= high_threshold``.\n"\
-"It does not check that this condition is satisifed.\n"     \
-"\n"                                                        \
-"Examples\n"                                                \
-"--------\n"                                                \
-">>> x = np.array([-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5])\n"\
-" TO DO...\n"                                               \
+"It does not check that this condition is satisifed.\n"      \
+"\n"                                                         \
+"Examples\n"                                                 \
+"--------\n"                                                 \
+">>> import numpy as np\n"                                   \
+">>> from ufunclab import hysteresis_relay\n"                \
+">>> x = np.array([-0.2, -0.6, -2, 0.2, 1.2, 2, 0.5, -0.7, -0.2, 0.7])\n"\
+"\n"                                                         \
+"`x` is the input signal.  The lower and upper thresholds\n" \
+"are -0.5 and 0.5, respectively. The low and high output\n"  \
+"values are -1 and 1 (except for the initial output, which\n"\
+"is 0, as determined by the last argument of `hysteresis_relay`).\n"\
+"\n"                                                         \
+">>> hysteresis_relay(x, -0.5, 0.5, -1, 1, 0)\n"             \
+"array([ 0., -1., -1., -1.,  1.,  1.,  1., -1., -1.,  1.])\n"\
 "\n"
 
 PyMODINIT_FUNC PyInit__hysteresis_relay(void)
