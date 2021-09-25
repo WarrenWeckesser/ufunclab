@@ -3,6 +3,7 @@ NumPy ufuncs and utilities.
 """
 
 from ._logfact import logfactorial
+from ._cross3 import cross3
 from ._peaktopeak import peaktopeak
 from ._minmax import minmax, argminmax, min_argmin, max_argmax
 from ._means import gmean, hmean

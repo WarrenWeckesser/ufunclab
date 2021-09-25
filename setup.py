@@ -14,6 +14,10 @@ def configuration(parent_package='', top_path=None):
                                        'logfactorial.c'),
                                   join('src', 'logfactorial',
                                        'logfactorial_ufunc.c')])
+    config.add_extension('ufunclab._cross3',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'cross3',
+                                       'cross3_gufunc.c.src')])
     config.add_extension('ufunclab._peaktopeak',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'peaktopeak',
@@ -58,5 +62,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.2.dev0',
+          version='0.0.2.dev1',
           configuration=configuration)

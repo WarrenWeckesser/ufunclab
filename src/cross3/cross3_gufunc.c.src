@@ -1,0 +1,259 @@
+//
+// cross3_gufunc.c.src
+//
+// gufunc implementation of the cross product for 3-d vectors.
+//
+
+#include <stddef.h>
+#include <stdint.h>
+#include <complex.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+#include "math.h"
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops
+//
+// Loops could be added for smaller integer bit widths, if needed.
+// If loops are added for unsigned integers, it might be reasonable to
+// make the output type signed, since, eg., cross3([1, 2, 3], [2, 2, 1])
+// is [-4, 5, -2].
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename = int32,   int64,   float, double, longdouble,  cfloat,        cdouble,        clongdouble         #
+ * #ctype    = int32_t, int64_t, float, double, long double, complex float, complex double, complex long double #
+ */
+
+static void cross3_@typename@_loop(char **args, npy_intp *dimensions,
+                                   npy_intp* steps, void* data)
+{
+    // Notation: out = u x v
+    //
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array (must be 3)
+    // steps[0]:  u array outer step
+    // steps[1]:  v array outer step
+    // steps[2]:  out array outer step
+    // steps[3]:  inner (core) u array step
+    // steps[4]:  inner v array step
+    // steps[5]:  inner out array step
+    char *pu = args[0];
+    char *pv = args[1];
+    char *pout = args[2];
+    npy_intp nloops = dimensions[0];
+
+    assert(dimensions[1] = 3);
+
+    for (int j = 0; j < nloops; ++j, pu += steps[0], pv += steps[1],
+                                     pout += steps[2]) {
+        @ctype@ u0, u1, u2, v0, v1, v2;
+        u0 = *(@ctype@ *) pu;
+        u1 = *(@ctype@ *) (pu + steps[3]);
+        u2 = *(@ctype@ *) (pu + 2*steps[3]);
+        v0 = *(@ctype@ *) pv;
+        v1 = *(@ctype@ *) (pv + steps[4]);
+        v2 = *(@ctype@ *) (pv + 2*steps[4]);
+        *(@ctype@ *) pout = u1*v2 - u2*v1;
+        *(@ctype@ *) (pout + steps[5]) = u2*v0 - u0*v2;            
+        *(@ctype@ *) (pout + 2*steps[5]) = u0*v1 - u1*v0;
+    }
+}
+
+/**end repeat**/
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loop for object arrays.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+//
+// Computes a*d - b*c
+// Returns a new reference, or NULL on error.
+//
+static PyObject *det2(PyObject *a, PyObject *b, PyObject *c, PyObject *d)
+{
+    PyObject *p0, *p1, *diff;
+
+    p0 = PyNumber_Multiply(a, d);
+    if (p0 == NULL) {
+        return NULL;
+    }
+    p1 = PyNumber_Multiply(b, c);
+    if (p1 == NULL) {
+        Py_DECREF(p0);
+        return NULL;
+    }
+    diff = PyNumber_Subtract(p0, p1);
+    Py_DECREF(p0);
+    Py_DECREF(p1);
+    return diff;
+}
+
+
+//
+// XXX Verify that when det2() returns NULL (i.e. an error
+//     occurred while computing a term), we don't end up with
+//     a memory leak.
+//
+static void cross3_object_loop(char **args, npy_intp *dimensions,
+                               npy_intp* steps, void* data)
+{
+    // Notation: out = u x v
+    //
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array (must be 3)
+    // steps[0]:  u array outer step
+    // steps[1]:  v array outer step
+    // steps[2]:  out array outer step
+    // steps[3]:  inner (core) u array step
+    // steps[4]:  inner v array step
+    // steps[5]:  inner out array step
+    char *pu = args[0];
+    char *pv = args[1];
+    char *pout = args[2];
+    npy_intp nloops = dimensions[0];
+
+    assert(dimensions[1] = 3);
+
+    for (int j = 0; j < nloops; ++j, pu += steps[0], pv += steps[1],
+                                     pout += steps[2]) {
+        PyObject *u0, *u1, *u2, *v0, *v1, *v2, *out;
+        u0 = *(PyObject **) pu;
+        u1 = *(PyObject **) (pu + steps[3]);
+        u2 = *(PyObject **) (pu + 2*steps[3]);
+        v0 = *(PyObject **) pv;
+        v1 = *(PyObject **) (pv + steps[4]);
+        v2 = *(PyObject **) (pv + 2*steps[4]);
+        out = det2(u1, u2, v1, v2);
+        if (out == NULL) {
+            return;
+        }
+        *(PyObject **) pout = out;
+        out = det2(u2, u0, v2, v0);
+        if (out == NULL) {
+            return;
+        }
+        *(PyObject **) (pout + steps[5]) = out;
+        out = det2(u0, u1, v0, v1);
+        if (out == NULL) {
+            return;
+        }
+        *(PyObject **) (pout + 2*steps[5]) = out;
+    }
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of cross3.
+static char types[] = {
+    NPY_INT32, NPY_INT32, NPY_INT32,
+    NPY_INT64, NPY_INT64, NPY_INT64,
+    NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
+    NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+    NPY_CFLOAT, NPY_CFLOAT, NPY_CFLOAT,
+    NPY_CDOUBLE, NPY_CDOUBLE, NPY_CDOUBLE,
+    NPY_CLONGDOUBLE, NPY_CLONGDOUBLE, NPY_CLONGDOUBLE,
+    NPY_OBJECT, NPY_OBJECT, NPY_OBJECT
+};
+
+PyUFuncGenericFunction cross3_funcs[] = {
+    &cross3_int32_loop,
+    &cross3_int64_loop,
+    &cross3_float_loop,
+    &cross3_double_loop,
+    &cross3_longdouble_loop,
+    &cross3_cfloat_loop,
+    &cross3_cdouble_loop,
+    &cross3_clongdouble_loop,
+    &cross3_object_loop
+};
+
+static void *cross3_data[sizeof(cross3_funcs)/sizeof(cross3_funcs[0])];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef Cross3Methods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_cross3",
+    .m_doc = "Module that defines the cross3 function.",
+    .m_size = -1,
+    .m_methods = Cross3Methods
+};
+
+
+#define CROSS3_DOCSTRING \
+"cross3(u, v)\n"                                               \
+"\n"                                                           \
+"Compute the 3-d vector cross product of u and v.\n"           \
+"\n"                                                           \
+"Parameters\n"                                                 \
+"----------\n"                                                 \
+"u : array_like, shape (..., 3)\n"                             \
+"    Input array\n"                                            \
+"v : array_like, shape (..., 3)\n"                             \
+"    Input array\n"                                            \
+"\n"                                                           \
+"Returns\n"                                                    \
+"-------\n"                                                    \
+"out : ndarray, shape (..., 3)\n"                              \
+"    Cross product of u and v.\n"                              \
+"\n"                                                           \
+"Examples\n"                                                   \
+"--------\n"                                                   \
+">>> from ufunclab import cross3\n"                            \
+">>> cross3([1, 2, -2], [5, 3, 1])\n"                          \
+"array([  8, -11,  -7])\n"                                     \
+">>> cross3([[1, 2, -2], [6, 0, 2]], [[5, 3, 1], [2, 2, 3]])\n"\
+"array([[  8, -11,  -7],\n"                                    \
+"       [ -4, -14,  12]])\n"                                   \
+"\n"
+
+
+PyMODINIT_FUNC PyInit__cross3(void)
+{
+    PyObject *m;
+    PyUFuncObject *cross3_gufunc;
+    PyObject *d;
+    size_t ntypes;
+    int nin, nout;
+
+    m = PyModule_Create(&moduledef);
+    if (!m) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the cross3 ufunc.
+    ntypes = sizeof(cross3_funcs) / sizeof(cross3_funcs[0]);
+    nin = 2;
+    nout = 1;
+    cross3_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                        cross3_funcs, cross3_data, types, ntypes, nin, nout,
+                        PyUFunc_None, "cross3",
+                        CROSS3_DOCSTRING, 0, "(3),(3)->(3)");
+
+    d = PyModule_GetDict(m);
+    PyDict_SetItemString(d, "cross3", (PyObject *) cross3_gufunc);
+    Py_DECREF(cross3_gufunc);
+
+    return m;
+}

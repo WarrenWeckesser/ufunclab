@@ -31,6 +31,7 @@ What's in ufunclab?
 | [`rmad`](#rmad)                         | Relative mean absolute difference|
 | [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD       |
 | [`vnorm`](#vnorm)                       | Vector norm                      |
+| [`cross3`](#cross3)                     | 3-d vector cross product         |
 | [`backlash`](#backlash)                 | Backlash operator                |
 | [`deadzone`](#deadzone)                 | Deadzone operator                |
 | [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis            |
@@ -397,6 +398,12 @@ Details follow.
   >>> vnorm(z, [1, 2, 3, np.inf])
   array([21.        , 15.        , 14.22263137, 14.        ])
   ```
+
+### `cross3`
+
+* `cross3(u, v)` is a gufunc with signature `(3),(3)->(3)`.  It computes
+  the 3-d vector cross product (like `numpy.cross`, but specialized to the
+  case of 3-d vectors only).
 
 ### `backlash`
 
