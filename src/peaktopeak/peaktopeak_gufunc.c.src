@@ -38,8 +38,8 @@ static inline @ctype_out@ max_diff_@typename@(@ctype_in@ xmax, @ctype_in@ xmin) 
 }
 #endif
 
-static void peaktopeak_@typename@_loop(char **args, npy_intp *dimensions,
-                                       npy_intp* steps, void* data)
+static void peaktopeak_@typename@_loop(char **args, const npy_intp *dimensions,
+                                       const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -89,8 +89,8 @@ static void peaktopeak_@typename@_loop(char **args, npy_intp *dimensions,
 // typical use-cases for these calculations do not encounter this situation.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static void peaktopeak_int64_signed_loop(char **args, npy_intp *dimensions,
-                                         npy_intp* steps, void* data)
+static void peaktopeak_int64_signed_loop(char **args, const npy_intp *dimensions,
+                                         const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -132,8 +132,8 @@ static void peaktopeak_int64_signed_loop(char **args, npy_intp *dimensions,
 // ufunc inner loop for object arrays.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static void peaktopeak_object_loop(char **args, npy_intp *dimensions,
-                                   npy_intp* steps, void* data)
+static void peaktopeak_object_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];

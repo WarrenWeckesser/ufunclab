@@ -27,8 +27,8 @@
  * #ctype         = float, double, long double#
  */
 
-static void deadzone_@typename@_loop(char **args, npy_intp *dimensions,
-                                     npy_intp* steps, void* data)
+static void deadzone_@typename@_loop(char **args, const npy_intp *dimensions,
+                                     const npy_intp* steps, void* data)
 {
     // args[0]: pointer to x array
     // args[1]: pointer to low array

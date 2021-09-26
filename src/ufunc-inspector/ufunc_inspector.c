@@ -106,7 +106,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
 
         printf("Registered user loops:\n");
         while (PyDict_Next(ufunc->userloops, &pos, &key, &value)) {
-            PyUFunc_Loop1d *current, *prev = NULL;
+            PyUFunc_Loop1d *current;
             // value is a PyCapsule
             printf("  key: ");
             PyObject_Print(key, stdout, 0);

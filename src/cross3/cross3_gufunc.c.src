@@ -32,8 +32,8 @@
  * #ctype    = int32_t, int64_t, float, double, long double, complex float, complex double, complex long double #
  */
 
-static void cross3_@typename@_loop(char **args, npy_intp *dimensions,
-                                   npy_intp* steps, void* data)
+static void cross3_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
 {
     // Notation: out = u x v
     //
@@ -102,8 +102,8 @@ static PyObject *det2(PyObject *a, PyObject *b, PyObject *c, PyObject *d)
 //     occurred while computing a term), we don't end up with
 //     a memory leak.
 //
-static void cross3_object_loop(char **args, npy_intp *dimensions,
-                               npy_intp* steps, void* data)
+static void cross3_object_loop(char **args, const npy_intp *dimensions,
+                               const npy_intp* steps, void* data)
 {
     // Notation: out = u x v
     //

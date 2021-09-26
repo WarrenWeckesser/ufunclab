@@ -23,8 +23,8 @@
  * #ctype    = int8_t,  int16_t,  int32_t,  int64_t,   uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
  */
 
-static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
-                                   npy_intp* steps, void* data)
+static void minmax_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -61,8 +61,8 @@ static void minmax_@typename@_loop(char **args, npy_intp *dimensions,
     }
 }
 
-static void argminmax_@typename@_loop(char **args, npy_intp *dimensions,
-                                      npy_intp* steps, void* data)
+static void argminmax_@typename@_loop(char **args, const npy_intp *dimensions,
+                                      const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -108,8 +108,8 @@ static void argminmax_@typename@_loop(char **args, npy_intp *dimensions,
  * #op = min, max#
  * #cmp = <, >#
  */
-static void @op@_arg@op@_@typename@_loop(char **args, npy_intp *dimensions,
-                                         npy_intp* steps, void* data)
+static void @op@_arg@op@_@typename@_loop(char **args, const npy_intp *dimensions,
+                                         const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out1 = args[1];
@@ -154,8 +154,8 @@ static void @op@_arg@op@_@typename@_loop(char **args, npy_intp *dimensions,
 // ufunc inner loop for object arrays.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static void minmax_object_loop(char **args, npy_intp *dimensions,
-                               npy_intp* steps, void* data)
+static void minmax_object_loop(char **args, const npy_intp *dimensions,
+                               const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -202,8 +202,8 @@ static void minmax_object_loop(char **args, npy_intp *dimensions,
 }
 
 
-static void argminmax_object_loop(char **args, npy_intp *dimensions,
-                                  npy_intp* steps, void* data)
+static void argminmax_object_loop(char **args, const npy_intp *dimensions,
+                                  const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -257,8 +257,8 @@ static void argminmax_object_loop(char **args, npy_intp *dimensions,
  * #cmp = Py_LT, Py_GT#
  */
 
-static void @op@_arg@op@_object_loop(char **args, npy_intp *dimensions,
-                                     npy_intp* steps, void* data)
+static void @op@_arg@op@_object_loop(char **args, const npy_intp *dimensions,
+                                     const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out1 = args[1];

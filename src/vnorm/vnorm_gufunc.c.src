@@ -30,8 +30,8 @@
  * #C             = F,,L#
  */
 
-static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
-                                  npy_intp* steps, void* data)
+static void vnorm_@typename@_loop(char **args, const npy_intp *dimensions,
+                                  const npy_intp* steps, void* data)
 {
     // dimensions[0]: Number of input arrays
     // dimensions[1]: Length of each array
@@ -106,8 +106,8 @@ static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
  * #C             = F,,L#
  */
 
-static void vnorm_@typename@_loop(char **args, npy_intp *dimensions,
-                                  npy_intp* steps, void* data)
+static void vnorm_@typename@_loop(char **args, const npy_intp *dimensions,
+                                  const npy_intp* steps, void* data)
 {
     // dimensions[0]: Number of input arrays
     // dimensions[1]: Length of each array

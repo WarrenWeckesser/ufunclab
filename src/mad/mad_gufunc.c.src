@@ -46,8 +46,8 @@
  * #funcsuffix    = ,,,,,,,, f, , l#
  */
 
-static void mad_@typename@_loop(char **args, npy_intp *dimensions,
-                                npy_intp* steps, void* data)
+static void mad_@typename@_loop(char **args, const npy_intp *dimensions,
+                                const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -85,8 +85,8 @@ static void mad_@typename@_loop(char **args, npy_intp *dimensions,
 }
 
 
-static void mad1_@typename@_loop(char **args, npy_intp *dimensions,
-                                 npy_intp* steps, void* data)
+static void mad1_@typename@_loop(char **args, const npy_intp *dimensions,
+                                 const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -123,8 +123,8 @@ static void mad1_@typename@_loop(char **args, npy_intp *dimensions,
     }
 }
 
-static void rmad_@typename@_loop(char **args, npy_intp *dimensions,
-                                 npy_intp* steps, void* data)
+static void rmad_@typename@_loop(char **args, const npy_intp *dimensions,
+                                 const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -178,8 +178,8 @@ static void rmad_@typename@_loop(char **args, npy_intp *dimensions,
 
 
 
-static void rmad1_@typename@_loop(char **args, npy_intp *dimensions,
-                                  npy_intp* steps, void* data)
+static void rmad1_@typename@_loop(char **args, const npy_intp *dimensions,
+                                  const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
