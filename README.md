@@ -15,27 +15,28 @@ What's in ufunclab?
 
 `ufunclab` defines these functions:
 
-| Function                                | Description                      |
-| --------                                | -----------                      |
-| [`logfactorial`](#logfactorial)         | Log of the factorial of integers |
-| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`       |
-| [`minmax`](#minmax)                     | Minimum and maximum              |
-| [`argminmax`](#argminmax)               | Indices of the min and the max   |
-| [`min_argmin`](#min_argmin)             | Minimum value and its index      |
-| [`max_argmax`](#max_argmax)             | Maximum value and its index      |
-| [`all_same`](#all_same)                 | Check all values are the same    |
-| [`gmean`](#gmean)                       | Geometric mean                   |
-| [`hmean`](#hmean)                       | Harmonic mean                    |
-| [`mad`](#mad)                           | Mean absolute difference (MAD)   |
-| [`mad1`](#mad1)                         | Unbiased estimator of the MAD    |
-| [`rmad`](#rmad)                         | Relative mean absolute difference|
-| [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD       |
-| [`vnorm`](#vnorm)                       | Vector norm                      |
-| [`cross3`](#cross3)                     | 3-d vector cross product         |
-| [`backlash`](#backlash)                 | Backlash operator                |
-| [`deadzone`](#deadzone)                 | Deadzone operator                |
-| [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis            |
-| [`ufunc_inspector`](#ufunc_inspector)   | Display ufunc information        |
+| Function                                | Description                                      |
+| --------                                | -----------                                      |
+| [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
+| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                       |
+| [`findfirst`](#findfirst)               | Find the first occurrence of a target comparison |
+| [`minmax`](#minmax)                     | Minimum and maximum                              |
+| [`argminmax`](#argminmax)               | Indices of the min and the max                   |
+| [`min_argmin`](#min_argmin)             | Minimum value and its index                      |
+| [`max_argmax`](#max_argmax)             | Maximum value and its index                      |
+| [`all_same`](#all_same)                 | Check all values are the same                    |
+| [`gmean`](#gmean)                       | Geometric mean                                   |
+| [`hmean`](#hmean)                       | Harmonic mean                                    |
+| [`mad`](#mad)                           | Mean absolute difference (MAD)                   |
+| [`mad1`](#mad1)                         | Unbiased estimator of the MAD                    |
+| [`rmad`](#rmad)                         | Relative mean absolute difference                |
+| [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD                       |
+| [`vnorm`](#vnorm)                       | Vector norm                                      |
+| [`cross3`](#cross3)                     | 3-d vector cross product                         |
+| [`backlash`](#backlash)                 | Backlash operator                                |
+| [`deadzone`](#deadzone)                 | Deadzone operator                                |
+| [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis                            |
+| [`ufunc_inspector`](#ufunc_inspector)   | Display ufunc information                        |
 
 Details follow.
 

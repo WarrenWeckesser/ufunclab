@@ -22,6 +22,10 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'peaktopeak',
                                        'peaktopeak_gufunc.c.src')])
+    config.add_extension('ufunclab._findfirst',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'findfirst',
+                                       'findfirst_gufunc.c.src')])
     config.add_extension('ufunclab._minmax',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'minmax',

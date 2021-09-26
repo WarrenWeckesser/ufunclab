@@ -1,0 +1,262 @@
+//
+// findfirst_gufunc.c.src
+//
+// gufunc implementation of the vector norm.
+//
+
+#include <stddef.h>
+#include <stdint.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+#include "math.h"
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for integer and real floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename = int8,   int16,   int32,   int64,   uint8,   uint16,   uint32,   uint64,   float, double, longdouble  #
+ * #ctype    = int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double #
+ */
+
+static void findfirst_@typename@_loop(char **args, const npy_intp *dimensions,
+                                      const npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array outer step
+    // steps[1]:  op array step
+    // steps[2]:  target array step
+    // steps[3]:  out array step
+    // steps[4]:  inner (core) x array step
+    char *px = args[0];
+    char *pop = args[1];
+    char *ptarget = args[2];
+    char *pout = args[3];
+    npy_intp nloops = dimensions[0];
+
+    for (int j = 0; j < nloops; ++j, px += steps[0], pop += steps[1],
+                                     ptarget += steps[2], pout += steps[3]) {
+        npy_intp result = -1;
+        int8_t op = *(int8_t *) pop;
+
+        if (op == Py_LT) {
+            for (npy_intp k = 0; k < dimensions[1]; ++k) {
+                if (*(@ctype@ *) (px + k*steps[4]) < *(@ctype@ *) ptarget) {
+                    result = k;
+                    break;
+                }
+            }
+        } else if (op == Py_LE) {
+            for (npy_intp k = 0; k < dimensions[1]; ++k) {
+                if (*(@ctype@ *) (px + k*steps[4]) <= *(@ctype@ *) ptarget) {
+                    result = k;
+                    break;
+                }
+            }
+        } else if (op == Py_EQ) {
+            for (npy_intp k = 0; k < dimensions[1]; ++k) {
+                if (*(@ctype@ *) (px + k*steps[4]) == *(@ctype@ *) ptarget) {
+                    result = k;
+                    break;
+                }
+            }
+        } else if (op == Py_NE) {
+            for (npy_intp k = 0; k < dimensions[1]; ++k) {
+                if (*(@ctype@ *) (px + k*steps[4]) != *(@ctype@ *) ptarget) {
+                    result = k;
+                    break;
+                }
+            }
+        } else if (op == Py_GT) {
+            for (npy_intp k = 0; k < dimensions[1]; ++k) {
+                if (*(@ctype@ *) (px + k*steps[4]) > *(@ctype@ *) ptarget) {
+                    result = k;
+                    break;
+                }
+            }
+        } else if (op == Py_GE) {
+            for (npy_intp k = 0; k < dimensions[1]; ++k) {
+                if (*(@ctype@ *) (px + k*steps[4]) >= *(@ctype@ *) ptarget) {
+                    result = k;
+                    break;
+                }
+            }
+        }
+        *(npy_intp *) pout = result;
+    }
+}
+
+/**end repeat**/
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of findfirst.
+static char types[] = {
+    NPY_INT8, NPY_INT8, NPY_INT8, NPY_INTP,
+    NPY_INT16, NPY_INT8, NPY_INT16, NPY_INTP,
+    NPY_INT32, NPY_INT8, NPY_INT32, NPY_INTP,
+    NPY_INT64, NPY_INT8, NPY_INT64, NPY_INTP,
+    NPY_UINT8, NPY_INT8, NPY_UINT8, NPY_INTP,
+    NPY_UINT16, NPY_INT8, NPY_UINT16, NPY_INTP,
+    NPY_UINT32, NPY_INT8, NPY_UINT32, NPY_INTP,
+    NPY_UINT64, NPY_INT8, NPY_UINT64, NPY_INTP,
+    NPY_FLOAT, NPY_INT8, NPY_FLOAT, NPY_INTP,
+    NPY_DOUBLE, NPY_INT8, NPY_DOUBLE, NPY_INTP,
+    NPY_LONGDOUBLE, NPY_INT8, NPY_LONGDOUBLE, NPY_INTP
+};
+
+
+PyUFuncGenericFunction findfirst_funcs[] = {
+    &findfirst_int8_loop,
+    &findfirst_int16_loop,
+    &findfirst_int32_loop,
+    &findfirst_int64_loop,
+    &findfirst_uint8_loop,
+    &findfirst_uint16_loop,
+    &findfirst_uint32_loop,
+    &findfirst_uint64_loop,
+    &findfirst_float_loop,
+    &findfirst_double_loop,
+    &findfirst_longdouble_loop
+};
+
+static void *findfirst_data[sizeof(findfirst_funcs)/sizeof(findfirst_funcs[0])];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef FindFirstMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_findfirst",
+    .m_doc = "Module that defines the findfirst function.",
+    .m_size = -1,
+    .m_methods = FindFirstMethods
+};
+
+
+#define FINDFIRST_DOCSTRING \
+"findfirst(x, op, target)\n"                                        \
+"\n"                                                                \
+"Find the index in `x` of the first value where `x op target`\n"    \
+"is true, where `op` is one of the basic comparison operators.\n"   \
+"\n"                                                                \
+"Parameters\n"                                                      \
+"----------\n"                                                      \
+"x : array_like, size (..., n)\n"                                   \
+"    Array to be searched.\n"                                       \
+"op : int, one of {0, 1, 2, 3, 4, 5}\n"                             \
+"    Defines the comparison operation to be used. Attributes of\n"  \
+"    the class `ufunclab.op` may be used as symbolic names of\n"    \
+"    the operators.\n"                                              \
+"\n"                                                                \
+"        Comparison  op  ufunclab.op attribute\n"                   \
+"        ----------  --  ---------------------\n"                   \
+"            <        0    ufunclab.op.LT\n"                        \
+"            <=       1    ufunclab.op.LE\n"                        \
+"            ==       2    ufunclab.op.EQ\n"                        \
+"            !=       3    ufunclab.op.NE\n"                        \
+"            >        4    ufunclab.op.GT\n"                        \
+"            >=       5    ufunclab.op.GE\n"                        \
+"\n"                                                                \
+"    An error is not raised if `op` is not in {0, 1, 2, 3, 4, 5},\n"\
+"    but the return value will be -1.\n"                            \
+"\n"                                                                \
+"target : value to be searched for\n"                               \
+"    For best efficiency, this value should have the same\n"        \
+"    type as the elements of `x`.\n"                                \
+"\n"                                                        \
+"Returns\n"                                                 \
+"-------\n"                                                 \
+"index : integer\n"                                         \
+"    The index of the first element where the comparison\n" \
+"    is true.  If no value is found, -1 is returned.\n"     \
+"\n"                                                        \
+"Examples\n"                                                \
+"--------\n"                                                \
+">>> import numpy as np\n"                                  \
+">>> from ufunclab import findfirst, op\n"                  \
+"\n"                                                        \
+"Find the index of the first occurrence of 0 in `x`:\n"     \
+"\n"                                                        \
+">>> x = np.array([10, 35, 19, 0, -1, 24, 0])\n"            \
+">>> findfirst(x, op.EQ, 0)\n"                              \
+"3\n"                                                       \
+"\n"                                                        \
+"Find the index of the first nonzero value in `a`:\n"       \
+"\n"                                                        \
+">>> a = np.array([0, 0, 0, 0, 0, -0.5, 0, 1, 0.1])\n"      \
+">>> findfirst(a, op.NE, 0.0)\n"                            \
+"5\n"                                                       \
+"\n"                                                        \
+"`findfirst` is a gufunc, so it can handle higher-dimensional\n"  \
+"array arguments, and among its gufunc-related parameters is\n"   \
+"`axis`.  By default, the gufunc operates along the last axis.\n" \
+"For example, here we find the location of the first nonzero\n"   \
+"element in each row of `b`:\n"                                   \
+"\n"                                                              \
+">>> b = np.array([[0, 8, 0, 0], [0, 0, 0, 0], [0, 0, 9, 2]],\n"  \
+"...              dtype=np.uint8)\n"                              \
+">>> b\n"                                                         \
+"array([[0, 8, 0, 0],\n"                                          \
+"       [0, 0, 0, 0],\n"                                          \
+"       [0, 0, 9, 2]])\n"                                         \
+">>> findfirst(b, op.NE, np.uint8(0))\n"                          \
+"array([ 1, -1,  2])\n"                                           \
+"\n"                                                              \
+"If we give the argument `axis=0`, we tell `findfirst` to\n"      \
+"operate along the first axis, which in this case is the\n"       \
+"columns:\n"                                                      \
+"\n"                                                              \
+">>> findfirst(b, op.NE, np.uint8(0), axis=0)\n"                  \
+"array([-1,  0,  2,  2])\n"                                       \
+"\n"
+
+PyMODINIT_FUNC PyInit__findfirst(void)
+{
+    PyObject *m;
+    PyUFuncObject *findfirst_gufunc;
+    PyObject *d;
+    size_t ntypes;
+    int nin, nout;
+
+    m = PyModule_Create(&moduledef);
+    if (!m) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the findfirst ufunc.
+    ntypes = sizeof(findfirst_funcs) / sizeof(findfirst_funcs[0]);
+    nin = 3;
+    nout = 1;
+    findfirst_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                        findfirst_funcs, findfirst_data, types, ntypes, nin, nout,
+                        PyUFunc_None, "findfirst",
+                        FINDFIRST_DOCSTRING, 0, "(i),(),()->()");
+
+    d = PyModule_GetDict(m);
+    PyDict_SetItemString(d, "findfirst", (PyObject *) findfirst_gufunc);
+    Py_DECREF(findfirst_gufunc);
+
+    return m;
+}
