@@ -18,8 +18,8 @@
 // floating point output).
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static void logfactorial_loop(char **args, npy_intp *dimensions,
-                              npy_intp* steps, void* data)
+static void logfactorial_loop(char **args, const npy_intp *dimensions,
+                              const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
