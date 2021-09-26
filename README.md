@@ -18,8 +18,8 @@ What's in ufunclab?
 | Function                                | Description                                      |
 | --------                                | -----------                                      |
 | [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
-| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                       |
 | [`findfirst`](#findfirst)               | Find the first occurrence of a target comparison |
+| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                       |
 | [`minmax`](#minmax)                     | Minimum and maximum                              |
 | [`argminmax`](#argminmax)               | Indices of the min and the max                   |
 | [`min_argmin`](#min_argmin)             | Minimum value and its index                      |
@@ -46,6 +46,59 @@ Details follow.
 * Computes the natural logarithm of the factorial of the integer x.
 
 * This is a fairly standard implementation of a NumPy ufunc.
+
+### `findfirst`
+
+* `findfirst` is a gufunc (signature `(i),(),()->()`) that finds the index of
+  the first true value of a comparison of an array with a target value.  If no
+  value is found, -1 is return.  Some examples follow.
+
+  ```
+  >>> import numpy as np
+  >>> from ufunclab import findfirst, op
+  ```
+
+  Find the index of the first occurrence of 0 in `x`:
+
+  ```
+  >>> x = np.array([10, 35, 19, 0, -1, 24, 0])
+  >>> findfirst(x, op.EQ, 0)
+  3
+  ```
+
+  Find the index of the first nonzero value in `a`:
+
+  ```
+  >>> a = np.array([0, 0, 0, 0, 0, -0.5, 0, 1, 0.1])
+  >>> findfirst(a, op.NE, 0.0)
+  5
+  ```
+
+  `findfirst` is a gufunc, so it can handle higher-dimensional
+  array arguments, and among its gufunc-related parameters is
+  `axis`.  By default, the gufunc operates along the last axis.
+  For example, here we find the location of the first nonzero
+  element in each row of `b`:
+
+  ```
+  >>> b = np.array([[0, 8, 0, 0], [0, 0, 0, 0], [0, 0, 9, 2]],
+  ...              dtype=np.uint8)
+  >>> b
+  array([[0, 8, 0, 0],
+         [0, 0, 0, 0],
+         [0, 0, 9, 2]])
+  >>> findfirst(b, op.NE, np.uint8(0))
+  array([ 1, -1,  2])
+  ```
+
+  If we give the argument `axis=0`, we tell `findfirst` to
+  operate along the first axis, which in this case is the
+  columns:
+
+  ```
+  >>> findfirst(b, op.NE, np.uint8(0), axis=0)
+  array([-1,  0,  2,  2])
+  ```
 
 ### `peaktopeak`
 
