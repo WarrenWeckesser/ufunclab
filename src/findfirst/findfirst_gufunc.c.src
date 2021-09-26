@@ -26,6 +26,30 @@
  * #ctype    = int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double #
  */
 
+/**begin repeat1
+ *
+ * #op = LT, LE, EQ, NE, GT, GE#
+ * #cmp = <, <=, ==, !=, >, >=#
+ */
+
+static inline
+npy_intp find_first_@op@_@typename@(const char *px,
+                                    npy_intp n, npy_intp stride,
+                                    const char *ptarget)
+{
+    npy_intp result = -1;
+    for (npy_intp k = 0; k < n; ++k) {
+        if (*(@ctype@ *) (px + k*stride) @cmp@ *(@ctype@ *) ptarget) {
+            result = k;
+            break;
+        }
+    }
+    return result;
+}
+
+/**end repeat1**/
+
+
 static void findfirst_@typename@_loop(char **args, const npy_intp *dimensions,
                                       const npy_intp* steps, void* data)
 {
@@ -41,54 +65,33 @@ static void findfirst_@typename@_loop(char **args, const npy_intp *dimensions,
     char *ptarget = args[2];
     char *pout = args[3];
     npy_intp nloops = dimensions[0];
+    npy_intp xlen = dimensions[1];
+    npy_intp xstride = steps[4];
 
     for (int j = 0; j < nloops; ++j, px += steps[0], pop += steps[1],
                                      ptarget += steps[2], pout += steps[3]) {
         npy_intp result = -1;
         int8_t op = *(int8_t *) pop;
 
-        if (op == Py_LT) {
-            for (npy_intp k = 0; k < dimensions[1]; ++k) {
-                if (*(@ctype@ *) (px + k*steps[4]) < *(@ctype@ *) ptarget) {
-                    result = k;
-                    break;
-                }
-            }
-        } else if (op == Py_LE) {
-            for (npy_intp k = 0; k < dimensions[1]; ++k) {
-                if (*(@ctype@ *) (px + k*steps[4]) <= *(@ctype@ *) ptarget) {
-                    result = k;
-                    break;
-                }
-            }
-        } else if (op == Py_EQ) {
-            for (npy_intp k = 0; k < dimensions[1]; ++k) {
-                if (*(@ctype@ *) (px + k*steps[4]) == *(@ctype@ *) ptarget) {
-                    result = k;
-                    break;
-                }
-            }
-        } else if (op == Py_NE) {
-            for (npy_intp k = 0; k < dimensions[1]; ++k) {
-                if (*(@ctype@ *) (px + k*steps[4]) != *(@ctype@ *) ptarget) {
-                    result = k;
-                    break;
-                }
-            }
-        } else if (op == Py_GT) {
-            for (npy_intp k = 0; k < dimensions[1]; ++k) {
-                if (*(@ctype@ *) (px + k*steps[4]) > *(@ctype@ *) ptarget) {
-                    result = k;
-                    break;
-                }
-            }
-        } else if (op == Py_GE) {
-            for (npy_intp k = 0; k < dimensions[1]; ++k) {
-                if (*(@ctype@ *) (px + k*steps[4]) >= *(@ctype@ *) ptarget) {
-                    result = k;
-                    break;
-                }
-            }
+        switch (op) {
+            case Py_LT:
+                result = find_first_LT_@typename@(px, xlen, xstride, ptarget);
+                break;
+            case Py_LE:
+                result = find_first_LE_@typename@(px, xlen, xstride, ptarget);
+                break;
+            case Py_EQ:
+                result = find_first_EQ_@typename@(px, xlen, xstride, ptarget);
+                break;
+            case Py_NE:
+                result = find_first_NE_@typename@(px, xlen, xstride, ptarget);
+                break;
+            case Py_GT:
+                result = find_first_GT_@typename@(px, xlen, xstride, ptarget);
+                break;
+            case Py_GE:
+                result = find_first_GE_@typename@(px, xlen, xstride, ptarget);
+                break;
         }
         *(npy_intp *) pout = result;
     }
@@ -234,6 +237,7 @@ PyMODINIT_FUNC PyInit__findfirst(void)
     PyObject *m;
     PyUFuncObject *findfirst_gufunc;
     PyObject *d;
+    PyObject *cmp;
     size_t ntypes;
     int nin, nout;
 
@@ -257,6 +261,40 @@ PyMODINIT_FUNC PyInit__findfirst(void)
     d = PyModule_GetDict(m);
     PyDict_SetItemString(d, "findfirst", (PyObject *) findfirst_gufunc);
     Py_DECREF(findfirst_gufunc);
+
+    // Expose the numerical values Py_LT, Py_LE, etc., as integers
+    // in this module.
+
+    cmp = PyLong_FromLong(Py_LT);
+    if (cmp) {
+        PyDict_SetItemString(d, "_LT", cmp);
+        Py_DECREF(cmp);
+    }
+    cmp = PyLong_FromLong(Py_LE);
+    if (cmp) {
+        PyDict_SetItemString(d, "_LE", cmp);
+        Py_DECREF(cmp);
+    }
+    cmp = PyLong_FromLong(Py_EQ);
+    if (cmp) {
+        PyDict_SetItemString(d, "_EQ", cmp);
+        Py_DECREF(cmp);
+    }
+    cmp = PyLong_FromLong(Py_NE);
+    if (cmp) {
+        PyDict_SetItemString(d, "_NE", cmp);
+        Py_DECREF(cmp);
+    }
+    cmp = PyLong_FromLong(Py_GT);
+    if (cmp) {
+        PyDict_SetItemString(d, "_GT", cmp);
+        Py_DECREF(cmp);
+    }
+    cmp = PyLong_FromLong(Py_GE);
+    if (cmp) {
+        PyDict_SetItemString(d, "_GE", cmp);
+        Py_DECREF(cmp);
+    }
 
     return m;
 }
