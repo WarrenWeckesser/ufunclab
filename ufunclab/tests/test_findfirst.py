@@ -64,3 +64,9 @@ def test_object(op, target, loc):
     a = np.array([F(1, 2), F(9, 10), F(-1, 3), 0, 1.5], dtype=object)
     i = findfirst(a, op, target)
     assert i == loc
+
+
+def test_object_bad_op():
+    a = np.array([F(1, 2), F(9, 10)], dtype=object)
+    i = findfirst(a, 6, 0.5)
+    assert i == -1

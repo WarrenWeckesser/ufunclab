@@ -148,7 +148,7 @@ static void findfirst_object_loop(char **args, const npy_intp *dimensions,
         npy_intp result = -1;
         int8_t op = *(int8_t *) pop;
 
-        if (op >= 0 && op <= 6) {
+        if (op >= 0 && op <= 5) {
             result = find_first_object(px, xlen, xstride, op, ptarget);
             if (result == -2) {
                 // Error occurred in PyObject_RichCompare().
