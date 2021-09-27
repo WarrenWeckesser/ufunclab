@@ -1,4 +1,6 @@
 import pytest
+from fractions import Fraction as F
+from decimal import Decimal
 import numpy as np
 from numpy.testing import assert_equal
 from ufunclab import findfirst, op
@@ -50,3 +52,15 @@ def test_broadcasting_op():
     # than 2, and the first occurrence of the value greater than 2.
     i = findfirst(a, [[op.LT], [op.GT]], 2.0)
     assert_equal(i, [[2, 0, -1], [0, 3, 2]])
+
+
+@pytest.mark.parametrize('op, target, loc', [(op.EQ, 0, 3),
+                                             (op.EQ, None, -1),
+                                             (op.EQ, F(9, 10), 1),
+                                             (op.LT, 0, 2),
+                                             (op.LT, -5.0, -1),
+                                             (op.NE, Decimal('0.5'), 1)])
+def test_object(op, target, loc):
+    a = np.array([F(1, 2), F(9, 10), F(-1, 3), 0, 1.5], dtype=object)
+    i = findfirst(a, op, target)
+    assert i == loc

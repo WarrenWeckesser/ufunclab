@@ -56,9 +56,9 @@ static void findfirst_@typename@_loop(char **args, const npy_intp *dimensions,
     // dimensions[0]: Number of input arrays
     // dimensions[1]: Length of each array
     // steps[0]:  x array outer step
-    // steps[1]:  op array step
-    // steps[2]:  target array step
-    // steps[3]:  out array step
+    // steps[1]:  op step
+    // steps[2]:  target step
+    // steps[3]:  out step
     // steps[4]:  inner (core) x array step
     char *px = args[0];
     char *pop = args[1];
@@ -100,6 +100,64 @@ static void findfirst_@typename@_loop(char **args, const npy_intp *dimensions,
 /**end repeat**/
 
 
+static inline
+npy_intp find_first_object(const char *px,
+                           npy_intp n, npy_intp stride,
+                           int py_op,
+                           const char *ptarget)
+{
+    npy_intp result = -1;
+    PyObject *target = *(PyObject **) ptarget;
+    for (npy_intp k = 0; k < n; ++k) {
+        PyObject *x = *(PyObject **) (px + k*stride);
+        int cmp = PyObject_RichCompareBool(x, target, py_op);
+        if (cmp == -1) {
+            return -2;  // Error occurred in PyObject_RichCompareBool().
+        }
+        if (cmp == 1) {
+            result = k;
+            break;
+        }
+    }
+    return result;
+}
+
+// The object loop allows x and target to be object arrays.
+// op must still be int8, and the output is still npy_intp.
+
+static void findfirst_object_loop(char **args, const npy_intp *dimensions,
+                                  const npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array outer step
+    // steps[1]:  op step
+    // steps[2]:  target step
+    // steps[3]:  out step
+    // steps[4]:  inner (core) x array step
+    char *px = args[0];
+    char *pop = args[1];
+    char *ptarget = args[2];
+    char *pout = args[3];
+    npy_intp nloops = dimensions[0];
+    npy_intp xlen = dimensions[1];
+    npy_intp xstride = steps[4];
+
+    for (int j = 0; j < nloops; ++j, px += steps[0], pop += steps[1],
+                                     ptarget += steps[2], pout += steps[3]) {
+        npy_intp result = -1;
+        int8_t op = *(int8_t *) pop;
+
+        if (op >= 0 && op <= 6) {
+            result = find_first_object(px, xlen, xstride, op, ptarget);
+            if (result == -2) {
+                // Error occurred in PyObject_RichCompare().
+                return;  // XXX Need more clean up?
+            }
+        }
+        *(npy_intp *) pout = result;
+    }
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
@@ -117,7 +175,8 @@ static char types[] = {
     NPY_UINT64, NPY_INT8, NPY_UINT64, NPY_INTP,
     NPY_FLOAT, NPY_INT8, NPY_FLOAT, NPY_INTP,
     NPY_DOUBLE, NPY_INT8, NPY_DOUBLE, NPY_INTP,
-    NPY_LONGDOUBLE, NPY_INT8, NPY_LONGDOUBLE, NPY_INTP
+    NPY_LONGDOUBLE, NPY_INT8, NPY_LONGDOUBLE, NPY_INTP,
+    NPY_OBJECT, NPY_INT8, NPY_OBJECT, NPY_INTP
 };
 
 
@@ -132,7 +191,8 @@ PyUFuncGenericFunction findfirst_funcs[] = {
     &findfirst_uint64_loop,
     &findfirst_float_loop,
     &findfirst_double_loop,
-    &findfirst_longdouble_loop
+    &findfirst_longdouble_loop,
+    &findfirst_object_loop
 };
 
 static void *findfirst_data[sizeof(findfirst_funcs)/sizeof(findfirst_funcs[0])];
