@@ -26,7 +26,12 @@ ufunc_inspector(PyObject *self, PyObject *arg)
 
     ufunc = (PyUFuncObject *) arg;
 
-    printf("'%s' is a ufunc.\n", ufunc->name);
+    if (ufunc->core_enabled) {
+        printf("'%s' is a gufunc with signature '%s'.\n", ufunc->name, ufunc->core_signature);
+    }
+    else {
+        printf("'%s' is a ufunc.\n", ufunc->name);
+    }
 
     printf("nin = %d, nout = %d, ntypes = %d\n", ufunc->nin, ufunc->nout, ufunc->ntypes);
 
