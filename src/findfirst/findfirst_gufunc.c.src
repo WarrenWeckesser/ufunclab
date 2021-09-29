@@ -297,9 +297,10 @@ PyMODINIT_FUNC PyInit__findfirst(void)
     PyObject *m;
     PyUFuncObject *findfirst_gufunc;
     PyObject *d;
-    PyObject *cmp;
     size_t ntypes;
     int nin, nout;
+    char *opnames[] = {"_LT", "_LE", "_EQ", "_NE", "_GT", "_GE"};
+    int opcodes[] = {Py_LT, Py_LE, Py_EQ, Py_NE, Py_GT, Py_GE};
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -324,36 +325,12 @@ PyMODINIT_FUNC PyInit__findfirst(void)
 
     // Expose the numerical values Py_LT, Py_LE, etc., as integers
     // in this module.
-
-    cmp = PyLong_FromLong(Py_LT);
-    if (cmp) {
-        PyDict_SetItemString(d, "_LT", cmp);
-        Py_DECREF(cmp);
-    }
-    cmp = PyLong_FromLong(Py_LE);
-    if (cmp) {
-        PyDict_SetItemString(d, "_LE", cmp);
-        Py_DECREF(cmp);
-    }
-    cmp = PyLong_FromLong(Py_EQ);
-    if (cmp) {
-        PyDict_SetItemString(d, "_EQ", cmp);
-        Py_DECREF(cmp);
-    }
-    cmp = PyLong_FromLong(Py_NE);
-    if (cmp) {
-        PyDict_SetItemString(d, "_NE", cmp);
-        Py_DECREF(cmp);
-    }
-    cmp = PyLong_FromLong(Py_GT);
-    if (cmp) {
-        PyDict_SetItemString(d, "_GT", cmp);
-        Py_DECREF(cmp);
-    }
-    cmp = PyLong_FromLong(Py_GE);
-    if (cmp) {
-        PyDict_SetItemString(d, "_GE", cmp);
-        Py_DECREF(cmp);
+    for (int k = 0; k < 6; ++k) {
+        int status = PyModule_AddIntConstant(m, opnames[k], opcodes[k]);
+        if (status == -1) {
+            Py_DECREF(m);
+            return NULL;
+        }
     }
 
     return m;
