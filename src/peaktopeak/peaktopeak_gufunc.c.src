@@ -2,15 +2,16 @@
 // peaktopeak_gufunc.c
 //
 
-#include <stdio.h>
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
+#include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
-#define PY_SSIZE_T_CLEAN
-#include "Python.h"
-#include "math.h"
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
@@ -392,11 +393,10 @@ static struct PyModuleDef moduledef = {
 PyMODINIT_FUNC PyInit__peaktopeak(void)
 {
     PyObject *m;
-    //PyObject *peaktopeak_gufunc;
     PyUFuncObject *peaktopeak_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -416,11 +416,17 @@ PyMODINIT_FUNC PyInit__peaktopeak(void)
                             PyUFunc_None, "peaktopeak",
                             PEAKTOPEAK_DOCSTRING, 0,
                             "(i)->()");
+    if (peaktopeak_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
     peaktopeak_gufunc->type_resolver = PeakToPeakTypeResolver;
 
-    d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "peaktopeak", (PyObject *) peaktopeak_gufunc);
-    Py_DECREF(peaktopeak_gufunc);
-
+    status = PyModule_AddObject(m, "peaktopeak", (PyObject *) peaktopeak_gufunc);
+    if (status == -1) {
+        Py_DECREF(peaktopeak_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
     return m;
 }

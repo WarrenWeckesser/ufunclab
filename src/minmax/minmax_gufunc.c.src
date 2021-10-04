@@ -2,14 +2,13 @@
 // minmax_gufunc.c
 //
 
-#include <stdio.h>
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
+#include <stddef.h>
 #include <stdint.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
-#define PY_SSIZE_T_CLEAN
-#include "Python.h"
-#include "math.h"
 #include "numpy/ndarraytypes.h"
 #include "numpy/ufuncobject.h"
 
@@ -436,9 +435,9 @@ PyMODINIT_FUNC PyInit__minmax(void)
     PyObject *argminmax_gufunc;
     PyObject *min_argmin_gufunc;
     PyObject *max_argmax_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -447,8 +446,6 @@ PyMODINIT_FUNC PyInit__minmax(void)
 
     import_array();
     import_umath();
-
-    d = PyModule_GetDict(m);
 
     // Create the minmax ufunc.
 
@@ -461,9 +458,17 @@ PyMODINIT_FUNC PyInit__minmax(void)
                             PyUFunc_None, "minmax",
                             MINMAX_DOCSTRING, 0,
                             "(i)->(2)");
+    if (minmax_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
 
-    PyDict_SetItemString(d, "minmax", minmax_gufunc);
-    Py_DECREF(minmax_gufunc);
+    status = PyModule_AddObject(m, "minmax", (PyObject *) minmax_gufunc);
+    if (status == -1) {
+        Py_DECREF(minmax_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     // Create the argminmax ufunc.
 
@@ -476,9 +481,17 @@ PyMODINIT_FUNC PyInit__minmax(void)
                             PyUFunc_None, "argminmax",
                             ARGMINMAX_DOCSTRING, 0,
                             "(i)->(2)");
+    if (argminmax_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
 
-    PyDict_SetItemString(d, "argminmax", argminmax_gufunc);
-    Py_DECREF(argminmax_gufunc);
+    status = PyModule_AddObject(m, "argminmax", (PyObject *) argminmax_gufunc);
+    if (status == -1) {
+        Py_DECREF(argminmax_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
 /**begin repeat
  *
@@ -496,9 +509,17 @@ PyMODINIT_FUNC PyInit__minmax(void)
                             PyUFunc_None, "@op@_arg@op@",
                             @OP@_ARG@OP@_DOCSTRING, 0,
                             "(i)->(),()");
+    if (@op@_arg@op@_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
 
-    PyDict_SetItemString(d, "@op@_arg@op@", @op@_arg@op@_gufunc);
-    Py_DECREF(@op@_arg@op@_gufunc);
+    status = PyModule_AddObject(m, "@op@_arg@op@", (PyObject *) @op@_arg@op@_gufunc);
+    if (status == -1) {
+        Py_DECREF(@op@_arg@op@_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
 /**end repeat**/
 

@@ -21,16 +21,14 @@
 // float64 float64
 // floatXX floatXX
 
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
-#include "math.h"
+
+#include <stddef.h>
+#include <stdint.h>
+#include <math.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
@@ -354,9 +352,9 @@ PyMODINIT_FUNC PyInit__mad(void)
     PyUFuncObject *mad1_gufunc;
     PyUFuncObject *rmad_gufunc;
     PyUFuncObject *rmad1_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -375,6 +373,16 @@ PyMODINIT_FUNC PyInit__mad(void)
                             PyUFunc_None, "mad",
                             MAD_DOCSTRING, 0,
                             "(i)->()");
+    if (mad_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    status = PyModule_AddObject(m, "mad", (PyObject *) mad_gufunc);
+    if (status == -1) {
+        Py_DECREF(mad_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     // Create the mad1 ufunc.
     ntypes = sizeof(mad1_funcs) / sizeof(mad1_funcs[0]);
@@ -385,6 +393,16 @@ PyMODINIT_FUNC PyInit__mad(void)
                             PyUFunc_None, "mad1",
                             MAD1_DOCSTRING, 0,
                             "(i)->()");
+    if (mad1_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    status = PyModule_AddObject(m, "mad1", (PyObject *) mad1_gufunc);
+    if (status == -1) {
+        Py_DECREF(mad1_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     // Create the rmad ufunc.
     ntypes = sizeof(rmad_funcs) / sizeof(rmad_funcs[0]);
@@ -395,6 +413,16 @@ PyMODINIT_FUNC PyInit__mad(void)
                             PyUFunc_None, "rmad",
                             RMAD_DOCSTRING, 0,
                             "(i)->()");
+    if (rmad_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    status = PyModule_AddObject(m, "rmad", (PyObject *) rmad_gufunc);
+    if (status == -1) {
+        Py_DECREF(rmad_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     // Create the rmad1 ufunc.
     ntypes = sizeof(rmad1_funcs) / sizeof(rmad1_funcs[0]);
@@ -405,16 +433,16 @@ PyMODINIT_FUNC PyInit__mad(void)
                             PyUFunc_None, "rmad1",
                             RMAD1_DOCSTRING, 0,
                             "(i)->()");
-
-    d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "mad", (PyObject *) mad_gufunc);
-    Py_DECREF(mad_gufunc);
-    PyDict_SetItemString(d, "mad1", (PyObject *) mad1_gufunc);
-    Py_DECREF(mad1_gufunc);
-    PyDict_SetItemString(d, "rmad", (PyObject *) rmad_gufunc);
-    Py_DECREF(rmad_gufunc);
-    PyDict_SetItemString(d, "rmad1", (PyObject *) rmad1_gufunc);
-    Py_DECREF(rmad1_gufunc);
+    if (rmad1_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    status = PyModule_AddObject(m, "rmad1", (PyObject *) rmad1_gufunc);
+    if (status == -1) {
+        Py_DECREF(rmad1_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     return m;
 }

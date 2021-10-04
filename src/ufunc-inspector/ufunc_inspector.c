@@ -1,10 +1,10 @@
-#include <stdio.h>
-
-#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
-#include "math.h"
+
+#include <stdio.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 #include "numpy/ufuncobject.h"
 

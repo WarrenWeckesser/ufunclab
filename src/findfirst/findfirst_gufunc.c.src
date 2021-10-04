@@ -4,14 +4,13 @@
 // gufunc implementation of the vector norm.
 //
 
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
-#define PY_SSIZE_T_CLEAN
-#include "Python.h"
-#include "math.h"
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
@@ -296,9 +295,9 @@ PyMODINIT_FUNC PyInit__findfirst(void)
 {
     PyObject *m;
     PyUFuncObject *findfirst_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
     char *opnames[] = {"_LT", "_LE", "_EQ", "_NE", "_GT", "_GE"};
     int opcodes[] = {Py_LT, Py_LE, Py_EQ, Py_NE, Py_GT, Py_GE};
 
@@ -318,10 +317,17 @@ PyMODINIT_FUNC PyInit__findfirst(void)
                         findfirst_funcs, findfirst_data, types, ntypes, nin, nout,
                         PyUFunc_None, "findfirst",
                         FINDFIRST_DOCSTRING, 0, "(i),(),()->()");
+    if (findfirst_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
 
-    d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "findfirst", (PyObject *) findfirst_gufunc);
-    Py_DECREF(findfirst_gufunc);
+    status = PyModule_AddObject(m, "findfirst", (PyObject *) findfirst_gufunc);
+    if (status == -1) {
+        Py_DECREF(findfirst_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     // Expose the numerical values Py_LT, Py_LE, etc., as integers
     // in this module.

@@ -4,15 +4,14 @@
 // gufunc implementation of the cross product for 3-d vectors.
 //
 
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <complex.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
-#define PY_SSIZE_T_CLEAN
-#include "Python.h"
-#include "math.h"
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"

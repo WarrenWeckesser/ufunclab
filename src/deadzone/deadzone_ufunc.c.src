@@ -4,15 +4,13 @@
 // ufunc implementation of deadzone(x, low, high)
 //
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
-#include "math.h"
+
+#include <stddef.h>
+#include <stdint.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
@@ -138,9 +136,9 @@ PyMODINIT_FUNC PyInit__deadzone(void)
 {
     PyObject *m;
     PyUFuncObject *deadzone_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -158,10 +156,16 @@ PyMODINIT_FUNC PyInit__deadzone(void)
                             deadzone_funcs, deadzone_data, types, ntypes, nin, nout,
                             PyUFunc_None, "deadzone",
                             DEADZONE_DOCSTRING, 0);
-
-    d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "deadzone", (PyObject *) deadzone_gufunc);
-    Py_DECREF(deadzone_gufunc);
+    if (deadzone_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    status = PyModule_AddObject(m, "deadzone", (PyObject *) deadzone_gufunc);
+    if (status == -1) {
+        Py_DECREF(deadzone_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     return m;
 }

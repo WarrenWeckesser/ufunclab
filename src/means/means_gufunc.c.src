@@ -20,16 +20,14 @@
 // float64 float64
 // floatXX floatXX
 
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
-#include "math.h"
+
+#include <stddef.h>
+#include <stdint.h>
+#include <math.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
@@ -185,9 +183,9 @@ PyMODINIT_FUNC PyInit__means(void)
     PyObject *m;
     PyUFuncObject *gmean_gufunc;
     PyUFuncObject *hmean_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -206,6 +204,17 @@ PyMODINIT_FUNC PyInit__means(void)
                             PyUFunc_None, "gmean",
                             GMEAN_DOCSTRING, 0,
                             "(i)->()");
+    if (gmean_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    status = PyModule_AddObject(m, "gmean", (PyObject *) gmean_gufunc);
+    if (status == -1) {
+        Py_DECREF(gmean_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     // Create the hmean ufunc.
     ntypes = sizeof(hmean_funcs) / sizeof(hmean_funcs[0]);
@@ -216,12 +225,17 @@ PyMODINIT_FUNC PyInit__means(void)
                             PyUFunc_None, "gmean",
                             HMEAN_DOCSTRING, 0,
                             "(i)->()");
+    if (hmean_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
 
-    d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "gmean", (PyObject *) gmean_gufunc);
-    Py_DECREF(gmean_gufunc);
-    PyDict_SetItemString(d, "hmean", (PyObject *) hmean_gufunc);
-    Py_DECREF(hmean_gufunc);
+    status = PyModule_AddObject(m, "hmean", (PyObject *) hmean_gufunc);
+    if (status == -1) {
+        Py_DECREF(hmean_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     return m;
 }

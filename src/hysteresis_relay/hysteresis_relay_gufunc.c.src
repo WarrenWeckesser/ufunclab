@@ -5,15 +5,13 @@
 //                                           low_value, high_value, init)
 //
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#define NPY_NO_DEPRECATED_API NPY_API_VERSION
-
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
-#include "math.h"
+
+#include <stddef.h>
+#include <stdint.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
@@ -175,9 +173,9 @@ PyMODINIT_FUNC PyInit__hysteresis_relay(void)
 {
     PyObject *m;
     PyUFuncObject *hysteresis_relay_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -196,10 +194,16 @@ PyMODINIT_FUNC PyInit__hysteresis_relay(void)
                             PyUFunc_None, "hysteresis_relay",
                             HYSTERESIS_RELAY_DOCSTRING, 0,
                             "(i),(),(),(),(),()->(i)");
-
-    d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "hysteresis_relay", (PyObject *) hysteresis_relay_gufunc);
-    Py_DECREF(hysteresis_relay_gufunc);
+    if (hysteresis_relay_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+    status = PyModule_AddObject(m, "hysteresis_relay", (PyObject *) hysteresis_relay_gufunc);
+    if (status == -1) {
+        Py_DECREF(hysteresis_relay_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     return m;
 }

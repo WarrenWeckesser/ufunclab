@@ -4,7 +4,7 @@ from os.path import join
 def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
 
-    compile_args = ['-std=c99']
+    compile_args = ['-std=c99', '-Werror']
     config = Configuration(None, parent_package, top_path)
     config.add_subpackage('ufunclab')
     config.add_subpackage('ufunclab/tests')
