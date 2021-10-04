@@ -96,9 +96,9 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction hysteresis_relay_funcs[] = {
-    &hysteresis_relay_float_loop,
-    &hysteresis_relay_double_loop,
-    &hysteresis_relay_longdouble_loop
+    (PyUFuncGenericFunction) &hysteresis_relay_float_loop,
+    (PyUFuncGenericFunction) &hysteresis_relay_double_loop,
+    (PyUFuncGenericFunction) &hysteresis_relay_longdouble_loop
 };
 
 static void *hysteresis_relay_data[sizeof(hysteresis_relay_funcs)/sizeof(hysteresis_relay_funcs[0])];

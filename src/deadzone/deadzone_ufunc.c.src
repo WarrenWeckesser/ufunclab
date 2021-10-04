@@ -75,9 +75,9 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction deadzone_funcs[] = {
-    &deadzone_float_loop,
-    &deadzone_double_loop,
-    &deadzone_longdouble_loop
+    (PyUFuncGenericFunction) &deadzone_float_loop,
+    (PyUFuncGenericFunction) &deadzone_double_loop,
+    (PyUFuncGenericFunction) &deadzone_longdouble_loop
 };
 
 static void *deadzone_data[sizeof(deadzone_funcs)/sizeof(deadzone_funcs[0])];

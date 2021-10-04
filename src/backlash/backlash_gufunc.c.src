@@ -78,9 +78,9 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction backlash_funcs[] = {
-    &backlash_float_loop,
-    &backlash_double_loop,
-    &backlash_longdouble_loop
+    (PyUFuncGenericFunction) &backlash_float_loop,
+    (PyUFuncGenericFunction) &backlash_double_loop,
+    (PyUFuncGenericFunction) &backlash_longdouble_loop
 };
 
 static void *backlash_data[sizeof(backlash_funcs)/sizeof(backlash_funcs[0])];

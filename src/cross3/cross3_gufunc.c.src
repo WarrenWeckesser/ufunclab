@@ -166,15 +166,15 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction cross3_funcs[] = {
-    &cross3_int32_loop,
-    &cross3_int64_loop,
-    &cross3_float_loop,
-    &cross3_double_loop,
-    &cross3_longdouble_loop,
-    &cross3_cfloat_loop,
-    &cross3_cdouble_loop,
-    &cross3_clongdouble_loop,
-    &cross3_object_loop
+    (PyUFuncGenericFunction) &cross3_int32_loop,
+    (PyUFuncGenericFunction) &cross3_int64_loop,
+    (PyUFuncGenericFunction) &cross3_float_loop,
+    (PyUFuncGenericFunction) &cross3_double_loop,
+    (PyUFuncGenericFunction) &cross3_longdouble_loop,
+    (PyUFuncGenericFunction) &cross3_cfloat_loop,
+    (PyUFuncGenericFunction) &cross3_cdouble_loop,
+    (PyUFuncGenericFunction) &cross3_clongdouble_loop,
+    (PyUFuncGenericFunction) &cross3_object_loop
 };
 
 static void *cross3_data[sizeof(cross3_funcs)/sizeof(cross3_funcs[0])];

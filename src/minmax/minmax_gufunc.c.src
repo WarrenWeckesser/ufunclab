@@ -319,18 +319,18 @@ static char minmax_types[] = {
 };
 
 PyUFuncGenericFunction minmax_funcs[] = {
-    &minmax_int8_loop,
-    &minmax_uint8_loop,
-    &minmax_int16_loop,
-    &minmax_uint16_loop,
-    &minmax_int32_loop,
-    &minmax_uint32_loop,
-    &minmax_int64_loop,
-    &minmax_uint64_loop,
-    &minmax_float_loop,
-    &minmax_double_loop,
-    &minmax_longdouble_loop,
-    &minmax_object_loop
+    (PyUFuncGenericFunction) &minmax_int8_loop,
+    (PyUFuncGenericFunction) &minmax_uint8_loop,
+    (PyUFuncGenericFunction) &minmax_int16_loop,
+    (PyUFuncGenericFunction) &minmax_uint16_loop,
+    (PyUFuncGenericFunction) &minmax_int32_loop,
+    (PyUFuncGenericFunction) &minmax_uint32_loop,
+    (PyUFuncGenericFunction) &minmax_int64_loop,
+    (PyUFuncGenericFunction) &minmax_uint64_loop,
+    (PyUFuncGenericFunction) &minmax_float_loop,
+    (PyUFuncGenericFunction) &minmax_double_loop,
+    (PyUFuncGenericFunction) &minmax_longdouble_loop,
+    (PyUFuncGenericFunction) &minmax_object_loop
 };
 
 static void *minmax_data[sizeof(minmax_funcs)/sizeof(minmax_funcs[0])];
@@ -351,18 +351,18 @@ static char argminmax_types[] = {
 };
 
 PyUFuncGenericFunction argminmax_funcs[] = {
-    &argminmax_int8_loop,
-    &argminmax_uint8_loop,
-    &argminmax_int16_loop,
-    &argminmax_uint16_loop,
-    &argminmax_int32_loop,
-    &argminmax_uint32_loop,
-    &argminmax_int64_loop,
-    &argminmax_uint64_loop,
-    &argminmax_float_loop,
-    &argminmax_double_loop,
-    &argminmax_longdouble_loop,
-    &argminmax_object_loop
+    (PyUFuncGenericFunction) &argminmax_int8_loop,
+    (PyUFuncGenericFunction) &argminmax_uint8_loop,
+    (PyUFuncGenericFunction) &argminmax_int16_loop,
+    (PyUFuncGenericFunction) &argminmax_uint16_loop,
+    (PyUFuncGenericFunction) &argminmax_int32_loop,
+    (PyUFuncGenericFunction) &argminmax_uint32_loop,
+    (PyUFuncGenericFunction) &argminmax_int64_loop,
+    (PyUFuncGenericFunction) &argminmax_uint64_loop,
+    (PyUFuncGenericFunction) &argminmax_float_loop,
+    (PyUFuncGenericFunction) &argminmax_double_loop,
+    (PyUFuncGenericFunction) &argminmax_longdouble_loop,
+    (PyUFuncGenericFunction) &argminmax_object_loop
 };
 
 static void *argminmax_data[sizeof(argminmax_funcs)/sizeof(argminmax_funcs[0])];
@@ -389,18 +389,18 @@ static char @op@_arg@op@_types[] = {
 };
 
 PyUFuncGenericFunction @op@_arg@op@_funcs[] = {
-    &@op@_arg@op@_int8_loop,
-    &@op@_arg@op@_uint8_loop,
-    &@op@_arg@op@_int16_loop,
-    &@op@_arg@op@_uint16_loop,
-    &@op@_arg@op@_int32_loop,
-    &@op@_arg@op@_uint32_loop,
-    &@op@_arg@op@_int64_loop,
-    &@op@_arg@op@_uint64_loop,
-    &@op@_arg@op@_float_loop,
-    &@op@_arg@op@_double_loop,
-    &@op@_arg@op@_longdouble_loop,
-    &@op@_arg@op@_object_loop
+    (PyUFuncGenericFunction) &@op@_arg@op@_int8_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_uint8_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_int16_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_uint16_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_int32_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_uint32_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_int64_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_uint64_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_float_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_double_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_longdouble_loop,
+    (PyUFuncGenericFunction) &@op@_arg@op@_object_loop
 };
 
 static void *@op@_arg@op@_data[sizeof(@op@_arg@op@_funcs)/sizeof(@op@_arg@op@_funcs[0])];

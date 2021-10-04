@@ -304,17 +304,17 @@ static void *rmad_data[sizeof(rmad_funcs)/sizeof(rmad_funcs[0])];
 
 
 PyUFuncGenericFunction rmad1_funcs[] = {
-    &rmad1_int8_loop,
-    &rmad1_uint8_loop,
-    &rmad1_int16_loop,
-    &rmad1_uint16_loop,
-    &rmad1_int32_loop,
-    &rmad1_uint32_loop,
-    &rmad1_int64_loop,
-    &rmad1_uint64_loop,
-    &rmad1_float_loop,
-    &rmad1_double_loop,
-    &rmad1_longdouble_loop
+    (PyUFuncGenericFunction) &rmad1_int8_loop,
+    (PyUFuncGenericFunction) &rmad1_uint8_loop,
+    (PyUFuncGenericFunction) &rmad1_int16_loop,
+    (PyUFuncGenericFunction) &rmad1_uint16_loop,
+    (PyUFuncGenericFunction) &rmad1_int32_loop,
+    (PyUFuncGenericFunction) &rmad1_uint32_loop,
+    (PyUFuncGenericFunction) &rmad1_int64_loop,
+    (PyUFuncGenericFunction) &rmad1_uint64_loop,
+    (PyUFuncGenericFunction) &rmad1_float_loop,
+    (PyUFuncGenericFunction) &rmad1_double_loop,
+    (PyUFuncGenericFunction) &rmad1_longdouble_loop
 };
 
 static void *rmad1_data[sizeof(rmad1_funcs)/sizeof(rmad1_funcs[0])];

@@ -41,7 +41,7 @@ static void logfactorial_loop(char **args, const npy_intp *dimensions,
 // ufunc configuration data.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-PyUFuncGenericFunction funcs[1] = {&logfactorial_loop};
+PyUFuncGenericFunction funcs[1] = {(PyUFuncGenericFunction) &logfactorial_loop};
 
 // These are the input and return dtypes of logfactorial.
 static char types[2] = {NPY_INT64, NPY_DOUBLE};

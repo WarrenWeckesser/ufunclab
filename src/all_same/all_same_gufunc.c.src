@@ -112,20 +112,20 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction funcs[] = {
-    &all_same_int8_loop,
-    &all_same_uint8_loop,
-    &all_same_int16_loop,
-    &all_same_uint16_loop,
-    &all_same_int32_loop,
-    &all_same_uint32_loop,
-    &all_same_int64_loop,
-    &all_same_uint64_loop,
-    &all_same_float_loop,
-    &all_same_double_loop,
-    &all_same_longdouble_loop,
-    &all_same_int64_loop,
-    &all_same_int64_loop,
-    &all_same_object_loop
+    (PyUFuncGenericFunction) &all_same_int8_loop,
+    (PyUFuncGenericFunction) &all_same_uint8_loop,
+    (PyUFuncGenericFunction) &all_same_int16_loop,
+    (PyUFuncGenericFunction) &all_same_uint16_loop,
+    (PyUFuncGenericFunction) &all_same_int32_loop,
+    (PyUFuncGenericFunction) &all_same_uint32_loop,
+    (PyUFuncGenericFunction) &all_same_int64_loop,
+    (PyUFuncGenericFunction) &all_same_uint64_loop,
+    (PyUFuncGenericFunction) &all_same_float_loop,
+    (PyUFuncGenericFunction) &all_same_double_loop,
+    (PyUFuncGenericFunction) &all_same_longdouble_loop,
+    (PyUFuncGenericFunction) &all_same_int64_loop,
+    (PyUFuncGenericFunction) &all_same_int64_loop,
+    (PyUFuncGenericFunction) &all_same_object_loop
 };
 
 static void *data[sizeof(funcs)/sizeof(funcs[0])];

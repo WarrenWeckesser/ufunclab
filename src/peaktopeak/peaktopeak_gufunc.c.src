@@ -216,20 +216,20 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction funcs[] = {
-    &peaktopeak_int8_loop,
-    &peaktopeak_uint8_loop,
-    &peaktopeak_int16_loop,
-    &peaktopeak_uint16_loop,
-    &peaktopeak_int32_loop,
-    &peaktopeak_uint32_loop,
-    &peaktopeak_int64_loop,
-    &peaktopeak_uint64_loop,
-    &peaktopeak_float_loop,
-    &peaktopeak_double_loop,
-    &peaktopeak_longdouble_loop,
-    &peaktopeak_int64_signed_loop,
-    &peaktopeak_int64_signed_loop,
-    &peaktopeak_object_loop
+    (PyUFuncGenericFunction) &peaktopeak_int8_loop,
+    (PyUFuncGenericFunction) &peaktopeak_uint8_loop,
+    (PyUFuncGenericFunction) &peaktopeak_int16_loop,
+    (PyUFuncGenericFunction) &peaktopeak_uint16_loop,
+    (PyUFuncGenericFunction) &peaktopeak_int32_loop,
+    (PyUFuncGenericFunction) &peaktopeak_uint32_loop,
+    (PyUFuncGenericFunction) &peaktopeak_int64_loop,
+    (PyUFuncGenericFunction) &peaktopeak_uint64_loop,
+    (PyUFuncGenericFunction) &peaktopeak_float_loop,
+    (PyUFuncGenericFunction) &peaktopeak_double_loop,
+    (PyUFuncGenericFunction) &peaktopeak_longdouble_loop,
+    (PyUFuncGenericFunction) &peaktopeak_int64_signed_loop,
+    (PyUFuncGenericFunction) &peaktopeak_int64_signed_loop,
+    (PyUFuncGenericFunction) &peaktopeak_object_loop
 };
 
 static void *data[sizeof(funcs)/sizeof(funcs[0])];

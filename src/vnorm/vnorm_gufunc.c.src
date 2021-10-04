@@ -180,12 +180,12 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction vnorm_funcs[] = {
-    &vnorm_float_loop,
-    &vnorm_double_loop,
-    &vnorm_longdouble_loop,
-    &vnorm_cfloat_loop,
-    &vnorm_cdouble_loop,
-    &vnorm_clongdouble_loop
+    (PyUFuncGenericFunction) &vnorm_float_loop,
+    (PyUFuncGenericFunction) &vnorm_double_loop,
+    (PyUFuncGenericFunction) &vnorm_longdouble_loop,
+    (PyUFuncGenericFunction) &vnorm_cfloat_loop,
+    (PyUFuncGenericFunction) &vnorm_cdouble_loop,
+    (PyUFuncGenericFunction) &vnorm_clongdouble_loop
 };
 
 static void *vnorm_data[sizeof(vnorm_funcs)/sizeof(vnorm_funcs[0])];

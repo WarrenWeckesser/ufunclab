@@ -180,18 +180,18 @@ static char types[] = {
 
 
 PyUFuncGenericFunction findfirst_funcs[] = {
-    &findfirst_int8_loop,
-    &findfirst_int16_loop,
-    &findfirst_int32_loop,
-    &findfirst_int64_loop,
-    &findfirst_uint8_loop,
-    &findfirst_uint16_loop,
-    &findfirst_uint32_loop,
-    &findfirst_uint64_loop,
-    &findfirst_float_loop,
-    &findfirst_double_loop,
-    &findfirst_longdouble_loop,
-    &findfirst_object_loop
+    (PyUFuncGenericFunction) &findfirst_int8_loop,
+    (PyUFuncGenericFunction) &findfirst_int16_loop,
+    (PyUFuncGenericFunction) &findfirst_int32_loop,
+    (PyUFuncGenericFunction) &findfirst_int64_loop,
+    (PyUFuncGenericFunction) &findfirst_uint8_loop,
+    (PyUFuncGenericFunction) &findfirst_uint16_loop,
+    (PyUFuncGenericFunction) &findfirst_uint32_loop,
+    (PyUFuncGenericFunction) &findfirst_uint64_loop,
+    (PyUFuncGenericFunction) &findfirst_float_loop,
+    (PyUFuncGenericFunction) &findfirst_double_loop,
+    (PyUFuncGenericFunction) &findfirst_longdouble_loop,
+    (PyUFuncGenericFunction) &findfirst_object_loop
 };
 
 static void *findfirst_data[sizeof(findfirst_funcs)/sizeof(findfirst_funcs[0])];

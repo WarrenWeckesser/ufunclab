@@ -126,33 +126,33 @@ static char types[] = {
 };
 
 PyUFuncGenericFunction gmean_funcs[] = {
-    &gmean_int8_loop,
-    &gmean_uint8_loop,
-    &gmean_int16_loop,
-    &gmean_uint16_loop,
-    &gmean_int32_loop,
-    &gmean_uint32_loop,
-    &gmean_int64_loop,
-    &gmean_uint64_loop,
-    &gmean_float_loop,
-    &gmean_double_loop,
-    &gmean_longdouble_loop
+    (PyUFuncGenericFunction) &gmean_int8_loop,
+    (PyUFuncGenericFunction) &gmean_uint8_loop,
+    (PyUFuncGenericFunction) &gmean_int16_loop,
+    (PyUFuncGenericFunction) &gmean_uint16_loop,
+    (PyUFuncGenericFunction) &gmean_int32_loop,
+    (PyUFuncGenericFunction) &gmean_uint32_loop,
+    (PyUFuncGenericFunction) &gmean_int64_loop,
+    (PyUFuncGenericFunction) &gmean_uint64_loop,
+    (PyUFuncGenericFunction) &gmean_float_loop,
+    (PyUFuncGenericFunction) &gmean_double_loop,
+    (PyUFuncGenericFunction) &gmean_longdouble_loop
 };
 
 static void *gmean_data[sizeof(gmean_funcs)/sizeof(gmean_funcs[0])];
 
 PyUFuncGenericFunction hmean_funcs[] = {
-    &hmean_int8_loop,
-    &hmean_uint8_loop,
-    &hmean_int16_loop,
-    &hmean_uint16_loop,
-    &hmean_int32_loop,
-    &hmean_uint32_loop,
-    &hmean_int64_loop,
-    &hmean_uint64_loop,
-    &hmean_float_loop,
-    &hmean_double_loop,
-    &hmean_longdouble_loop
+    (PyUFuncGenericFunction) &hmean_int8_loop,
+    (PyUFuncGenericFunction) &hmean_uint8_loop,
+    (PyUFuncGenericFunction) &hmean_int16_loop,
+    (PyUFuncGenericFunction) &hmean_uint16_loop,
+    (PyUFuncGenericFunction) &hmean_int32_loop,
+    (PyUFuncGenericFunction) &hmean_uint32_loop,
+    (PyUFuncGenericFunction) &hmean_int64_loop,
+    (PyUFuncGenericFunction) &hmean_uint64_loop,
+    (PyUFuncGenericFunction) &hmean_float_loop,
+    (PyUFuncGenericFunction) &hmean_double_loop,
+    (PyUFuncGenericFunction) &hmean_longdouble_loop
 };
 
 static void *hmean_data[sizeof(hmean_funcs)/sizeof(hmean_funcs[0])];
