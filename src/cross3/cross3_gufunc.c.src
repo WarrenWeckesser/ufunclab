@@ -255,7 +255,7 @@ PyMODINIT_FUNC PyInit__cross3(void)
         return NULL;
     }
 
-    status = PyModule_AddObject(m, "cross3", cross3_gufunc);
+    status = PyModule_AddObject(m, "cross3", (PyObject *) cross3_gufunc);
     if (status == -1) {
         Py_DECREF(cross3_gufunc);
         Py_DECREF(m);
