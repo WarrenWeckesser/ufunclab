@@ -230,9 +230,9 @@ PyMODINIT_FUNC PyInit__cross3(void)
 {
     PyObject *m;
     PyUFuncObject *cross3_gufunc;
-    PyObject *d;
     size_t ntypes;
     int nin, nout;
+    int status;
 
     m = PyModule_Create(&moduledef);
     if (!m) {
@@ -250,10 +250,17 @@ PyMODINIT_FUNC PyInit__cross3(void)
                         cross3_funcs, cross3_data, types, ntypes, nin, nout,
                         PyUFunc_None, "cross3",
                         CROSS3_DOCSTRING, 0, "(3),(3)->(3)");
+    if (cross3_gufunc == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
 
-    d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "cross3", (PyObject *) cross3_gufunc);
-    Py_DECREF(cross3_gufunc);
+    status = PyModule_AddObject(m, "cross3", cross3_gufunc);
+    if (status == -1) {
+        Py_DECREF(cross3_gufunc);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     return m;
 }
