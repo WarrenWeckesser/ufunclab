@@ -385,6 +385,29 @@ Details follow.
   the unbiased estimator (sum of the absolute differences divided by
   `n*(n-1)`).
 
+  For example,
+  ```
+  In [15]: import numpy as np
+
+  In [16]: from ufunclab import mad
+
+  In [17]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
+
+  In [18]: mad(x)
+  Out[18]: 2.6666666666666665
+
+  In [19]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
+
+  In [20]: y
+  Out[20]:
+  array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
+         [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
+         [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
+
+  In [21]: mad(y, axis=1)
+  Out[21]: array([0.03428571, 0.11428571, 0.19428571])
+  ```
+
 ### `mad1`
 
 * `mad1` computes the mean absolute difference of a 1-d array
@@ -393,6 +416,29 @@ Details follow.
   calculation (sum of the absolute differences divided by `n**2`), and
   `mad1` is the unbiased estimator (sum of the absolute differences
   divided by `n*(n-1)`).
+
+  For example,
+  ```
+  In [1]: import numpy as np
+
+  In [2]: from ufunclab import mad1
+
+  In [3]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
+
+  In [4]: mad1(x)
+  Out[4]: 3.2
+
+  In [5]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
+
+  In [6]: y
+  Out[6]:
+  array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
+         [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
+         [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
+
+  In [7]: mad1(y, axis=1)
+  Out[7]: array([0.04      , 0.13333333, 0.22666667])
+  ```
 
 ### `rmad`
 
@@ -403,11 +449,57 @@ Details follow.
 
   `rmad` is twice the Gini coefficient.
 
+  For example,
+  ```
+  In [1]: import numpy as np
+
+  In [2]: from ufunclab import rmad
+
+  In [3]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
+
+  In [4]: rmad(x)
+  Out[4]: 0.7999999999999999
+
+  In [5]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
+
+  In [6]: y
+  Out[6]:
+  array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
+         [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
+         [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
+
+  In [7]: rmad(y, axis=1)
+  Out[7]: array([1.05494505, 0.43956044, 0.26523647])
+  ```
+
 ### `rmad1`
 
 * `rmad1` computes the relative mean absolute difference. `rmad1` uses
   the unbiased estimator of the mean absolute difference to compute the
   relative mean absolute difference.
+
+  For example,
+  ```
+  In [1]: import numpy as np
+
+  In [2]: from ufunclab import rmad1
+
+  In [3]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
+
+  In [4]: rmad1(x)
+  Out[4]: 0.96
+
+  In [5]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
+
+  In [6]: y
+  Out[6]:
+  array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
+         [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
+         [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
+
+  In [7]: rmad1(y, axis=1)
+  Out[7]: array([1.23076923, 0.51282051, 0.30944255])
+  ```
 
 ### `vnorm`
 
@@ -458,6 +550,52 @@ Details follow.
 * `cross3(u, v)` is a gufunc with signature `(3),(3)->(3)`.  It computes
   the 3-d vector cross product (like `numpy.cross`, but specialized to the
   case of 3-d vectors only).
+
+  For example,
+  ```
+  In [1]: import numpy as np
+
+  In [2]: from ufunclab import cross3
+
+  In [3]: u = np.array([1, 2, 3])
+
+  In [4]: v = np.array([2, 2, -1])
+
+  In [5]: cross3(u, v)
+  Out[5]: array([-8,  7, -2])
+
+  In [6]: x = np.arange(15).reshape(5, 3)
+
+  In [7]: y = np.round(10*np.sin(np.linspace(0, 2, 6))).reshape(2, 1, 3)
+
+  In [8]: x
+  Out[8]:
+  array([[ 0,  1,  2],
+         [ 3,  4,  5],
+         [ 6,  7,  8],
+         [ 9, 10, 11],
+         [12, 13, 14]])
+
+  In [9]: y
+  Out[9]:
+  array([[[ 0.,  4.,  7.]],
+
+        [[ 9., 10.,  9.]]])
+
+  In [10]: cross3(x, y)
+  Out[10]:
+  array([[[ -1.,   0.,   0.],
+          [  8., -21.,  12.],
+          [ 17., -42.,  24.],
+          [ 26., -63.,  36.],
+          [ 35., -84.,  48.]],
+
+         [[-11.,  18.,  -9.],
+          [-14.,  18.,  -6.],
+          [-17.,  18.,  -3.],
+          [-20.,  18.,   0.],
+          [-23.,  18.,   3.]]])
+  ```
 
 ### `backlash`
 
