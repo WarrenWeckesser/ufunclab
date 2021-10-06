@@ -17,7 +17,8 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._cross3',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'cross3',
-                                       'cross3_gufunc.c.src')])
+                                       'cross3_gufunc.c.src')],
+                         include_dirs=[join('src', 'util')])
     config.add_extension('ufunclab._peaktopeak',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'peaktopeak',
@@ -39,7 +40,8 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._vnorm',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'vnorm',
-                                       'vnorm_gufunc.c.src')])
+                                       'vnorm_gufunc.c.src')],
+                         include_dirs=[join('src', 'util')])
     config.add_extension('ufunclab._backlash',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'backlash',

@@ -17,6 +17,8 @@
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
+#include "../util/ufunc_tools.h"
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for floating point types.
@@ -170,7 +172,7 @@ static void vnorm_@typename@_loop(char **args, const npy_intp *dimensions,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // These are the input and return dtypes of vnorm.
-static char types[] = {
+static char vnorm_typecodes[] = {
     NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
@@ -188,7 +190,8 @@ PyUFuncGenericFunction vnorm_funcs[] = {
     (PyUFuncGenericFunction) &vnorm_clongdouble_loop
 };
 
-static void *vnorm_data[sizeof(vnorm_funcs)/sizeof(vnorm_funcs[0])];
+#define VNORM_NTYPES  (sizeof(vnorm_funcs)/sizeof(vnorm_funcs[0]))
+static void *vnorm_data[VNORM_NTYPES];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -239,16 +242,13 @@ static struct PyModuleDef moduledef = {
 "array([ 3.60555128, 13.        ,  3.        , 14.28285686])\n" \
 "\n"
 
+
 PyMODINIT_FUNC PyInit__vnorm(void)
 {
-    PyObject *m;
-    PyUFuncObject *vnorm_gufunc;
-    size_t ntypes;
-    int nin, nout;
-    int status;
+    PyObject *module;
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -256,23 +256,12 @@ PyMODINIT_FUNC PyInit__vnorm(void)
     import_umath();
 
     // Create the vnorm ufunc.
-    ntypes = sizeof(vnorm_funcs) / sizeof(vnorm_funcs[0]);
-    nin = 2;
-    nout = 1;
-    vnorm_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
-                        vnorm_funcs, vnorm_data, types, ntypes, nin, nout,
-                        PyUFunc_None, "vnorm",
-                        VNORM_DOCSTRING, 0, "(i),()->()");
-    if (vnorm_gufunc == NULL) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    status = PyModule_AddObject(m, "vnorm", (PyObject *) vnorm_gufunc);
-    if (status == -1) {
-        Py_DECREF(vnorm_gufunc);
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "vnorm", VNORM_DOCSTRING, "(i),()->()",
+                         VNORM_NTYPES,
+                         vnorm_funcs, vnorm_data, vnorm_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
-    return m;
+    return module;
 }

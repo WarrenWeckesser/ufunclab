@@ -16,6 +16,8 @@
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
+#include "../util/ufunc_tools.h"
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops
@@ -153,7 +155,7 @@ static void cross3_object_loop(char **args, const npy_intp *dimensions,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // These are the input and return dtypes of cross3.
-static char types[] = {
+static char cross3_typecodes[] = {
     NPY_INT32, NPY_INT32, NPY_INT32,
     NPY_INT64, NPY_INT64, NPY_INT64,
     NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
@@ -177,7 +179,8 @@ PyUFuncGenericFunction cross3_funcs[] = {
     (PyUFuncGenericFunction) &cross3_object_loop
 };
 
-static void *cross3_data[sizeof(cross3_funcs)/sizeof(cross3_funcs[0])];
+#define CROSS3_NTYPES  (sizeof(cross3_funcs)/sizeof(cross3_funcs[0]))
+static void *cross3_data[CROSS3_NTYPES];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -227,14 +230,10 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__cross3(void)
 {
-    PyObject *m;
-    PyUFuncObject *cross3_gufunc;
-    size_t ntypes;
-    int nin, nout;
-    int status;
+    PyObject *module;
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -242,24 +241,12 @@ PyMODINIT_FUNC PyInit__cross3(void)
     import_umath();
 
     // Create the cross3 ufunc.
-    ntypes = sizeof(cross3_funcs) / sizeof(cross3_funcs[0]);
-    nin = 2;
-    nout = 1;
-    cross3_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
-                        cross3_funcs, cross3_data, types, ntypes, nin, nout,
-                        PyUFunc_None, "cross3",
-                        CROSS3_DOCSTRING, 0, "(3),(3)->(3)");
-    if (cross3_gufunc == NULL) {
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "cross3", CROSS3_DOCSTRING, "(3),(3)->(3)",
+                         CROSS3_NTYPES,
+                         cross3_funcs, cross3_data, cross3_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
-    status = PyModule_AddObject(m, "cross3", (PyObject *) cross3_gufunc);
-    if (status == -1) {
-        Py_DECREF(cross3_gufunc);
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    return m;
+    return module;
 }
