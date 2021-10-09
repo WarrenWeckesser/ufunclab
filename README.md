@@ -258,7 +258,7 @@ computes the `argmin` and `argmax` of a NumPy array.
 >>> y = np.array([[-518,  509,  309, -871,  444,  449, -618,  381],
 ...               [-454,  565, -231,  142,  393,  339, -346, -895],
 ...               [ 115, -241,  398,  232, -118, -287, -733,  101]],
-              dtype=np.float32)
+...              dtype=np.float32)
 >>> argminmax(y)
 array([[3, 1],
        [7, 1],
