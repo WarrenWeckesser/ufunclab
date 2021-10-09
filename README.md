@@ -32,6 +32,7 @@ What's in ufunclab?
 | [`rmad`](#rmad)                         | Relative mean absolute difference                |
 | [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD                       |
 | [`vnorm`](#vnorm)                       | Vector norm                                      |
+| [`cross2`](#cross2)                     | 2-d vector cross product (returns scalar)        |
 | [`cross3`](#cross3)                     | 3-d vector cross product                         |
 | [`backlash`](#backlash)                 | Backlash operator                                |
 | [`deadzone`](#deadzone)                 | Deadzone operator                                |
@@ -543,6 +544,46 @@ Details follow.
   >>> z = np.array([-2j, 3+4j, 0, 14])
   >>> vnorm(z, [1, 2, 3, np.inf])
   array([21.        , 15.        , 14.22263137, 14.        ])
+  ```
+
+### `cross2`
+
+* `cross2(u, v)` is a gufunc with signature `(2),(2)->()`.  It computes
+  the 2-d cross product that returns a scalar.  That is, `cross2([u0, u1], [v0, v1])`
+  is `u0*v1 - u1*v0`.  The calculation is the same as that of `numpy.cross`,
+  but `cross2` is restricted to 2-d inputs.
+
+  For example,
+  ```
+  In [1]: import numpy as np
+
+  In [2]: from ufunclab import cross2
+
+  In [3]: cross2([1, 2], [5, 3])
+  Out[3]: -7
+
+  In [4]: cross2([[1, 2], [6, 0]], [[5, 3], [2, 3]])
+  Out[4]: array([-7, 18])
+
+  In [5]: cross2([1j, 3], [-1j, 2+3j])
+  Out[5]: (-3+5j)
+  ```
+
+  In the following, `a` and `b` are object arrays; `a` has shape (2,),
+  and `b` has shape (3, 2).  The result of ``cross2(a, b)`` has shape
+  (3,).
+
+  ```
+  In [6]: from fractions import Fraction as F
+
+  In [7]: a = np.array([F(1, 3), F(2, 7)])
+
+  In [8]: b = np.array([[F(7, 4), F(6, 7)], [F(2, 5), F(-3, 7)], [1, F(1, 4)]])
+
+  In [9]: cross2(a, b)
+  Out[9]:
+  array([Fraction(-3, 14), Fraction(-9, 35), Fraction(-17, 84)],
+        dtype=object)
   ```
 
 ### `cross3`

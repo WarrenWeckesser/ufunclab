@@ -1,5 +1,5 @@
 //
-// cross3_gufunc.c.src
+// cross_gufunc.c.src
 //
 // gufunc implementation of the cross product for 3-d vectors.
 //
@@ -65,6 +65,34 @@ static void cross3_@typename@_loop(char **args, const npy_intp *dimensions,
         *(@ctype@ *) pout = u1*v2 - u2*v1;
         *(@ctype@ *) (pout + steps[5]) = u2*v0 - u0*v2;            
         *(@ctype@ *) (pout + 2*steps[5]) = u0*v1 - u1*v0;
+    }
+}
+
+static void cross2_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
+{
+    // Notation: out = u x v
+    //
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  u array outer step
+    // steps[1]:  v array outer step
+    // steps[2]:  out array outer step
+    // steps[3]:  inner (core) u array step
+    // steps[4]:  inner v array step
+    char *pu = args[0];
+    char *pv = args[1];
+    char *pout = args[2];
+    npy_intp nloops = dimensions[0];
+
+    for (int j = 0; j < nloops; ++j, pu += steps[0], pv += steps[1],
+                                     pout += steps[2]) {
+        @ctype@ u0, u1, v0, v1;
+        u0 = *(@ctype@ *) pu;
+        u1 = *(@ctype@ *) (pu + steps[3]);
+        v0 = *(@ctype@ *) pv;
+        v1 = *(@ctype@ *) (pv + steps[4]);
+        *(@ctype@ *) pout = u0*v1 - u1*v0;
     }
 }
 
@@ -150,6 +178,38 @@ static void cross3_object_loop(char **args, const npy_intp *dimensions,
     }
 }
 
+
+static void cross2_object_loop(char **args, const npy_intp *dimensions,
+                               const npy_intp* steps, void* data)
+{
+    // Notation: out = u x v
+    //
+    // dimensions[0]: Number of input arrays
+    // steps[0]:  u array outer step
+    // steps[1]:  v array outer step
+    // steps[2]:  out array outer step
+    // steps[3]:  inner (core) u array step
+    // steps[4]:  inner v array step
+    char *pu = args[0];
+    char *pv = args[1];
+    char *pout = args[2];
+    npy_intp nloops = dimensions[0];
+
+    for (int j = 0; j < nloops; ++j, pu += steps[0], pv += steps[1],
+                                     pout += steps[2]) {
+        PyObject *u0, *u1, *v0, *v1, *out;
+        u0 = *(PyObject **) pu;
+        u1 = *(PyObject **) (pu + steps[3]);
+        v0 = *(PyObject **) pv;
+        v1 = *(PyObject **) (pv + steps[4]);
+        out = det2(u0, u1, v0, v1);
+        if (out == NULL) {
+            return;
+        }
+        *(PyObject **) pout = out;
+    }
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -183,6 +243,35 @@ PyUFuncGenericFunction cross3_funcs[] = {
 static void *cross3_data[CROSS3_NTYPES];
 
 
+// These are the input and return dtypes of cross2.
+// (Same as for cross3, so could probably share the types array.)
+static char cross2_typecodes[] = {
+    NPY_INT32, NPY_INT32, NPY_INT32,
+    NPY_INT64, NPY_INT64, NPY_INT64,
+    NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
+    NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+    NPY_CFLOAT, NPY_CFLOAT, NPY_CFLOAT,
+    NPY_CDOUBLE, NPY_CDOUBLE, NPY_CDOUBLE,
+    NPY_CLONGDOUBLE, NPY_CLONGDOUBLE, NPY_CLONGDOUBLE,
+    NPY_OBJECT, NPY_OBJECT, NPY_OBJECT
+};
+
+PyUFuncGenericFunction cross2_funcs[] = {
+    (PyUFuncGenericFunction) &cross2_int32_loop,
+    (PyUFuncGenericFunction) &cross2_int64_loop,
+    (PyUFuncGenericFunction) &cross2_float_loop,
+    (PyUFuncGenericFunction) &cross2_double_loop,
+    (PyUFuncGenericFunction) &cross2_longdouble_loop,
+    (PyUFuncGenericFunction) &cross2_cfloat_loop,
+    (PyUFuncGenericFunction) &cross2_cdouble_loop,
+    (PyUFuncGenericFunction) &cross2_clongdouble_loop,
+    (PyUFuncGenericFunction) &cross2_object_loop
+};
+
+#define CROSS2_NTYPES  (sizeof(cross2_funcs)/sizeof(cross2_funcs[0]))
+static void *cross2_data[CROSS2_NTYPES];
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Python extension module definitions.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -194,7 +283,7 @@ static PyMethodDef CrossMethods[] = {
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_cross",
-    .m_doc = "Module that defines the cross3 function.",
+    .m_doc = "Module that defines the cross2 and cross3 functions.",
     .m_size = -1,
     .m_methods = CrossMethods
 };
@@ -227,6 +316,32 @@ static struct PyModuleDef moduledef = {
 "       [ -4, -14,  12]])\n"                                   \
 "\n"
 
+#define CROSS2_DOCSTRING \
+"cross2(u, v)\n"                                               \
+"\n"                                                           \
+"Compute the cross product of 2-d vectors u and v.\n"          \
+"The result is a scalar.\n"                                    \
+"\n"                                                           \
+"Parameters\n"                                                 \
+"----------\n"                                                 \
+"u : array_like, shape (..., 2)\n"                             \
+"    Input array\n"                                            \
+"v : array_like, shape (..., 2)\n"                             \
+"    Input array\n"                                            \
+"\n"                                                           \
+"Returns\n"                                                    \
+"-------\n"                                                    \
+"out : scalar or ndarray, shape (...)\n"                       \
+"    Cross product of u and v.\n"                              \
+"\n"                                                           \
+"Examples\n"                                                   \
+"--------\n"                                                   \
+">>> from ufunclab import cross2\n"                            \
+">>> cross2`([1, 2], [5, 3])\n"                                 \
+"-7\n"                                                         \
+">>> cross2([[1, 2], [6, 0]], [[5, 3], [2, 3]])\n"             \
+"array([-7, 18])\n"                                           \
+"\n"
 
 PyMODINIT_FUNC PyInit__cross(void)
 {
@@ -244,6 +359,14 @@ PyMODINIT_FUNC PyInit__cross(void)
     if (ul_define_gufunc(module, "cross3", CROSS3_DOCSTRING, "(3),(3)->(3)",
                          CROSS3_NTYPES,
                          cross3_funcs, cross3_data, cross3_typecodes) < 0) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    // Create the cross2 ufunc.
+    if (ul_define_gufunc(module, "cross2", CROSS2_DOCSTRING, "(2),(2)->()",
+                         CROSS2_NTYPES,
+                         cross2_funcs, cross2_data, cross2_typecodes) < 0) {
         Py_DECREF(module);
         return NULL;
     }
