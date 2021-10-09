@@ -187,16 +187,16 @@ static void *cross3_data[CROSS3_NTYPES];
 // Python extension module definitions.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static PyMethodDef Cross3Methods[] = {
+static PyMethodDef CrossMethods[] = {
         {NULL, NULL, 0, NULL}
 };
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "_cross3",
+    .m_name = "_cross",
     .m_doc = "Module that defines the cross3 function.",
     .m_size = -1,
-    .m_methods = Cross3Methods
+    .m_methods = CrossMethods
 };
 
 
@@ -228,7 +228,7 @@ static struct PyModuleDef moduledef = {
 "\n"
 
 
-PyMODINIT_FUNC PyInit__cross3(void)
+PyMODINIT_FUNC PyInit__cross(void)
 {
     PyObject *module;
 

@@ -14,10 +14,10 @@ def configuration(parent_package='', top_path=None):
                                        'logfactorial.c'),
                                   join('src', 'logfactorial',
                                        'logfactorial_ufunc.c')])
-    config.add_extension('ufunclab._cross3',
+    config.add_extension('ufunclab._cross',
                          extra_compile_args=compile_args,
-                         sources=[join('src', 'cross3',
-                                       'cross3_gufunc.c.src')],
+                         sources=[join('src', 'cross',
+                                       'cross_gufunc.c.src')],
                          include_dirs=[join('src', 'util')])
     config.add_extension('ufunclab._peaktopeak',
                          extra_compile_args=compile_args,
