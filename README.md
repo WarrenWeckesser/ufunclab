@@ -400,7 +400,9 @@ In [3]: meanvar([1, 2, 4, 5], 0)  # Use ddof=0.
 Out[3]: array([3. , 2.5])
 ```
 
-Appy `meanvar` with `ddof=1` to the rows of a 2-d array:
+Appy `meanvar` with `ddof=1` to the rows of a 2-d array.
+The output has shape `(4, 2)`; the first column holds the
+means, and the second column holds the variances.
 
 
 ```
@@ -417,7 +419,7 @@ array([[ 2.75 ,  4.5  ],
        [ 5.   ,  0.   ]])
 ```
 
-Comare to the results of `numpy.mean` and `numpy.var`:
+Compare to the results of `numpy.mean` and `numpy.var`:
 
 ```
 In [6]: np.mean(x, axis=1)
