@@ -27,6 +27,7 @@ What's in ufunclab?
 | [`all_same`](#all_same)                 | Check all values are the same                    |
 | [`gmean`](#gmean)                       | Geometric mean                                   |
 | [`hmean`](#hmean)                       | Harmonic mean                                    |
+| [`meanvar`](#meanvar)                   | Mean and variance                                |
 | [`mad`](#mad)                           | Mean absolute difference (MAD)                   |
 | [`mad1`](#mad1)                         | Unbiased estimator of the MAD                    |
 | [`rmad`](#rmad)                         | Relative mean absolute difference                |
@@ -382,6 +383,49 @@ array([[ 1,  2,  3,  4,  5],
 In [31]: hmean(y, axis=1)
 Out[31]: array([ 2.18978102,  7.74431469, 12.84486077])
 ```
+
+### `meanvar`
+
+`meanvar` is a gufunc (signature `(i),()->(2)`) that computes both
+the mean and variance in one function call.
+
+For example,
+
+```
+In [1]: import numpy as np
+
+In [2]: from ufunclab import meanvar
+
+In [3]: meanvar([1, 2, 4, 5], 0)  # Use ddof=0.
+Out[3]: array([3. , 2.5])
+```
+
+Appy `meanvar` with `ddof=1` to the rows of a 2-d array:
+
+
+```
+In [4]: x = np.array([[1, 4, 4, 2, 1, 1, 2, 7],
+   ...:               [0, 0, 9, 4, 1, 0, 0, 1],
+   ...:               [8, 3, 3, 3, 3, 3, 3, 3],
+   ...:               [5, 5, 5, 5, 5, 5, 5, 5]])
+
+In [5]: meanvar(x, 1)  # Use ddof=1.
+Out[5]:
+array([[ 2.75 ,  4.5  ],
+       [ 1.875, 10.125],
+       [ 3.625,  3.125],
+       [ 5.   ,  0.   ]])
+```
+
+Comare to the results of `numpy.mean` and `numpy.var`:
+
+```
+In [6]: np.mean(x, axis=1)
+Out[6]: array([2.75 , 1.875, 3.625, 5.   ])
+
+In [7]: np.var(x, ddof=1, axis=1)
+Out[7]: array([ 4.5  , 10.125,  3.125,  0.   ])
+
 
 ### `mad`
 
