@@ -212,7 +212,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define VNORM_DOCSTRING \
-"vnorm(x, order, ...)\n"                                    \
+"vnorm(x, p, ...)\n"                                        \
 "\n"                                                        \
 "Compute the vector norm of the input signal x.\n"          \
 "\n"                                                        \
@@ -220,10 +220,9 @@ static struct PyModuleDef moduledef = {
 "----------\n"                                              \
 "x : array_like\n"                                          \
 "    Input array\n"                                         \
-"order : scalar or array_like\n"                            \
-"    Order of the norm to be computed (e.g. order=2 is\n"   \
-"    the standard Euclidean norm). Must be greater\n"       \
-"    than 0.\n"                                             \
+"p : scalar or array_like\n"                                \
+"    Order of the norm to be computed (e.g. p=2 is the\n"   \
+"    standard Euclidean norm). Must be greater than 0.\n"   \
 "\n"                                                        \
 "Returns\n"                                                 \
 "-------\n"                                                 \
