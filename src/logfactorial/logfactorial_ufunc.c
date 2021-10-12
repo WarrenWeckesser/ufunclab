@@ -67,7 +67,9 @@ static struct PyModuleDef moduledef = {
 
 
 #define LOGFACTORIAL_DOCSTRING \
-    "Natural logarithm of the factorial of the integer x."
+"logfactorial(x, ...)\n"                                   \
+"\n"                                                       \
+"Natural logarithm of the factorial of the integer x."
 
 
 PyMODINIT_FUNC PyInit__logfact(void)

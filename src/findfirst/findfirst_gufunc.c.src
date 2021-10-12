@@ -215,7 +215,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define FINDFIRST_DOCSTRING \
-"findfirst(x, op, target)\n"                                        \
+"findfirst(x, op, target, ...)\n"                                   \
 "\n"                                                                \
 "Find the index in `x` of the first value where `x op target`\n"    \
 "is true, where `op` is one of the basic comparison operators.\n"   \

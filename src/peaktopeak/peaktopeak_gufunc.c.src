@@ -384,10 +384,12 @@ static struct PyModuleDef moduledef = {
 };
 
 
-#define PEAKTOPEAK_DOCSTRING                                        \
-    "Peak-to-peak value (i.e. maximum - minimum) of an array.\n"    \
-    "\n"                                                            \
-    "An unsigned integer is returned for signed integer input.\n"
+#define PEAKTOPEAK_DOCSTRING                                    \
+"peaktopeak(x, ...)\n"                                          \
+"\n"                                                            \
+"Peak-to-peak value (i.e. maximum - minimum) of an array.\n"    \
+"\n"                                                            \
+"An unsigned integer is returned for signed integer input.\n"
 
 
 PyMODINIT_FUNC PyInit__peaktopeak(void)

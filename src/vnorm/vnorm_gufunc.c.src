@@ -212,7 +212,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define VNORM_DOCSTRING \
-"vnorm(x, order)\n"                                         \
+"vnorm(x, order, ...)\n"                                    \
 "\n"                                                        \
 "Compute the vector norm of the input signal x.\n"          \
 "\n"                                                        \

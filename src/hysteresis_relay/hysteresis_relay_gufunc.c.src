@@ -122,7 +122,8 @@ static struct PyModuleDef moduledef = {
 
 
 #define HYSTERESIS_RELAY_DOCSTRING \
-"hysteresis_relay(x, low_threshold, high_threshold, low_value, high_value, init)\n" \
+"hysteresis_relay(x, low_threshold, high_threshold, "       \
+"low_value, high_value, init, ...)\n"                       \
 "\n"                                                        \
 "Pass x through a 'relay' with hysteresis.\n"               \
 "\n"                                                        \

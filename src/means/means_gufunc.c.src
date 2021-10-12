@@ -175,8 +175,16 @@ static struct PyModuleDef moduledef = {
 };
 
 
-#define GMEAN_DOCSTRING  "Geometric mean (WIP: argument validation incomplete)"
-#define HMEAN_DOCSTRING  "Harmonic mean (WIP: argument validation incomplete)"
+#define GMEAN_DOCSTRING \
+"gmean(x, ...)\n"                                       \
+"\n"                                                    \
+"Geometric mean (WIP: argument validation incomplete)"
+
+#define HMEAN_DOCSTRING \
+"hmean(x, ...)\n"                                       \
+"\n"                                                    \
+"Harmonic mean (WIP: argument validation incomplete)"
+
 
 PyMODINIT_FUNC PyInit__means(void)
 {

@@ -148,7 +148,10 @@ static struct PyModuleDef moduledef = {
 };
 
 
-#define ALL_SAME_DOCSTRING "Test for all values being the same."
+#define ALL_SAME_DOCSTRING \
+"all_same(x, ...)\n"                        \
+"\n"                                        \
+"Test for all values being the same."
 
 
 PyMODINIT_FUNC PyInit__all_same(void)
