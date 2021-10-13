@@ -125,7 +125,7 @@ static char types[] = {
     NPY_LONGDOUBLE, NPY_LONGDOUBLE,
 };
 
-PyUFuncGenericFunction gmean_funcs[] = {
+static PyUFuncGenericFunction gmean_funcs[] = {
     (PyUFuncGenericFunction) &gmean_int8_loop,
     (PyUFuncGenericFunction) &gmean_uint8_loop,
     (PyUFuncGenericFunction) &gmean_int16_loop,
@@ -141,7 +141,7 @@ PyUFuncGenericFunction gmean_funcs[] = {
 
 static void *gmean_data[sizeof(gmean_funcs)/sizeof(gmean_funcs[0])];
 
-PyUFuncGenericFunction hmean_funcs[] = {
+static PyUFuncGenericFunction hmean_funcs[] = {
     (PyUFuncGenericFunction) &hmean_int8_loop,
     (PyUFuncGenericFunction) &hmean_uint8_loop,
     (PyUFuncGenericFunction) &hmean_int16_loop,

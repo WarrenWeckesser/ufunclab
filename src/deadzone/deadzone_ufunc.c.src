@@ -74,7 +74,7 @@ static char types[] = {
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
 };
 
-PyUFuncGenericFunction deadzone_funcs[] = {
+static PyUFuncGenericFunction deadzone_funcs[] = {
     (PyUFuncGenericFunction) &deadzone_float_loop,
     (PyUFuncGenericFunction) &deadzone_double_loop,
     (PyUFuncGenericFunction) &deadzone_longdouble_loop

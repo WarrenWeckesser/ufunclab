@@ -15,6 +15,8 @@
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
+#include "../util/ufunc_tools.h"
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for integer and real floating point types.
@@ -163,7 +165,7 @@ static void findfirst_object_loop(char **args, const npy_intp *dimensions,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // These are the input and return dtypes of findfirst.
-static char types[] = {
+static char findfirst_typecodes[] = {
     NPY_INT8, NPY_INT8, NPY_INT8, NPY_INTP,
     NPY_INT16, NPY_INT8, NPY_INT16, NPY_INTP,
     NPY_INT32, NPY_INT8, NPY_INT32, NPY_INTP,
@@ -179,7 +181,7 @@ static char types[] = {
 };
 
 
-PyUFuncGenericFunction findfirst_funcs[] = {
+static PyUFuncGenericFunction findfirst_funcs[] = {
     (PyUFuncGenericFunction) &findfirst_int8_loop,
     (PyUFuncGenericFunction) &findfirst_int16_loop,
     (PyUFuncGenericFunction) &findfirst_int32_loop,
@@ -194,7 +196,8 @@ PyUFuncGenericFunction findfirst_funcs[] = {
     (PyUFuncGenericFunction) &findfirst_object_loop
 };
 
-static void *findfirst_data[sizeof(findfirst_funcs)/sizeof(findfirst_funcs[0])];
+#define FINDFIRST_NTYPES (sizeof(findfirst_funcs)/sizeof(findfirst_funcs[0]))
+static void *findfirst_data[FINDFIRST_NTYPES];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -293,16 +296,12 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__findfirst(void)
 {
-    PyObject *m;
-    PyUFuncObject *findfirst_gufunc;
-    size_t ntypes;
-    int nin, nout;
-    int status;
+    PyObject *module;
     char *opnames[] = {"_LT", "_LE", "_EQ", "_NE", "_GT", "_GE"};
     int opcodes[] = {Py_LT, Py_LE, Py_EQ, Py_NE, Py_GT, Py_GE};
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -310,34 +309,22 @@ PyMODINIT_FUNC PyInit__findfirst(void)
     import_umath();
 
     // Create the findfirst ufunc.
-    ntypes = sizeof(findfirst_funcs) / sizeof(findfirst_funcs[0]);
-    nin = 3;
-    nout = 1;
-    findfirst_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
-                        findfirst_funcs, findfirst_data, types, ntypes, nin, nout,
-                        PyUFunc_None, "findfirst",
-                        FINDFIRST_DOCSTRING, 0, "(i),(),()->()");
-    if (findfirst_gufunc == NULL) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    status = PyModule_AddObject(m, "findfirst", (PyObject *) findfirst_gufunc);
-    if (status == -1) {
-        Py_DECREF(findfirst_gufunc);
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "findfirst", FINDFIRST_DOCSTRING, "(i),(),()->()",
+                         FINDFIRST_NTYPES,
+                         findfirst_funcs, findfirst_data, findfirst_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
     // Expose the numerical values Py_LT, Py_LE, etc., as integers
     // in this module.
     for (int k = 0; k < 6; ++k) {
-        int status = PyModule_AddIntConstant(m, opnames[k], opcodes[k]);
+        int status = PyModule_AddIntConstant(module, opnames[k], opcodes[k]);
         if (status == -1) {
-            Py_DECREF(m);
+            Py_DECREF(module);
             return NULL;
         }
     }
 
-    return m;
+    return module;
 }

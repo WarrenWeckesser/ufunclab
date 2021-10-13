@@ -198,7 +198,7 @@ static void peaktopeak_object_loop(char **args, const npy_intp *dimensions,
 //    ...
 // then the result for an input with dtype np.uint8 will
 // have dtype np.uint16.
-static char types[] = {
+static char peaktopeak_typecodes[] = {
     NPY_INT8, NPY_UINT8,
     NPY_UINT8, NPY_UINT8,
     NPY_INT16, NPY_UINT16,
@@ -215,7 +215,7 @@ static char types[] = {
     NPY_OBJECT, NPY_OBJECT
 };
 
-PyUFuncGenericFunction funcs[] = {
+static PyUFuncGenericFunction peaktopeak_funcs[] = {
     (PyUFuncGenericFunction) &peaktopeak_int8_loop,
     (PyUFuncGenericFunction) &peaktopeak_uint8_loop,
     (PyUFuncGenericFunction) &peaktopeak_int16_loop,
@@ -232,7 +232,8 @@ PyUFuncGenericFunction funcs[] = {
     (PyUFuncGenericFunction) &peaktopeak_object_loop
 };
 
-static void *data[sizeof(funcs)/sizeof(funcs[0])];
+#define PEAKTOPEAK_NTYPES (sizeof(peaktopeak_funcs)/sizeof(peaktopeak_funcs[0]))
+static void *peaktopeak_data[PEAKTOPEAK_NTYPES];
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // peaktopeak type resolver
@@ -394,14 +395,13 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__peaktopeak(void)
 {
-    PyObject *m;
+    PyObject *module;
     PyUFuncObject *peaktopeak_gufunc;
-    size_t ntypes;
     int nin, nout;
     int status;
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -410,25 +410,27 @@ PyMODINIT_FUNC PyInit__peaktopeak(void)
 
     // Create the peaktopeak ufunc.
 
-    ntypes = sizeof(funcs) / sizeof(funcs[0]);
     nin = 1;
     nout = 1;
     peaktopeak_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
-                            funcs, data, types, ntypes, nin, nout,
+                            peaktopeak_funcs,
+                            peaktopeak_data,
+                            peaktopeak_typecodes,
+                            PEAKTOPEAK_NTYPES, nin, nout,
                             PyUFunc_None, "peaktopeak",
                             PEAKTOPEAK_DOCSTRING, 0,
                             "(i)->()");
     if (peaktopeak_gufunc == NULL) {
-        Py_DECREF(m);
+        Py_DECREF(module);
         return NULL;
     }
     peaktopeak_gufunc->type_resolver = PeakToPeakTypeResolver;
 
-    status = PyModule_AddObject(m, "peaktopeak", (PyObject *) peaktopeak_gufunc);
+    status = PyModule_AddObject(module, "peaktopeak", (PyObject *) peaktopeak_gufunc);
     if (status == -1) {
         Py_DECREF(peaktopeak_gufunc);
-        Py_DECREF(m);
+        Py_DECREF(module);
         return NULL;
     }
-    return m;
+    return module;
 }

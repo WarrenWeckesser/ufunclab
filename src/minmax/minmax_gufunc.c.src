@@ -318,7 +318,7 @@ static char minmax_types[] = {
     NPY_OBJECT, NPY_OBJECT
 };
 
-PyUFuncGenericFunction minmax_funcs[] = {
+static PyUFuncGenericFunction minmax_funcs[] = {
     (PyUFuncGenericFunction) &minmax_int8_loop,
     (PyUFuncGenericFunction) &minmax_uint8_loop,
     (PyUFuncGenericFunction) &minmax_int16_loop,
@@ -350,7 +350,7 @@ static char argminmax_types[] = {
     NPY_OBJECT, NPY_INTP
 };
 
-PyUFuncGenericFunction argminmax_funcs[] = {
+static PyUFuncGenericFunction argminmax_funcs[] = {
     (PyUFuncGenericFunction) &argminmax_int8_loop,
     (PyUFuncGenericFunction) &argminmax_uint8_loop,
     (PyUFuncGenericFunction) &argminmax_int16_loop,
@@ -388,7 +388,7 @@ static char @op@_arg@op@_types[] = {
     NPY_OBJECT, NPY_OBJECT, NPY_INTP
 };
 
-PyUFuncGenericFunction @op@_arg@op@_funcs[] = {
+static PyUFuncGenericFunction @op@_arg@op@_funcs[] = {
     (PyUFuncGenericFunction) &@op@_arg@op@_int8_loop,
     (PyUFuncGenericFunction) &@op@_arg@op@_uint8_loop,
     (PyUFuncGenericFunction) &@op@_arg@op@_int16_loop,

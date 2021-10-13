@@ -252,7 +252,7 @@ static char types[] = {
 };
 
 
-PyUFuncGenericFunction mad_funcs[] = {
+static PyUFuncGenericFunction mad_funcs[] = {
     (PyUFuncGenericFunction) &mad_int8_loop,
     (PyUFuncGenericFunction) &mad_uint8_loop,
     (PyUFuncGenericFunction) &mad_int16_loop,
@@ -269,7 +269,7 @@ PyUFuncGenericFunction mad_funcs[] = {
 static void *mad_data[sizeof(mad_funcs)/sizeof(mad_funcs[0])];
 
 
-PyUFuncGenericFunction mad1_funcs[] = {
+static PyUFuncGenericFunction mad1_funcs[] = {
     (PyUFuncGenericFunction) &mad1_int8_loop,
     (PyUFuncGenericFunction) &mad1_uint8_loop,
     (PyUFuncGenericFunction) &mad1_int16_loop,
@@ -286,7 +286,7 @@ PyUFuncGenericFunction mad1_funcs[] = {
 static void *mad1_data[sizeof(mad1_funcs)/sizeof(mad1_funcs[0])];
 
 
-PyUFuncGenericFunction rmad_funcs[] = {
+static PyUFuncGenericFunction rmad_funcs[] = {
     (PyUFuncGenericFunction) &rmad_int8_loop,
     (PyUFuncGenericFunction) &rmad_uint8_loop,
     (PyUFuncGenericFunction) &rmad_int16_loop,
@@ -303,7 +303,7 @@ PyUFuncGenericFunction rmad_funcs[] = {
 static void *rmad_data[sizeof(rmad_funcs)/sizeof(rmad_funcs[0])];
 
 
-PyUFuncGenericFunction rmad1_funcs[] = {
+static PyUFuncGenericFunction rmad1_funcs[] = {
     (PyUFuncGenericFunction) &rmad1_int8_loop,
     (PyUFuncGenericFunction) &rmad1_uint8_loop,
     (PyUFuncGenericFunction) &rmad1_int16_loop,

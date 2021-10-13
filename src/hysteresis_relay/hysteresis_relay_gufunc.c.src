@@ -16,6 +16,8 @@
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
+#include "../util/ufunc_tools.h"
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for floating point types.
@@ -89,19 +91,20 @@ static void hysteresis_relay_@typename@_loop(char **args, const npy_intp *dimens
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // These are the input and return dtypes of hysteresis_relay.
-static char types[] = {
+static char hysteresis_relay_typecodes[] = {
     NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
 };
 
-PyUFuncGenericFunction hysteresis_relay_funcs[] = {
+static PyUFuncGenericFunction hysteresis_relay_funcs[] = {
     (PyUFuncGenericFunction) &hysteresis_relay_float_loop,
     (PyUFuncGenericFunction) &hysteresis_relay_double_loop,
     (PyUFuncGenericFunction) &hysteresis_relay_longdouble_loop
 };
 
-static void *hysteresis_relay_data[sizeof(hysteresis_relay_funcs)/sizeof(hysteresis_relay_funcs[0])];
+#define HYSTERESIS_RELAY_NTYPES (sizeof(hysteresis_relay_funcs)/sizeof(hysteresis_relay_funcs[0]))
+static void *hysteresis_relay_data[HYSTERESIS_RELAY_NTYPES];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -172,14 +175,10 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__hysteresis_relay(void)
 {
-    PyObject *m;
-    PyUFuncObject *hysteresis_relay_gufunc;
-    size_t ntypes;
-    int nin, nout;
-    int status;
+    PyObject *module;
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -187,24 +186,16 @@ PyMODINIT_FUNC PyInit__hysteresis_relay(void)
     import_umath();
 
     // Create the hysteresis_relay ufunc.
-    ntypes = sizeof(hysteresis_relay_funcs) / sizeof(hysteresis_relay_funcs[0]);
-    nin = 6;
-    nout = 1;
-    hysteresis_relay_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
-                            hysteresis_relay_funcs, hysteresis_relay_data, types, ntypes, nin, nout,
-                            PyUFunc_None, "hysteresis_relay",
-                            HYSTERESIS_RELAY_DOCSTRING, 0,
-                            "(i),(),(),(),(),()->(i)");
-    if (hysteresis_relay_gufunc == NULL) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    status = PyModule_AddObject(m, "hysteresis_relay", (PyObject *) hysteresis_relay_gufunc);
-    if (status == -1) {
-        Py_DECREF(hysteresis_relay_gufunc);
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "hysteresis_relay",
+                         HYSTERESIS_RELAY_DOCSTRING,
+                         "(i),(),(),(),(),()->(i)",
+                         HYSTERESIS_RELAY_NTYPES,
+                         hysteresis_relay_funcs,
+                         hysteresis_relay_data,
+                         hysteresis_relay_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
-    return m;
+    return module;
 }

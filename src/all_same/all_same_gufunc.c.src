@@ -16,6 +16,8 @@
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
+#include "../util/ufunc_tools.h"
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for integer and floating point types.
@@ -94,7 +96,7 @@ static void all_same_object_loop(char **args, const npy_intp *dimensions,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // These are the input and return dtypes of all_same.
-static char types[] = {
+static char all_same_typecodes[] = {
     NPY_INT8,       NPY_BOOL,
     NPY_UINT8,      NPY_BOOL,
     NPY_INT16,      NPY_BOOL,
@@ -111,7 +113,7 @@ static char types[] = {
     NPY_OBJECT,     NPY_BOOL
 };
 
-PyUFuncGenericFunction funcs[] = {
+static PyUFuncGenericFunction all_same_funcs[] = {
     (PyUFuncGenericFunction) &all_same_int8_loop,
     (PyUFuncGenericFunction) &all_same_uint8_loop,
     (PyUFuncGenericFunction) &all_same_int16_loop,
@@ -128,7 +130,8 @@ PyUFuncGenericFunction funcs[] = {
     (PyUFuncGenericFunction) &all_same_object_loop
 };
 
-static void *data[sizeof(funcs)/sizeof(funcs[0])];
+#define ALL_SAME_NTYPES (sizeof(all_same_funcs)/sizeof(all_same_funcs[0]))
+static void *all_same_data[ALL_SAME_NTYPES];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -156,14 +159,10 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__all_same(void)
 {
-    PyObject *m;
-    PyUFuncObject *all_same_gufunc;
-    size_t ntypes;
-    int nin, nout;
-    int status;
+    PyObject *module;
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -171,25 +170,12 @@ PyMODINIT_FUNC PyInit__all_same(void)
     import_umath();
 
     // Create the all_same ufunc.
-
-    ntypes = sizeof(funcs) / sizeof(funcs[0]);
-    nin = 1;
-    nout = 1;
-    all_same_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
-                            funcs, data, types, ntypes, nin, nout,
-                            PyUFunc_None, "all_same",
-                            ALL_SAME_DOCSTRING, 0,
-                            "(i)->()");
-    if (all_same_gufunc == NULL) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    status = PyModule_AddObject(m, "all_same", (PyObject *) all_same_gufunc);
-    if (status == -1) {
-        Py_DECREF(all_same_gufunc);
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "all_same", ALL_SAME_DOCSTRING, "(i)->()",
+                         ALL_SAME_NTYPES,
+                         all_same_funcs, all_same_data, all_same_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
-    return m;
+    return module;
 }

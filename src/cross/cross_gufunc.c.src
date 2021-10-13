@@ -227,7 +227,7 @@ static char cross3_typecodes[] = {
     NPY_OBJECT, NPY_OBJECT, NPY_OBJECT
 };
 
-PyUFuncGenericFunction cross3_funcs[] = {
+static PyUFuncGenericFunction cross3_funcs[] = {
     (PyUFuncGenericFunction) &cross3_int32_loop,
     (PyUFuncGenericFunction) &cross3_int64_loop,
     (PyUFuncGenericFunction) &cross3_float_loop,
@@ -257,7 +257,7 @@ static char cross2_typecodes[] = {
     NPY_OBJECT, NPY_OBJECT, NPY_OBJECT
 };
 
-PyUFuncGenericFunction cross2_funcs[] = {
+static PyUFuncGenericFunction cross2_funcs[] = {
     (PyUFuncGenericFunction) &cross2_int32_loop,
     (PyUFuncGenericFunction) &cross2_int64_loop,
     (PyUFuncGenericFunction) &cross2_float_loop,

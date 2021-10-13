@@ -181,7 +181,7 @@ static char vnorm_typecodes[] = {
     NPY_CLONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
 };
 
-PyUFuncGenericFunction vnorm_funcs[] = {
+static PyUFuncGenericFunction vnorm_funcs[] = {
     (PyUFuncGenericFunction) &vnorm_float_loop,
     (PyUFuncGenericFunction) &vnorm_double_loop,
     (PyUFuncGenericFunction) &vnorm_longdouble_loop,

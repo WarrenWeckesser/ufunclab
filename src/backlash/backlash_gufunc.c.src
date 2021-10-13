@@ -15,6 +15,8 @@
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
+#include "../util/ufunc_tools.h"
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for floating point types.
@@ -71,19 +73,20 @@ static void backlash_@typename@_loop(char **args, const npy_intp *dimensions,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // These are the input and return dtypes of backlash.
-static char types[] = {
+static char backlash_typecodes[] = {
     NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
 };
 
-PyUFuncGenericFunction backlash_funcs[] = {
+static PyUFuncGenericFunction backlash_funcs[] = {
     (PyUFuncGenericFunction) &backlash_float_loop,
     (PyUFuncGenericFunction) &backlash_double_loop,
     (PyUFuncGenericFunction) &backlash_longdouble_loop
 };
 
-static void *backlash_data[sizeof(backlash_funcs)/sizeof(backlash_funcs[0])];
+#define BACKLASH_NTYPES (sizeof(backlash_funcs)/sizeof(backlash_funcs[0]))
+static void *backlash_data[BACKLASH_NTYPES];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -131,14 +134,10 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__backlash(void)
 {
-    PyObject *m;
-    PyUFuncObject *backlash_gufunc;
-    size_t ntypes;
-    int nin, nout;
-    int status;
+    PyObject *module;
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -146,24 +145,12 @@ PyMODINIT_FUNC PyInit__backlash(void)
     import_umath();
 
     // Create the backlash ufunc.
-    ntypes = sizeof(backlash_funcs) / sizeof(backlash_funcs[0]);
-    nin = 3;
-    nout = 1;
-    backlash_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
-                            backlash_funcs, backlash_data, types, ntypes, nin, nout,
-                            PyUFunc_None, "backlash",
-                            BACKLASH_DOCSTRING, 0,
-                            "(i),(),()->(i)");
-    if (backlash_gufunc == NULL) {
-        Py_DECREF(m);
-        return NULL;
-    }
-    status = PyModule_AddObject(m, "backlash", (PyObject *) backlash_gufunc);
-    if (status == -1) {
-        Py_DECREF(backlash_gufunc);
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "backlash", BACKLASH_DOCSTRING, "(i),(),()->(i)",
+                         BACKLASH_NTYPES,
+                         backlash_funcs, backlash_data, backlash_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
-    return m;
+    return module;
 }

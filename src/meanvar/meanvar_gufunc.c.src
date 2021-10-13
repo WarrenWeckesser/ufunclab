@@ -116,7 +116,7 @@ static char meanvar_typecodes[] = {
 };
 
 
-PyUFuncGenericFunction meanvar_funcs[] = {
+static PyUFuncGenericFunction meanvar_funcs[] = {
     (PyUFuncGenericFunction) &meanvar_int8_loop,
     (PyUFuncGenericFunction) &meanvar_uint8_loop,
     (PyUFuncGenericFunction) &meanvar_int16_loop,
