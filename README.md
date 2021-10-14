@@ -734,10 +734,14 @@ The function is similar to the
 of Matlab's Simulink library.  The function is also known as
 a *soft threshold*.
 
-The script `deadzone_demo.py` in the `examples` directory generates
+Here's a plot of `deadzone(x, -0.25, 0.5)`:
+
+![Deadzone plot1](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo1.png)
+
+The script `deadzone_demo2.py` in the `examples` directory generates
 the plot
 
-![Deadzone plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo.png)
+![Deadzone plot2](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo2.png)
 
 ### `hysteresis_relay`
 
