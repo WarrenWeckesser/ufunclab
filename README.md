@@ -723,7 +723,7 @@ the plot
 ### `deadzone`
 
 `deadzone(x, low, high)` is ufunc with three inputs and one output.
-It computes the "deadzone" response of a signal::
+It computes the "deadzone" response of a signal:
 
            { 0         if low <= x <= high
     f(x) = { x - low   if x < low
