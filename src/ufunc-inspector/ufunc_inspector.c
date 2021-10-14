@@ -152,6 +152,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
             else CHECKFOR(F_F_As_D_D)
             else CHECKFOR(D_D)
             else CHECKFOR(G_G)
+            else CHECKFOR(O_O)
             else CHECKFOR(O_O_method)
             else CHECKFOR(On_Om)
             else {
