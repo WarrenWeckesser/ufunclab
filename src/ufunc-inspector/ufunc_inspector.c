@@ -3,6 +3,7 @@
 #include "Python.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -10,6 +11,29 @@
 
 
 typedef double (*doublebinaryfunc)(double, double);
+
+
+void print_core_dim_flags(npy_uint32 flags)
+{
+    bool add_bar = false;
+    if (flags & UFUNC_CORE_DIM_SIZE_INFERRED) {
+        printf("SIZE_INFERRED");
+        add_bar = true;
+    }
+    if (flags & UFUNC_CORE_DIM_CAN_IGNORE) {
+        if (add_bar) {
+            printf(" | ");
+        }
+        printf("CAN_IGNORE");
+        add_bar = true;
+    }
+    if (flags & UFUNC_CORE_DIM_MISSING) {
+        if (add_bar) {
+            printf(" | ");
+        }
+        printf("MISSING");
+    }
+}
 
 
 static PyObject *
@@ -28,14 +52,80 @@ ufunc_inspector(PyObject *self, PyObject *arg)
 
     if (ufunc->core_enabled) {
         printf("'%s' is a gufunc with signature '%s'.\n", ufunc->name, ufunc->core_signature);
+        printf("nin = %d, nout = %d\n", ufunc->nin, ufunc->nout);
+        printf("...core_num_dim_ix  (number of distinct names in sig) = %d\n", ufunc->core_num_dim_ix);
+        printf("...core_dim_sizes                  (-1 if not frozen) = [");
+        for (int i = 0; i < ufunc->core_num_dim_ix; ++i) {
+            printf("%ld", ufunc->core_dim_sizes[i]);
+            if (i == ufunc->core_num_dim_ix-1) {
+                printf("]\n");
+            }
+            else {
+                printf(", ");
+            }
+        }
+        printf("...core_dim_flags             (UFUNC_CORE_DIM* flags) = [");
+        for (int i = 0; i < ufunc->core_num_dim_ix; ++i) {
+            print_core_dim_flags(ufunc->core_dim_flags[i]);
+            //printf("%u", ufunc->core_dim_flags[i]);
+            if (i == ufunc->core_num_dim_ix-1) {
+                printf("]\n");
+            }
+            else {
+                printf(", ");
+            }
+        }
+        printf("...core_num_dims    (number of core dims in each arg) = [");
+        for (int i = 0; i < ufunc->nargs; ++i) {
+            printf("%d", ufunc->core_num_dims[i]);
+            if (i == ufunc->nargs-1) {
+                printf("]\n");
+            }
+            else {
+                printf(", ");
+            }
+        }
+        printf("...core_dim_ixs      (dimension indices for each arg) =");
+        for (int i = 0; i < ufunc->nargs; ++i) {
+            int offset = ufunc->core_offsets[i];
+            printf(" [");
+            for (int j = offset; j < offset + ufunc->core_num_dims[i]; ++j) {
+                printf("%d", ufunc->core_dim_ixs[j]);
+                if (j != offset + ufunc->core_num_dims[i]-1) {
+                    printf(", ");
+                }
+            }
+            printf("]");
+        }
+        printf("\n");
+        printf("...core_offsets    (pos. of 1st core dim of each arg) = [");
+        for (int i = 0; i < ufunc->nargs; ++i) {
+            printf("%d", ufunc->core_offsets[i]);
+            if (i == ufunc->nargs-1) {
+                printf("]\n");
+            }
+            else {
+                printf(", ");
+            }
+        }
+        printf("...op_flags (flags for each op when called by nditer) = [");
+        for (int i = 0; i < ufunc->nargs; ++i) {
+            printf("%u", ufunc->op_flags[i]);
+            if (i == ufunc->nargs-1) {
+                printf("]\n");
+            }
+            else {
+                printf(", ");
+            }
+        }
     }
     else {
         printf("'%s' is a ufunc.\n", ufunc->name);
+        printf("nin = %d, nout = %d\n", ufunc->nin, ufunc->nout);
     }
+    printf("ntypes = %d\n", ufunc->ntypes);
 
-    printf("nin = %d, nout = %d, ntypes = %d\n", ufunc->nin, ufunc->nout, ufunc->ntypes);
-
-    if (ufunc->ntypes > 0) {
+    if (ufunc->ntypes > 0 && ufunc->nin > 0 && ufunc->nin < 4 && ufunc->nout == 1) {
         printf("loop types:\n");
     }
     for (int i = 0; i < ufunc->ntypes; ++i) {
