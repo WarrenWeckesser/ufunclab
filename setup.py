@@ -35,7 +35,8 @@ def configuration(parent_package='', top_path=None):
                                        'minmax_gufunc.c.src')])
     config.add_extension('ufunclab._means',
                          extra_compile_args=compile_args,
-                         sources=[join('src', 'means', 'means_gufunc.c.src')])
+                         sources=[join('src', 'means', 'means_gufunc.c.src')],
+                         include_dirs=[join('src', 'util')])
     config.add_extension('ufunclab._meanvar',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'meanvar',
@@ -78,5 +79,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.3.dev1',
+          version='0.0.3.dev2',
           configuration=configuration)

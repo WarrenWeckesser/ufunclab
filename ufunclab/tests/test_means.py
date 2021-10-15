@@ -20,6 +20,14 @@ def test_gmean_float(dt, rtol):
     assert_allclose(m, 100.0, rtol=rtol)
 
 
+def test_gmean_with_zero_or_neg():
+    x = np.array([[1.0, 9.0, 0.0, 4.0],
+                  [2.0, 2.0, 3.0, -3.0],
+                  [3.0, 0.0, 3.0, -3.0]])
+    m = gmean(x)
+    assert_equal(m, [0.0, np.nan, np.nan])
+
+
 def test_gmean_axis():
     x = np.array([[1, 2, 4, 8, 16],
                   [3, 3, 3, 3, 3],
