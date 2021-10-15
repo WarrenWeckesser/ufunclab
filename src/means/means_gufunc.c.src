@@ -230,7 +230,7 @@ PyMODINIT_FUNC PyInit__means(void)
     nout = 1;
     hmean_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
                             hmean_funcs, hmean_data, types, ntypes, nin, nout,
-                            PyUFunc_None, "gmean",
+                            PyUFunc_None, "hmean",
                             HMEAN_DOCSTRING, 0,
                             "(i)->()");
     if (hmean_gufunc == NULL) {
