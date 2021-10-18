@@ -15,6 +15,7 @@ from ._backlash import backlash
 from ._deadzone import deadzone
 from ._hysteresis_relay import hysteresis_relay
 from ._all_same import all_same
+from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector
 
 import numpy as _np

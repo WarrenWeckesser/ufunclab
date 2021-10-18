@@ -69,6 +69,10 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'all_same',
                                        'all_same_gufunc.c.src')],
                          include_dirs=[join('src', 'util')])
+    config.add_extension('ufunclab._gendot',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'gendot',
+                                       'gendotmodule.c')])
     config.add_extension('ufunclab._ufunc_inspector',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'ufunc-inspector',
@@ -79,5 +83,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.3.dev2',
+          version='0.0.3.dev3',
           configuration=configuration)

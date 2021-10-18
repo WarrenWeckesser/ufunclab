@@ -38,6 +38,7 @@ What's in ufunclab?
 | [`backlash`](#backlash)                 | Backlash operator                                |
 | [`deadzone`](#deadzone)                 | Deadzone operator                                |
 | [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis                            |
+| [`gendot`](#gendot)                     | Create a new gufunc that composes two ufuncs     |
 | [`ufunc_inspector`](#ufunc_inspector)   | Display ufunc information                        |
 
 Details follow.
@@ -755,6 +756,47 @@ The script `hysteresis_relay_demo.py` in the `examples` directory generates
 the plot
 
 ![hysteresis_replay plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hysteresis_relay_demo.png)
+
+### `gendot`
+
+`gendot` creates a new gufunc (with signature `(n),(n)->()`)
+that is the composition of two element-wise ufuncs that each
+have two inputs and one output.
+
+The name `gendot` is from "generalized dot product".  The standard
+dot product is the composition of element-wise multiplication and
+reduction with addition.  The `prodfunc` and `sumfunc` arguments of
+`gendot` take the place of multiplication and addition.
+
+For example, to take the element-wise minimum of two 1-d arrays,
+and then take the maximum of the result:
+
+```
+In [1]: import numpy as np
+
+In [2]: from ufunclab import gendot
+
+In [3]: minmaxdot = gendot(np.minimum, np.maximum)
+
+In [4]: a = np.array([1.0, 2.5, 0.3, 1.9, 3.0, 1.8])
+
+In [5]: b = np.array([0.5, 1.1, 0.9, 2.1, 0.3, 3.0])
+
+In [6]: minmaxdot(a, b)
+Out[6]: 1.9
+```
+
+`gendot` is experimental, and might not be useful in many applications.
+We could do the same calculation as `minmaxdot` with, for example,
+`np.maximum.reduce(np.minimum(a, b))`, and in fact, the pure NumPy
+version is faster than `minmaxdot(a, b)` for large (and even moderately
+sized) 1-d arrays.  An advantage of the `gendot` gufunc is that it does
+not create an intermediate array when broadcasting takes place.  For
+example, with inputs `x` and `y` with shapes `(20, 10000000)` and
+`(10, 1, 10000000)`, the equivalent of `minmaxdot(x, y)` can be computed
+with `np.maximum.reduce(np.minimum(x, y), axis=-1)`, but `np.minimum(x, y)`
+creates an array with shape `(10, 20, 10000000)`.  Computing the result
+with `minmaxdot(x, y)` does not create the temporary intermediate array.
 
 ### `ufunc_inspector`
 
