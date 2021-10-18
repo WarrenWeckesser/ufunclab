@@ -134,5 +134,17 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
                           for chars in typechars],
                          dtype=np.uint8)
     loop_indices = np.array(loop_indices, dtype=np.uint8)
-    return _gendot(name, doc, prodfunc, sumfunc,
+    sumfunc_identity_array = np.zeros((len(typechars), np.dtype('G').itemsize),
+                                      dtype=np.uint8)
+    sumfunc_has_identity = False
+    if sumfunc.identity is not None:
+        sumfunc_has_identity = True
+        for k, tc in enumerate(typechars):
+            identity = np.dtype(tc[-1]).type(sumfunc.identity)
+            size = identity.itemsize
+            identity_bytes = identity.view(np.dtype(('B', (size,))))
+            sumfunc_identity_array[k, :size] = identity_bytes
+
+    return _gendot(name, doc, prodfunc,
+                   sumfunc, sumfunc_has_identity, sumfunc_identity_array,
                    loop_indices, typecodes, itemsizes)

@@ -32,3 +32,35 @@ def test_bitwise_and_or(dtype):
     expected = np.bitwise_or.reduce(np.bitwise_and(a, b), axis=-1)
     assert c.dtype == expected.dtype
     assert_equal(c, expected)
+
+
+@pytest.mark.xfail(reason="need to deal with type resolution in prodfunc",
+                   raises=TypeError)
+def test_datetime_timedelta_add_max():
+    addmax = gendot(np.add, np.maximum)
+    a = np.array([np.datetime64('2021-01-01T12:55:55'),
+                  np.datetime64('2021-01-01T13:00:00')])
+    b = np.array([np.timedelta64(60, 's'), np.timedelta64(-360, 's')])
+    c = addmax(a, b)
+    assert c.dtype == a.dtype
+    assert_equal(c, np.maximum.reduce(np.add(a, b)))
+
+
+@pytest.mark.parametrize('dtype', [np.float16, np.float32, np.float64,
+                                   np.complex64, np.complex128,
+                                   np.uint8, np.uint16, np.uint32, np.uint64,
+                                   np.int8, np.int16, np.int32, np.int64])
+def test_identity(dtype):
+    am = gendot(np.add, np.multiply)
+    a = np.array([], dtype=dtype)
+    b = np.array([], dtype=dtype)
+    p = am(a, b)
+    assert p.dtype == dtype
+    assert p == np.multiply.identity
+
+
+def test_no_identity():
+    # The ufunc np.maximum does not have an identity element.
+    minmaxdot = gendot(np.minimum, np.maximum)
+    with pytest.raises(ValueError, match='with no identity'):
+        minmaxdot([], [])

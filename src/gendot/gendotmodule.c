@@ -18,13 +18,19 @@ typedef struct gendot_data_t {
     PyUFuncGenericFunction *sumfunc_loop;
     void *sumfunc_loop_data;
     npy_intp sumfunc_loop_itemsize;
+    npy_intp sumfunc_has_identity; // actual values are only 0 or 1.
+    // sumfunc_identity_buffer is large enough to hold an instance
+    // of np.complex256
+    uint8_t sumfunc_identity_buffer[32];
 } gendot_data_t;
 
-#define PRODFUNC_LOOP(p)         (((gendot_data_t *)(p))->prodfunc_loop)
-#define PRODFUNC_LOOP_DATA(p)    (((gendot_data_t *)(p))->prodfunc_loop_data)
-#define SUMFUNC_LOOP(p)          (((gendot_data_t *)(p))->sumfunc_loop)
-#define SUMFUNC_LOOP_DATA(p)     (((gendot_data_t *)(p))->sumfunc_loop_data)
-#define SUMFUNC_LOOP_ITEMSIZE(p) (((gendot_data_t *)(p))->sumfunc_loop_itemsize)
+#define PRODFUNC_LOOP(p)            (((gendot_data_t *)(p))->prodfunc_loop)
+#define PRODFUNC_LOOP_DATA(p)       (((gendot_data_t *)(p))->prodfunc_loop_data)
+#define SUMFUNC_LOOP(p)             (((gendot_data_t *)(p))->sumfunc_loop)
+#define SUMFUNC_LOOP_DATA(p)        (((gendot_data_t *)(p))->sumfunc_loop_data)
+#define SUMFUNC_LOOP_ITEMSIZE(p)    (((gendot_data_t *)(p))->sumfunc_loop_itemsize)
+#define SUMFUNC_HAS_IDENTITY(p)     (((gendot_data_t *)(p))->sumfunc_has_identity)
+#define SUMFUNC_IDENTITY_BUFFER(p)  (((gendot_data_t *)(p))->sumfunc_identity_buffer)
 
 
 typedef struct funct_index_pair {
@@ -91,12 +97,28 @@ gendot_loop(char **args, const npy_intp *dimensions,
     npy_intp prodfunc_dimensions[3];
     npy_intp prodfunc_steps[3];
 
-    if (dimensions[1] == 0) {
-        // XXX Can this happen?
-        return;
-    }
-
     size_t itemsize = SUMFUNC_LOOP_ITEMSIZE(data);
+
+    if (dimensions[1] == 0) {
+        if (SUMFUNC_HAS_IDENTITY(data)) {
+            // Attempting to apply the reduction to empty sequences.
+            // Return the identity element.
+            for (int j = 0; j < nloops; ++j, pout += steps[2]) {
+                memcpy(pout, SUMFUNC_IDENTITY_BUFFER(data), itemsize);
+            }
+            return;
+        }
+        else {
+            // Applying the reduction to an empty sequence is not
+            // allowed if there is no identity element.
+            NPY_ALLOW_C_API_DEF
+            NPY_ALLOW_C_API
+                PyErr_SetString(PyExc_ValueError,
+                    "zero-size array to reduction operation with no identity");
+            NPY_DISABLE_C_API
+            return;
+        }
+    }
 
     char *tmp = malloc(dimensions[1] * itemsize);
     if (tmp == NULL) {
@@ -145,20 +167,26 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
     char *doc;
     PyUFuncObject *prodfunc = NULL;
     PyUFuncObject *sumfunc = NULL;
+    int sumfunc_has_identity;
+    PyObject *sumfunc_identity_array = NULL;
     PyObject *loop_indices = NULL;
     PyObject *typecodes = NULL;
     PyObject *itemsizes = NULL;
     static char *kwlist[] = {"name", "doc", "prodfunc", "sumfunc",
+                             "sumfunc_has_identity",
+                             "sumfunc_identity_array",
                              "loop_indices", "typecodes", "itemsizes", NULL};
     // The type checks are included here, but in fact, the code will assume
     // that the inputs have all been validated by the calling code.  Invalid
     // arguments (e.g. arrays with the wrong size or wrong data type) will
     // almost certainly cause the program to crash.
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssO!O!O!O!O!:gendot", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssO!O!pO!O!O!O!:gendot", kwlist,
                                      &name,
                                      &doc,
                                      &PyUFunc_Type, &prodfunc,
                                      &PyUFunc_Type, &sumfunc,
+                                     &sumfunc_has_identity,
+                                     &PyArray_Type, &sumfunc_identity_array,
                                      &PyArray_Type, &loop_indices,
                                      &PyArray_Type, &typecodes,
                                      &PyArray_Type, &itemsizes)) {
@@ -168,10 +196,14 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
     // loop_indices is an array with shape (nloops, 2).
     // func_index_pairs is a 1-d arry of func_index_pair structs that is
     // a view of the 2-d array in loop_indices.
-    func_index_pair *func_index_pairs = (func_index_pair *) PyArray_DATA((PyArrayObject *)loop_indices);
+    func_index_pair *func_index_pairs =
+            (func_index_pair *) PyArray_DATA((PyArrayObject *)loop_indices);
 
     npy_intp nloops = PyArray_DIMS((PyArrayObject *)loop_indices)[0];
     npy_intp *gendot_itemsizes = PyArray_DATA((PyArrayObject *)itemsizes);
+
+    uint8_t *sumfunc_identity_data =
+            PyArray_DATA((PyArrayObject *)sumfunc_identity_array);
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // Allocate arrays for PyUFunc_FromFuncAndDataAndSignature.
@@ -247,6 +279,10 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
         gendot_data[i].sumfunc_loop = (PyUFuncGenericFunction *) sumfunc->functions[sum_index];
         gendot_data[i].sumfunc_loop_data = sumfunc->data[sum_index];
         gendot_data[i].sumfunc_loop_itemsize = gendot_itemsizes[i];
+        gendot_data[i].sumfunc_has_identity = (npy_intp) sumfunc_has_identity;
+        memcpy(gendot_data[i].sumfunc_identity_buffer,
+               sumfunc_identity_data + 32*i,  // FIXME: hard-coded constant 32 :(
+               gendot_itemsizes[i]);
 
         gendot_data_ptrs[i] = &gendot_data[i];
     }
@@ -277,7 +313,8 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
 
 
 static char gendot_docstring[] =
-"_gendot(name, doc, prodfunc, sumfunc, loop_indices, typecodes, itemsizes)\n"
+"_gendot(name, doc, prodfunc, sumfunc, sumfunc_identity_array, "
+"loop_indices, typecodes, itemsizes)\n"
 "\n"
 "*** This is not a public function! Use at your own risk! ***\n"
 "\n"
