@@ -70,14 +70,6 @@ reduce(PyUFuncGenericFunction *loop_function, void *loop_data,
 }
 
 
-//
-// This loop's data pointer must point to a structure that holds:
-// * the prodfunc loop function
-// * the size of the output dtype of prodfunc
-// * the data associated with the prodfunc loop
-// * the sumfunc's loop function
-//
-
 static void
 gendot_loop(char **args, const npy_intp *dimensions,
             const npy_intp* steps, void* data)
@@ -211,7 +203,7 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
     }
     // gendot_funcs and gendot_data_ptrs are arrays of pointers, and all the
     // fields in gendot_data_t are pointer-sized, so the alignment of the
-    // gendot_data_ptrs and gendot_data points should be OK.
+    // gendot_data_ptrs and gendot_data pointers should be OK.
     PyUFuncGenericFunction *gendot_funcs = (PyUFuncGenericFunction *) mem;
     void **gendot_data_ptrs = (void *) (mem
                                        + sizeof_gendot_funcs);
@@ -228,11 +220,11 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
                                   + sizeof_gendot_data
                                   + sizeof_gendot_typecodes);
     char *gendot_doc = (char *) (mem
-                                  + sizeof_gendot_funcs
-                                  + sizeof_gendot_data_ptrs
-                                  + sizeof_gendot_data
-                                  + sizeof_gendot_typecodes
-                                  + (strlen(name) + 1));
+                                 + sizeof_gendot_funcs
+                                 + sizeof_gendot_data_ptrs
+                                 + sizeof_gendot_data
+                                 + sizeof_gendot_typecodes
+                                 + (strlen(name) + 1));
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // Fill in the allocated arrays.
@@ -272,7 +264,8 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
                         gendot_data_ptrs,  // array with length nloops
                         gendot_typecodes,  // "2-d" array with shape (nloops, 3)
                         nloops, nin, nout,
-                        PyUFunc_None, name, doc, unused, "(i),(i)->()");
+                        PyUFunc_None, gendot_name, gendot_doc, unused,
+                        "(i),(i)->()");
     if (gufunc == NULL) {
         PyArray_free(mem);
         return NULL;
