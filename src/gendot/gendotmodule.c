@@ -246,7 +246,7 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
     strcpy(gendot_doc, doc);
 
     for (int i = 0; i < nloops; ++i) {
-        gendot_funcs[i] = &gendot_loop;
+        gendot_funcs[i] = (PyUFuncGenericFunction) &gendot_loop;
 
         npy_intp prod_index = func_index_pairs[i].prod_index;
         npy_intp sum_index = func_index_pairs[i].sum_index;
