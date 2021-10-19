@@ -36,6 +36,11 @@ def test_gmean_axis():
     assert_allclose(m, [4.0, 3.0, 120**0.2], rtol=1e-14)
 
 
+def test_gmean_empty_array():
+    with pytest.raises(ValueError, match='length at least 1'):
+        gmean([])
+
+
 @pytest.mark.parametrize('dt, rtol', [(np.float32, 1e-7), (np.float64, 1e-14)])
 def test_hmean_float(dt, rtol):
     x = np.array([1.0, 1.0, 4.0, 4.0, 4.0, 4.0], dtype=dt)
@@ -50,3 +55,8 @@ def test_hmean_axis():
                   [2, 4, 1, 1, 1, 4]])
     m = hmean(x, axis=1)
     assert_allclose(m, [24.0, 11.0, 1.5], rtol=1e-14)
+
+
+def test_hmean_empty_array():
+    with pytest.raises(ValueError, match='length at least 1'):
+        hmean([])
