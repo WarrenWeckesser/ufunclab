@@ -759,7 +759,7 @@ the plot
 
 ### `gendot`
 
-`gendot` creates a new gufunc (with signature `(n),(n)->()`)
+`gendot` creates a new gufunc (with signature `(i),(i)->()`)
 that is the composition of two element-wise ufuncs that each
 have two inputs and one output.
 
@@ -784,6 +784,21 @@ In [5]: b = np.array([0.5, 1.1, 0.9, 2.1, 0.3, 3.0])
 
 In [6]: minmaxdot(a, b)
 Out[6]: 1.9
+```
+
+`minmaxdot` is a gufunc with signature `(i),(i)->()`;  the type
+signatures of the gufunc loop functions were derived by matching
+the signatures of the ufunc loop functions for `np.minimum` and
+`np.maximum`:
+
+```
+In [8]: minmaxdot.signature
+Out[8]: '(i),(i)->()'
+
+In [9]: print(minmaxdot.types)
+['??->?', 'bb->b', 'BB->B', 'hh->h', 'HH->H', 'ii->i', 'II->I', 'll->l',
+ 'LL->L', 'qq->q', 'QQ->Q', 'ee->e', 'ff->f', 'dd->d', 'gg->g', 'FF->F',
+ 'DD->D', 'GG->G', 'mm->m', 'MM->M']
 ```
 
 `gendot` is experimental, and might not be useful in many applications.
