@@ -209,9 +209,23 @@ static struct PyModuleDef moduledef = {
 
 
 #define HMEAN_DOCSTRING \
-"hmean(x, ...)\n"                                       \
-"\n"                                                    \
-"Harmonic mean (WIP: argument validation incomplete)"
+"hmean(x, ...)\n"                                                           \
+"\n"                                                                        \
+"Harmonic mean of x.\n"                                                     \
+"\n"                                                                        \
+"The harmonic mean of [x1, x2, ..., xn] is n/(1/x1 + 1/x2 + ... + 1/xn).\n" \
+"Typically the function is defined for x > 0, but `hmean` does not\n"       \
+"check the values.  Negative values are accepted.  If x contains 0, a\n"    \
+"`RuntimeWarning` is generated and 0 is returned.\n"                        \
+"\n"                                                                        \
+"Examples\n"                                                                \
+"--------\n"                                                                \
+">>> from ufunclab import hmean\n"                                          \
+">>> hmean([1.0, 1.2, 2.5, 7.5, 8.0])\n"                                    \
+"2.0066889632107023\n"                                                      \
+">>> hmean([[2, 14], [7, 9], [3, 12], [7, 8]], axis=1)\n"                   \
+"array([3.5       , 7.875     , 4.8       , 7.46666667])\n"                 \
+"\n"
 
 
 PyMODINIT_FUNC PyInit__means(void)
