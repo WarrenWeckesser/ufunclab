@@ -289,6 +289,12 @@ the extreme value and the index of the extreme value.
 the extreme value and the index of the extreme value.
 
 ```
+>>> x = np.array([[ 1, 10, 18, 17, 11],
+...               [15, 11,  0,  4,  8],
+...               [10, 10, 12, 11, 11]])
+>>> max_argmax(x, axis=1)
+(array([18, 15, 12]), array([2, 0, 2]))
+
 >>> from fractions import Fraction as F
 >>> y = np.array([F(2, 3), F(3, 4), F(2, 7), F(2, 5)])
 >>> max_argmax(y)
@@ -697,8 +703,8 @@ array([[[ -1.,   0.,   0.],
 ### `backlash`
 
 `backlash(x, deadband, initial)`, a gufunc with signature `(i),(),()->(i)`,
-computes the "backlash" response of a signal; see
-https://en.wikipedia.org/wiki/Backlash_(engineering).
+computes the "backlash" response of a signal; see the Wikipedia article
+[Backlash (engineering)](https://en.wikipedia.org/wiki/Backlash_(engineering)).
 The function emulates the
 [Backlash block](https://www.mathworks.com/help/simulink/slref/backlash.html)
 of Matlab's Simulink library.
