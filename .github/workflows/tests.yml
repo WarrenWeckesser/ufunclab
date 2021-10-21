@@ -78,7 +78,7 @@ jobs:
         python -m pip install pytest
         pushd .
         cd ..
-        git clone --depth 1 --shallow-submodules --recurse-submodules https://github.com/numpy/numpy.git
+        git clone --shallow-submodules --recurse-submodules https://github.com/numpy/numpy.git
         cd numpy
         python -m pip install .
         popd
