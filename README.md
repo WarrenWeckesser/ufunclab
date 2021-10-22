@@ -72,15 +72,20 @@ The current implementation only handles the floating point types `np.float16`,
 >>> from ufunclab import issnan
 >>> x = np.array([12.5, 0.0, np.inf, 999.0, np.nan], dtype=np.float32)
 ```
-Put a signaling nan in `x[1]`. (The nan in x[4] is a quiet nan, and
+Put a signaling nan in `x[1]`. (The nan in `x[4]` is a quiet nan, and
 we'll leave it that way.)
 ```
 >>> v = x.view(np.uint32)
 >>> v[1] = 0b0111_1111_1000_0000_0000_0000_0000_0011
 >>> x
 array([ 12.5,   nan,   inf, 999. ,   nan], dtype=float32)
+>>> np.isnan(x)
+array([False,  True, False, False,  True])
 ```
-Note that NumPy displays both quiet and signaling nans as just `nan`.
+Note that NumPy displays both quiet and signaling nans as just `nan`,
+and `np.isnan(x)` returns True for both quiet and signaling nans (as
+it should).
+
 `issnan(x)` indicates which values are signaling nans:
 ```
 >>> issnan(x)
