@@ -41,10 +41,15 @@
 // * first payload bit (i.e. the "is quiet" bit) is 0,
 // * remaining payload is nonzero.
 
+// XXX It would be nice to eliminate the copy that is made in
+//     these functions while still avoiding the compiler
+//     warning about dereferencing a type-punned pointer.
+
 static npy_bool
 issnanh(npy_half x)
 {
-    uint16_t v = *(uint16_t *) &x;
+    uint16_t v;
+    memcpy(&v, &x, sizeof(v));
     return (((v & FLOAT16_EXPMASK) == FLOAT16_EXPMASK)
             && (~(v & (((uint16_t) 1) << FLOAT16_QUIETNANBIT)))
             && (v & FLOAT16_NANPAYLOADMASK));
@@ -53,7 +58,8 @@ issnanh(npy_half x)
 static npy_bool
 issnanf(float x)
 {
-    uint32_t v = *(uint32_t *) &x;
+    uint32_t v;
+    memcpy(&v, &x, sizeof(v));
     return (((v & FLOAT32_EXPMASK) == FLOAT32_EXPMASK)
             && (~(v & (((uint32_t) 1) << FLOAT32_QUIETNANBIT)))
             && (v & FLOAT32_NANPAYLOADMASK));
@@ -62,7 +68,8 @@ issnanf(float x)
 static npy_bool
 issnan(double x)
 {
-    uint64_t v = *(uint64_t *) &x;
+    uint64_t v;
+    memcpy(&v, &x, sizeof(v));
     return (((v & FLOAT64_EXPMASK) == FLOAT64_EXPMASK)
             && (~(v & (((uint64_t) 1) << FLOAT64_QUIETNANBIT)))
             && (v & FLOAT64_NANPAYLOADMASK));
