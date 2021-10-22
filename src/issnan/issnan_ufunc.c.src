@@ -1,0 +1,198 @@
+//
+// issnan_gufunc.c.src
+//
+// ufunc for checking if floating point values are signaling nans.
+//
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
+#include <stdio.h>
+
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+
+#define b00000001 0x01
+#define b00000010 0x02
+#define b00000111 0x07
+#define b00001000 0x08
+#define b00111111 0x3F
+#define b01000000 0x40
+#define b01111100 0x7C
+#define b01111111 0x7F
+#define b10000000 0x80
+#define b10100000 0xA0
+#define b11110000 0xF0
+#define b11110100 0xF4
+#define b11111111 0xFF
+
+
+//
+// These issnan functions assume that the floating point
+// values are stored in little-endian format.
+//
+
+static npy_bool
+issnanh(npy_half x)
+{
+    unsigned char *p = (unsigned char *) &x;
+
+    if (((b01111100 & p[1]) == b01111100) &&
+        (~(b00000010 & p[1]))) {
+            // It is either a signaling NAN or inf.
+            return (npy_bool) ((p[1] & b00000001) || p[0]);
+    }
+    return (npy_bool) false;
+}
+
+
+static npy_bool
+issnanf(float x)
+{
+    unsigned char *p = (unsigned char *) &x;
+
+    if (((b01111111 & p[3]) == b01111111) &&
+        ((b10000000 & p[2]) == b10000000) &&
+        (~(b01000000 & p[2]))) {
+            // It is either a signaling NAN or inf.
+            return (npy_bool) ((p[2] & b00111111) || p[1] || p[0]);
+    }
+    return (npy_bool) false;
+}
+
+
+static npy_bool
+issnan(double x)
+{
+    unsigned char *p = (unsigned char *) &x;
+
+    if (((b01111111 & p[7]) == b01111111) &&
+        ((b11110000 & p[6]) == b11110000) &&
+        (~(b00001000 & p[6]))) {
+            // It is either a signaling NAN or inf.
+            return (npy_bool) ((p[6] & b00000111) || p[5] || p[4] || *(uint32_t *) &p[0]);
+    }
+    return (npy_bool) false;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = half,     float, double #
+ * #ctype         = npy_half, float, double #
+ * #suffix        = h,        f,            #
+ */
+
+static void issnan_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
+{
+    // args[0]: pointer to x array
+    // args[1]: pointer to output array
+    // dimensions[0]: Length of each array
+    // steps[0]:  x array step
+    // steps[1]:  output array step
+    char *px = args[0];
+    char *pout = args[1];
+    npy_intp n = dimensions[0];
+
+    for (int j = 0; j < n; ++j, px += steps[0], pout += steps[1]) {
+        @ctype@ x = *((@ctype@ *) px);
+        *((npy_bool *) pout) = issnan@suffix@(x);
+    }
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of deadzone.
+static char issnan_codetypes[] = {
+    NPY_HALF,   NPY_BOOL,
+    NPY_FLOAT,  NPY_BOOL,
+    NPY_DOUBLE, NPY_BOOL
+};
+
+static PyUFuncGenericFunction issnan_funcs[] = {
+    (PyUFuncGenericFunction) &issnan_half_loop,
+    (PyUFuncGenericFunction) &issnan_float_loop,
+    (PyUFuncGenericFunction) &issnan_double_loop
+};
+
+#define ISSNAN_NTYPES (sizeof(issnan_funcs)/sizeof(issnan_funcs[0]))
+static void *issnan_data[ISSNAN_NTYPES];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef IssnanMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_issnan",
+    .m_doc = "Module that defines the issnan function.",
+    .m_size = -1,
+    .m_methods = IssnanMethods
+};
+
+
+#define ISSNAN_DOCSTRING \
+"issnan(x, ...)\n"                                      \
+"\n"                                                    \
+"\nTest whether the values in x are signaling nans.\n"  \
+"\n"
+
+
+PyMODINIT_FUNC PyInit__issnan(void)
+{
+    PyObject *module;
+    PyUFuncObject *issnan_gufunc;
+    int nin, nout;
+    int status;
+
+    module = PyModule_Create(&moduledef);
+    if (!module) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the issnan ufunc.
+    nin = 1;
+    nout = 1;
+    issnan_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndData(
+                            issnan_funcs,
+                            issnan_data,
+                            issnan_codetypes,
+                            ISSNAN_NTYPES, nin, nout,
+                            PyUFunc_None, "issnan",
+                            ISSNAN_DOCSTRING, 0);
+    if (issnan_gufunc == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    status = PyModule_AddObject(module, "issnan", (PyObject *) issnan_gufunc);
+    if (status == -1) {
+        Py_DECREF(issnan_gufunc);
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    return module;
+}

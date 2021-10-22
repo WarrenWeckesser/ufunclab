@@ -18,6 +18,7 @@ What's in ufunclab?
 | Function                                | Description                                      |
 | --------                                | -----------                                      |
 | [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
+| [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.       |
 | [`findfirst`](#findfirst)               | Find the first occurrence of a target comparison |
 | [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                       |
 | [`minmax`](#minmax)                     | Minimum and maximum                              |
@@ -55,6 +56,38 @@ In [47]: from ufunclab import logfactorial
 
 In [48]: logfactorial([1, 10, 100, 1000])
 Out[48]: array([   0.        ,   15.10441257,  363.73937556, 5912.12817849])
+```
+
+### `issnan`
+
+`issnan` is an element-wise ufunc with a single input that acts like
+the standard `isnan` function, but it returns True only for *signaling*
+nans.
+
+The current implementation only handles the floating point types `np.float16`,
+`np.float32` and `np.float64`.
+
+*Note*: Currently the code assumes that the floating point
+values are stored in little-endian format.
+
+```
+>>> import numpy as np
+>>> from ufunclab import issnan
+>>> x = np.array([12.5, 0.0, np.inf, 999.0, np.nan], dtype=np.float32)
+```
+Put a signaling nan in `x[1]`. (The nan in x[4] is a quiet nan, and
+we'll leave it that way.)
+```
+>>> v = x.view(np.uint32)
+>>> v[1] = 0b0111_1111_1000_0000_0000_0000_0000_0011
+>>> x
+array([ 12.5,   nan,   inf, 999. ,   nan], dtype=float32)
+```
+Note that NumPy displays both quiet and signaling nans as just `nan`.
+`issnan(x)` indicates which values are signaling nans:
+```
+>>> issnan(x)
+array([False,  True, False, False, False])
 ```
 
 ### `findfirst`
