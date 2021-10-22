@@ -67,9 +67,6 @@ nans.
 The current implementation only handles the floating point types `np.float16`,
 `np.float32` and `np.float64`.
 
-*Note*: Currently the code assumes that the floating point
-values are stored in little-endian format.
-
 ```
 >>> import numpy as np
 >>> from ufunclab import issnan

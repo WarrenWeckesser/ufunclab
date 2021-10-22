@@ -19,68 +19,55 @@
 #include "numpy/ufuncobject.h"
 
 
-#define b00000001 0x01
-#define b00000010 0x02
-#define b00000111 0x07
-#define b00001000 0x08
-#define b00111111 0x3F
-#define b01000000 0x40
-#define b01111100 0x7C
-#define b01111111 0x7F
-#define b10000000 0x80
-#define b10100000 0xA0
-#define b11110000 0xF0
-#define b11110100 0xF4
-#define b11111111 0xFF
+#define FLOAT16_EXPMASK ((uint16_t) 0x7C00)
+#define FLOAT32_EXPMASK ((uint32_t) 0x7F800000ul)
+#define FLOAT64_EXPMASK ((uint64_t) 0x7FF0000000000000ull)
+
+#define FLOAT16_QUIETNANBIT 9
+#define FLOAT32_QUIETNANBIT 22
+#define FLOAT64_QUIETNANBIT 51
+
+// These are the payload masks for *signaling* nans, where
+// we know the most significant bit in the full payload
+// (i.e the "is quiet" bit) is 0.
+#define FLOAT16_NANPAYLOADMASK 0x01FF
+#define FLOAT32_NANPAYLOADMASK 0x003FFFFFul
+#define FLOAT64_NANPAYLOADMASK 0x0007FFFFFFFFFFFFull
 
 
-//
-// These issnan functions assume that the floating point
-// values are stored in little-endian format.
-//
+// In these issan* functions, the three terms in the return
+// expression that are combined with && check that:
+// * all exponent bits are 1,
+// * first payload bit (i.e. the "is quiet" bit) is 0,
+// * remaining payload is nonzero.
 
 static npy_bool
 issnanh(npy_half x)
 {
-    unsigned char *p = (unsigned char *) &x;
-
-    if (((b01111100 & p[1]) == b01111100) &&
-        (~(b00000010 & p[1]))) {
-            // It is either a signaling NAN or inf.
-            return (npy_bool) ((p[1] & b00000001) || p[0]);
-    }
-    return (npy_bool) false;
+    uint16_t v = *(uint16_t *) &x;
+    return (((v & FLOAT16_EXPMASK) == FLOAT16_EXPMASK)
+            && (~(v & (((uint16_t) 1) << FLOAT16_QUIETNANBIT)))
+            && (v & FLOAT16_NANPAYLOADMASK));
 }
-
 
 static npy_bool
 issnanf(float x)
 {
-    unsigned char *p = (unsigned char *) &x;
-
-    if (((b01111111 & p[3]) == b01111111) &&
-        ((b10000000 & p[2]) == b10000000) &&
-        (~(b01000000 & p[2]))) {
-            // It is either a signaling NAN or inf.
-            return (npy_bool) ((p[2] & b00111111) || p[1] || p[0]);
-    }
-    return (npy_bool) false;
+    uint32_t v = *(uint32_t *) &x;
+    return (((v & FLOAT32_EXPMASK) == FLOAT32_EXPMASK)
+            && (~(v & (((uint32_t) 1) << FLOAT32_QUIETNANBIT)))
+            && (v & FLOAT32_NANPAYLOADMASK));
 }
-
 
 static npy_bool
 issnan(double x)
 {
-    unsigned char *p = (unsigned char *) &x;
-
-    if (((b01111111 & p[7]) == b01111111) &&
-        ((b11110000 & p[6]) == b11110000) &&
-        (~(b00001000 & p[6]))) {
-            // It is either a signaling NAN or inf.
-            return (npy_bool) ((p[6] & b00000111) || p[5] || p[4] || *(uint32_t *) &p[0]);
-    }
-    return (npy_bool) false;
+    uint64_t v = *(uint64_t *) &x;
+    return (((v & FLOAT64_EXPMASK) == FLOAT64_EXPMASK)
+            && (~(v & (((uint64_t) 1) << FLOAT64_QUIETNANBIT)))
+            && (v & FLOAT64_NANPAYLOADMASK));
 }
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for floating point types.
