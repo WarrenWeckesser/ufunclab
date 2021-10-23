@@ -162,7 +162,7 @@ array([0, 4, 7, 8])
 ...                 [1, 1, 1, 1, 2, 2, 10, 10]])
 >>> searchsortedl(arr, [7, 8])
 array([5, 6])
->>> searchsorted(arr, [[2], [5]])
+>>> searchsortedl(arr, [[2], [5]])
 array([[2, 4],
        [4, 6]])
 ```
@@ -183,7 +183,7 @@ array([2, 4, 7, 8])
 ...                 [1, 1, 1, 1, 2, 2, 10, 10]])
 >>> searchsortedr(arr, [7, 8])
 array([5, 6])
->>> searchsorted(arr, [[2], [5]])
+>>> searchsortedr(arr, [[2], [5]])
 array([[3, 6],
        [5, 6]])
 ```
