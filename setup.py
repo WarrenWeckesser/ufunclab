@@ -2,7 +2,7 @@ from os.path import join
 
 
 def configuration(parent_package='', top_path=None):
-    from numpy.distutils.misc_util import Configuration
+    from numpy.distutils.misc_util import Configuration, get_info
 
     compile_args = ['-std=c99', '-Werror']
     config = Configuration(None, parent_package, top_path)
@@ -36,7 +36,8 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('ufunclab._searchsorted',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'searchsorted',
-                                       'searchsorted_gufunc.c.src')])
+                                       'searchsorted_gufunc.c.src')],
+                         **get_info("npymath"))
     config.add_extension('ufunclab._minmax',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'minmax',
