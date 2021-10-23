@@ -5,7 +5,7 @@ NumPy ufuncs and utilities.
 from ._logfact import logfactorial
 from ._issnan import issnan
 from ._cross import cross3, cross2
-from ._findfirst import findfirst, _LT, _LE, _EQ, _NE, _GT, _GE
+from ._first import argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
 from ._searchsorted import searchsortedl, searchsortedr
 from ._peaktopeak import peaktopeak
 from ._minmax import minmax, argminmax, min_argmin, max_argmax
@@ -25,7 +25,7 @@ import numpy as _np
 
 class op:
     """
-    Allowed values for the `op` argument of `findfirst`.
+    Allowed values for the `op` argument of `argfirst`.
     """
     LT = _np.int8(_LT)
     LE = _np.int8(_LE)
