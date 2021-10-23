@@ -13,38 +13,46 @@ and gufuncs are given [below](#resources).
 What's in ufunclab?
 -------------------
 
-`ufunclab` defines these functions:
+*Element-wise ufuncs*
 
 | Function                                | Description                                      |
 | --------                                | -----------                                      |
 | [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
 | [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.       |
-| [`argfirst`](#argfirst)                 | Find the first occurrence of a target comparison |
-| [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.   |
-| [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.   |
-| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                       |
-| [`minmax`](#minmax)                     | Minimum and maximum                              |
-| [`argminmax`](#argminmax)               | Indices of the min and the max                   |
-| [`min_argmin`](#min_argmin)             | Minimum value and its index                      |
-| [`max_argmax`](#max_argmax)             | Maximum value and its index                      |
-| [`all_same`](#all_same)                 | Check all values are the same                    |
-| [`gmean`](#gmean)                       | Geometric mean                                   |
-| [`hmean`](#hmean)                       | Harmonic mean                                    |
-| [`meanvar`](#meanvar)                   | Mean and variance                                |
-| [`mad`](#mad)                           | Mean absolute difference (MAD)                   |
-| [`mad1`](#mad1)                         | Unbiased estimator of the MAD                    |
-| [`rmad`](#rmad)                         | Relative mean absolute difference                |
-| [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD                       |
-| [`vnorm`](#vnorm)                       | Vector norm                                      |
-| [`cross2`](#cross2)                     | 2-d vector cross product (returns scalar)        |
-| [`cross3`](#cross3)                     | 3-d vector cross product                         |
-| [`backlash`](#backlash)                 | Backlash operator                                |
-| [`deadzone`](#deadzone)                 | Deadzone operator                                |
-| [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis                            |
-| [`gendot`](#gendot)                     | Create a new gufunc that composes two ufuncs     |
-| [`ufunc_inspector`](#ufunc_inspector)   | Display ufunc information                        |
+| [`deadzone`](#deadzone)                 | Deadzone function                                |
 
-Details follow.
+*Generalized ufuncs*
+
+| Function                                | Description                                           |
+| --------                                | -----------                                           |
+| [`argfirst`](#argfirst)                 | Index of the first occurrence of a target comparison  |
+| [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.        |
+| [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.        |
+| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                            |
+| [`minmax`](#minmax)                     | Minimum and maximum                                   |
+| [`argminmax`](#argminmax)               | Indices of the min and the max                        |
+| [`min_argmin`](#min_argmin)             | Minimum value and its index                           |
+| [`max_argmax`](#max_argmax)             | Maximum value and its index                           |
+| [`all_same`](#all_same)                 | Check all values are the same                         |
+| [`gmean`](#gmean)                       | Geometric mean                                        |
+| [`hmean`](#hmean)                       | Harmonic mean                                         |
+| [`meanvar`](#meanvar)                   | Mean and variance                                     |
+| [`mad`](#mad)                           | Mean absolute difference (MAD)                        |
+| [`mad1`](#mad1)                         | Unbiased estimator of the MAD                         |
+| [`rmad`](#rmad)                         | Relative mean absolute difference (RMAD)              |
+| [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD                            |
+| [`vnorm`](#vnorm)                       | Vector norm                                           |
+| [`cross2`](#cross2)                     | 2-d vector cross product (returns scalar)             |
+| [`cross3`](#cross3)                     | 3-d vector cross product                              |
+| [`backlash`](#backlash)                 | Backlash operator                                     |
+| [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis (Schmitt trigger)               |
+
+*Other tools*
+
+| Function                                | Description                                           |
+| --------                                | -----------                                           |
+| [`gendot`](#gendot)                     | Create a new gufunc that composes two ufuncs          |
+| [`ufunc_inspector`](#ufunc_inspector)   | Display ufunc information                             |
 
 
 ### `logfactorial`
