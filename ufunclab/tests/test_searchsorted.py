@@ -53,3 +53,25 @@ def test_timedelta64():
     assert_equal(kl0, [0, 0])
     kr0 = searchsortedr(sortedarr, elements, axis=0)
     assert_equal(kr0, [1, 2])
+
+
+@pytest.mark.parametrize('dtype', [str, bytes])
+def test_str_and_bytes(dtype):
+    sortedarr = np.array([['abc', 'def', 'def', 'xyz'],
+                          ['123', 'ABC', 'JKL', 'XYZ']], dtype=dtype)
+    elements = np.array(['aaa', 'abc', 'ghi', 'JKL', 'XYZ', 'zzz'],
+                        dtype=dtype)[:, None]
+    kl = searchsortedl(sortedarr, elements)
+    assert_equal(kl, np.array([[0, 4],
+                               [0, 4],
+                               [3, 4],
+                               [0, 2],
+                               [0, 3],
+                               [4, 4]]))
+    kr = searchsortedr(sortedarr, elements)
+    assert_equal(kr, np.array([[0, 4],
+                               [1, 4],
+                               [3, 4],
+                               [0, 3],
+                               [0, 4],
+                               [4, 4]]))

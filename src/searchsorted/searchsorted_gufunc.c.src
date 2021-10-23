@@ -51,9 +51,12 @@ ensure_dtype_nbo(PyArray_Descr *type)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // SearchSortedTypeResolver is a modified version of the function
 // PyUFunc_SimpleBinaryComparisonTypeResolver from the file
-// numpy/core/src/umath/ufunc_type_resolution.c
-// The only change is that the return type is always NPY_INTP instead
-// of NPY_BOOL.
+// numpy/core/src/umath/ufunc_type_resolution.c.
+// Changes:
+// * The output type for this resolver is always NPY_INTP.
+// * If either input is flexible (i.e. bytes or str), then out_dtypes[:2]
+//   are set to the object type.
+// XXX More changes might be needed...
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /*
  * This function applies special type resolution rules for the case
@@ -110,10 +113,12 @@ SearchSortedTypeResolver(PyUFuncObject *ufunc,
             Py_INCREF(out_dtypes[1]);
         }
         else {
-            /* Not doing anything will lead to a loop no found error. */
-            out_dtypes[0] = PyArray_DESCR(operands[0]);
-            Py_INCREF(out_dtypes[0]);
-            out_dtypes[1] = PyArray_DESCR(operands[1]);
+            // Try object arrays when one of the input arrays is a flexible
+            // type (i.e. bytes or str).  This is a work-around for the limitation
+            // of gufunc loops with bytes or str dtypes:  the loops don't know the
+            // lengths of the flexible type, so it is useless to implement them.
+            out_dtypes[0] = PyArray_DescrFromType(NPY_OBJECT);
+            out_dtypes[1] = out_dtypes[0];
             Py_INCREF(out_dtypes[1]);
         }
     }
