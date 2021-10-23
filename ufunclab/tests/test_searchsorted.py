@@ -9,7 +9,8 @@ from ufunclab import searchsortedl, searchsortedr
 @pytest.mark.parametrize('searchsorted', [searchsortedl, searchsortedr])
 @pytest.mark.parametrize('v, expected', [(6, 5), (0, 0), (99, 8)])
 @pytest.mark.parametrize('dtype', [np.int8, np.uint16,
-                                   np.float32, np.float64, object])
+                                   np.float16, np.float32, np.float64,
+                                   object])
 def test_basic(searchsorted, v, expected, dtype):
     sortedarr = np.array([1, 1, 2, 3, 5, 8, 13, 21], dtype=dtype)
     y = searchsorted(sortedarr, v)

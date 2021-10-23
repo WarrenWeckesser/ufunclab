@@ -15,6 +15,7 @@
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
+#include "numpy/halffloat.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc_get_name_cstr copied from numpy/core/src/umath/ufunc_object.c
@@ -264,7 +265,7 @@ searchsorted@side@_@typename@_loop(char **args, const npy_intp *dimensions,
 /**end repeat**/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// ufunc inner loop for object arrays.
+// ufunc inner loops for object arrays.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 static npy_intp
@@ -347,6 +348,81 @@ searchsorted@side@_object_loop(char **args, const npy_intp *dimensions,
 /**end repeat**/
 
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for the NPY_HALF data type.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static npy_intp
+_searchsortedl_half(char *a, npy_intp len_a, npy_intp step, float v)
+{
+    npy_intp lo = 0;
+    npy_intp hi = len_a;
+    while (lo < hi) {
+        npy_intp mid = (lo + hi)/2;
+        npy_half m = *(npy_half *)(a + mid*step);
+        float mf = npy_half_to_float(m);
+        if (mf < v) {
+            lo = mid + 1;
+        }
+        else {
+            hi = mid;
+        }
+    }
+    return lo;
+}
+
+static npy_intp
+_searchsortedr_half(char *a, npy_intp len_a, npy_intp step, float v)
+{
+    npy_intp lo = 0;
+    npy_intp hi = len_a;
+    while (lo < hi) {
+        npy_intp mid = (lo + hi)/2;
+        npy_half m = *(npy_half *)(a + mid*step);
+        float mf = npy_half_to_float(m);
+        if (v < mf) {
+            hi = mid;
+        }
+        else {
+            lo = mid  + 1;
+        }
+    }
+    return lo;
+}
+
+
+/**begin repeat
+ * #side = l, r #
+ */
+
+static void
+searchsorted@side@_half_loop(char **args, const npy_intp *dimensions,
+                             const npy_intp* steps, void* data)
+{
+    char *sortedarr = args[0];
+    char *element   = args[1];
+    char *out       = args[2];
+    npy_intp nloops = dimensions[0];
+    npy_intp len_sortedarr = dimensions[1];
+    npy_intp sortedarr_step = steps[0];
+    npy_intp element_step   = steps[1];
+    npy_intp out_step       = steps[2];
+    npy_intp sortedarr_inner_step = steps[3];
+
+    for (npy_intp i = 0; i < nloops; ++i, sortedarr += sortedarr_step,
+                                          element += element_step,
+                                          out += out_step) {
+        npy_half v = *((npy_half *) element);
+        float vf = npy_half_to_float(v);
+        *((npy_intp *)out) = _searchsorted@side@_half(sortedarr, len_sortedarr,
+                                                      sortedarr_inner_step, vf);
+        if (*((npy_intp *)out) == -1) {
+            return;
+        }
+    }
+}
+
+/**end repeat**/
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -362,6 +438,7 @@ static char searchsorted_typecodes[] = {
     NPY_UINT32,     NPY_UINT32,     NPY_INTP,
     NPY_INT64,      NPY_INT64,      NPY_INTP,
     NPY_UINT64,     NPY_UINT64,     NPY_INTP,
+    NPY_HALF,       NPY_HALF,       NPY_INTP,
     NPY_FLOAT,      NPY_FLOAT,      NPY_INTP,
     NPY_DOUBLE,     NPY_DOUBLE,     NPY_INTP,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_INTP,
@@ -382,6 +459,7 @@ static PyUFuncGenericFunction searchsorted@side@_funcs[] = {
     (PyUFuncGenericFunction) &searchsorted@side@_uint32_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_uint64_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_half_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_float_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_double_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_longdouble_loop,
