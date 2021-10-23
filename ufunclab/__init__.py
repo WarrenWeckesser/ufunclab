@@ -6,6 +6,7 @@ from ._logfact import logfactorial
 from ._issnan import issnan
 from ._cross import cross3, cross2
 from ._findfirst import findfirst, _LT, _LE, _EQ, _NE, _GT, _GE
+from ._searchsorted import searchsortedl, searchsortedr
 from ._peaktopeak import peaktopeak
 from ._minmax import minmax, argminmax, min_argmin, max_argmax
 from ._means import gmean, hmean

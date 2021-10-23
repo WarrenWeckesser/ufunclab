@@ -33,6 +33,10 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'findfirst',
                                        'findfirst_gufunc.c.src')],
                          include_dirs=[join('src', 'util')])
+    config.add_extension('ufunclab._searchsorted',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'searchsorted',
+                                       'searchsorted_gufunc.c.src')])
     config.add_extension('ufunclab._minmax',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'minmax',
@@ -87,5 +91,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.3.dev4',
+          version='0.0.4.dev1',
           configuration=configuration)

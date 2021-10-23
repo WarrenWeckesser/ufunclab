@@ -1,0 +1,479 @@
+//
+// searchsorted_gufunc.c
+//
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <math.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc_get_name_cstr copied from numpy/core/src/umath/ufunc_object.c
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*
+ * Produce a name for the ufunc, if one is not already set
+ * This is used in the PyUFunc_handlefperr machinery, and in error messages
+ */
+static const char*
+ufunc_get_name_cstr(PyUFuncObject *ufunc) {
+    return ufunc->name ? ufunc->name : "<unnamed ufunc>";
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ensure_dtype_nbo copied from numpy/core/src/multiarray/convert_datatype.c
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*
+ * Returns a new reference to type if it is already NBO, otherwise
+ * returns a copy converted to NBO.
+ */
+static PyArray_Descr *
+ensure_dtype_nbo(PyArray_Descr *type)
+{
+    if (PyArray_ISNBO(type->byteorder)) {
+        Py_INCREF(type);
+        return type;
+    }
+    else {
+        return PyArray_DescrNewByteorder(type, NPY_NATIVE);
+    }
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// SearchSortedTypeResolver is a modified version of the function
+// PyUFunc_SimpleBinaryComparisonTypeResolver from the file
+// numpy/core/src/umath/ufunc_type_resolution.c
+// The only change is that the return type is always NPY_INTP instead
+// of NPY_BOOL.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*
+ * This function applies special type resolution rules for the case
+ * where all the functions have the pattern XX->NPY_INTP, using
+ * PyArray_ResultType instead of a linear search to get the best
+ * loop.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+SearchSortedTypeResolver(PyUFuncObject *ufunc,
+                         NPY_CASTING casting,
+                         PyArrayObject **operands,
+                         PyObject *type_tup,
+                         PyArray_Descr **out_dtypes)
+{
+    int i, type_num1, type_num2;
+    const char *ufunc_name = ufunc_get_name_cstr(ufunc);
+
+    if (ufunc->nin != 2 || ufunc->nout != 1) {
+        PyErr_Format(PyExc_RuntimeError, "ufunc %s is configured "
+                "to use binary comparison type resolution but has "
+                "the wrong number of inputs or outputs",
+                ufunc_name);
+        return -1;
+    }
+
+    /*
+     * Use the default type resolution if there's a custom data type
+     * or object arrays.
+     */
+    type_num1 = PyArray_DESCR(operands[0])->type_num;
+    type_num2 = PyArray_DESCR(operands[1])->type_num;
+    if (type_num1 >= NPY_NTYPES || type_num2 >= NPY_NTYPES ||
+            type_num1 == NPY_OBJECT || type_num2 == NPY_OBJECT) {
+        return PyUFunc_DefaultTypeResolver(ufunc, casting, operands,
+                type_tup, out_dtypes);
+    }
+
+    if (type_tup == NULL) {
+        /*
+         * DEPRECATED NumPy 1.20, 2020-12.
+         * This check is required to avoid the FutureWarning that
+         * ResultType will give for number->string promotions.
+         * (We never supported flexible dtypes here.)
+         */
+        if (!PyArray_ISFLEXIBLE(operands[0]) &&
+                !PyArray_ISFLEXIBLE(operands[1])) {
+            out_dtypes[0] = PyArray_ResultType(2, operands, 0, NULL);
+            if (out_dtypes[0] == NULL) {
+                return -1;
+            }
+            out_dtypes[1] = out_dtypes[0];
+            Py_INCREF(out_dtypes[1]);
+        }
+        else {
+            /* Not doing anything will lead to a loop no found error. */
+            out_dtypes[0] = PyArray_DESCR(operands[0]);
+            Py_INCREF(out_dtypes[0]);
+            out_dtypes[1] = PyArray_DESCR(operands[1]);
+            Py_INCREF(out_dtypes[1]);
+        }
+    }
+    else {
+        PyArray_Descr *descr;
+        /*
+         * DEPRECATED 2021-03, NumPy 1.20
+         *
+         * If the type tuple was originally a single element (probably),
+         * issue a deprecation warning, but otherwise accept it.  Since the
+         * result dtype is always boolean, this is not actually valid unless it
+         * is `object` (but if there is an object input we already deferred).
+         *
+         * TODO: Once this deprecation is gone, the special case for
+         *       `PyUFunc_SimpleBinaryComparisonTypeResolver` in dispatching.c
+         *       can be removed.
+         */
+        if (PyTuple_Check(type_tup) && PyTuple_GET_SIZE(type_tup) == 3 &&
+                PyTuple_GET_ITEM(type_tup, 0) == Py_None &&
+                PyTuple_GET_ITEM(type_tup, 1) == Py_None &&
+                PyArray_DescrCheck(PyTuple_GET_ITEM(type_tup, 2))) {
+            descr = (PyArray_Descr *)PyTuple_GET_ITEM(type_tup, 2);
+            if (descr->type_num == NPY_OBJECT) {
+                if (DEPRECATE_FUTUREWARNING(
+                        "using `dtype=object` (or equivalent signature) will "
+                        "return object arrays in the future also when the "
+                        "inputs do not already have `object` dtype.") < 0) {
+                    return -1;
+                }
+            }
+            else if (descr->type_num != NPY_BOOL) {
+                if (DEPRECATE(
+                        "using `dtype=` in comparisons is only useful for "
+                        "`dtype=object` (and will do nothing for bool). "
+                        "This operation will fail in the future.") < 0) {
+                    return -1;
+                }
+            }
+        }
+        else {
+            /* Usually a failure, but let the the default version handle it */
+            return PyUFunc_DefaultTypeResolver(ufunc, casting,
+                    operands, type_tup, out_dtypes);
+        }
+
+        out_dtypes[0] = ensure_dtype_nbo(descr);
+        if (out_dtypes[0] == NULL) {
+            return -1;
+        }
+        out_dtypes[1] = out_dtypes[0];
+        Py_INCREF(out_dtypes[1]);
+    }
+
+    /* Output type is always NPY_INTP */
+    out_dtypes[2] = PyArray_DescrFromType(NPY_INTP);
+    if (out_dtypes[2] == NULL) {
+        for (i = 0; i < 2; ++i) {
+            Py_DECREF(out_dtypes[i]);
+            out_dtypes[i] = NULL;
+        }
+        return -1;
+    }
+
+    /* Check against the casting rules */
+    if (PyUFunc_ValidateCasting(ufunc, casting, operands, out_dtypes) < 0) {
+        for (i = 0; i < 3; ++i) {
+            Py_DECREF(out_dtypes[i]);
+            out_dtypes[i] = NULL;
+        }
+        return -1;
+    }
+
+    return 0;
+}
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for integer and floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename  = int8,   int16,   int32,   int64,   uint8,   uint16,   uint32,   uint64,   float, double, longdouble#
+ * #ctype     = int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
+ */
+
+static npy_intp
+_searchsortedl_@typename@(char *a, npy_intp len_a, npy_intp step, @ctype@ v)
+{
+    npy_intp lo = 0;
+    npy_intp hi = len_a;
+    while (lo < hi) {
+        npy_intp mid = (lo + hi)/2;
+        if (*(@ctype@ *)(a + mid*step) < v) {
+            lo = mid + 1;
+        }
+        else {
+            hi = mid;
+        }
+    }
+    return lo;
+}
+
+static npy_intp
+_searchsortedr_@typename@(char *a, npy_intp len_a, npy_intp step, @ctype@ v)
+{
+    npy_intp lo = 0;
+    npy_intp hi = len_a;
+    while (lo < hi) {
+        npy_intp mid = (lo + hi)/2;
+        if (v < *(@ctype@ *)(a + mid*step)) {
+            hi = mid;
+        }
+        else {
+            lo = mid  + 1;
+        }
+    }
+    return lo;
+}
+
+/**begin repeat1
+ * #side = l, r #
+ */
+
+static void
+searchsorted@side@_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
+{
+    char *sortedarr = args[0];
+    char *element   = args[1];
+    char *out       = args[2];
+    npy_intp nloops = dimensions[0];
+    npy_intp len_sortedarr = dimensions[1];
+    npy_intp sortedarr_step = steps[0];
+    npy_intp element_step   = steps[1];
+    npy_intp out_step       = steps[2];
+    npy_intp sortedarr_inner_step = steps[3];
+
+    for (npy_intp i = 0; i < nloops; ++i, sortedarr += sortedarr_step,
+                                          element += element_step,
+                                          out += out_step) {
+        @ctype@ v = *((@ctype@ *) element);
+        *((npy_intp *)out) = _searchsorted@side@_@typename@(sortedarr, len_sortedarr,
+                                                            sortedarr_inner_step, v);
+    }
+}
+
+/**end repeat1**/
+
+/**end repeat**/
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loop for object arrays.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static npy_intp
+_searchsortedl_object(char *a, npy_intp len_a, npy_intp step, PyObject *v)
+{
+    npy_intp lo = 0;
+    npy_intp hi = len_a;
+    while (lo < hi) {
+        npy_intp mid = (lo + hi)/2;
+        PyObject *m = *(PyObject **)(a + mid*step);
+        int lt = PyObject_RichCompareBool(m, v, Py_LT);
+        if (lt == -1) {
+            // Error occurred
+            return -1;
+        }
+        if (lt == 1) {
+            lo = mid + 1;
+        }
+        else {
+            hi = mid;
+        }
+    }
+    return lo;
+}
+
+static npy_intp
+_searchsortedr_object(char *a, npy_intp len_a, npy_intp step, PyObject *v)
+{
+    npy_intp lo = 0;
+    npy_intp hi = len_a;
+    while (lo < hi) {
+        npy_intp mid = (lo + hi)/2;
+        PyObject *m = *(PyObject **)(a + mid*step);
+        int lt = PyObject_RichCompareBool(v, m, Py_LT);
+        if (lt == -1) {
+            // Error occurred
+            return -1;
+        }
+        if (lt == 1) {
+            hi = mid;
+        }
+        else {
+            lo = mid  + 1;
+        }
+    }
+    return lo;
+}
+
+
+/**begin repeat
+ * #side = l, r #
+ */
+
+static void
+searchsorted@side@_object_loop(char **args, const npy_intp *dimensions,
+                               const npy_intp* steps, void* data)
+{
+    char *sortedarr = args[0];
+    char *element   = args[1];
+    char *out       = args[2];
+    npy_intp nloops = dimensions[0];
+    npy_intp len_sortedarr = dimensions[1];
+    npy_intp sortedarr_step = steps[0];
+    npy_intp element_step   = steps[1];
+    npy_intp out_step       = steps[2];
+    npy_intp sortedarr_inner_step = steps[3];
+
+    for (npy_intp i = 0; i < nloops; ++i, sortedarr += sortedarr_step,
+                                          element += element_step,
+                                          out += out_step) {
+        PyObject *v = *((PyObject **) element);
+        *((npy_intp *)out) = _searchsorted@side@_object(sortedarr, len_sortedarr,
+                                                        sortedarr_inner_step, v);
+        if (*((npy_intp *)out) == -1) {
+            return;
+        }
+    }
+}
+
+/**end repeat**/
+
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static char searchsorted_typecodes[] = {
+    NPY_INT8,       NPY_INT8,       NPY_INTP,
+    NPY_UINT8,      NPY_UINT8,      NPY_INTP,
+    NPY_INT16,      NPY_INT16,      NPY_INTP,
+    NPY_UINT16,     NPY_UINT16,     NPY_INTP,
+    NPY_INT32,      NPY_INT32,      NPY_INTP,
+    NPY_UINT32,     NPY_UINT32,     NPY_INTP,
+    NPY_INT64,      NPY_INT64,      NPY_INTP,
+    NPY_UINT64,     NPY_UINT64,     NPY_INTP,
+    NPY_FLOAT,      NPY_FLOAT,      NPY_INTP,
+    NPY_DOUBLE,     NPY_DOUBLE,     NPY_INTP,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_INTP,
+    NPY_DATETIME,   NPY_DATETIME,   NPY_INTP,
+    NPY_TIMEDELTA,  NPY_TIMEDELTA,  NPY_INTP,
+    NPY_OBJECT,     NPY_OBJECT,     NPY_INTP
+};
+
+/**begin repeat
+ * #side = l, r #
+ */
+static PyUFuncGenericFunction searchsorted@side@_funcs[] = {
+    (PyUFuncGenericFunction) &searchsorted@side@_int8_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_uint8_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_int16_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_uint16_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_int32_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_uint32_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_uint64_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_float_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_double_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_longdouble_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
+    (PyUFuncGenericFunction) &searchsorted@side@_object_loop
+};
+
+/**end repeat**/
+
+#define SEARCHSORTED_NTYPES (sizeof(searchsortedl_funcs)/sizeof(searchsortedl_funcs[0]))
+static void *searchsortedl_data[SEARCHSORTED_NTYPES];
+static void *searchsortedr_data[SEARCHSORTED_NTYPES];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef SearchSortedMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_searchsorted",
+    .m_doc = "Module that defines the searchsortedl and searchsortedr functions.",
+    .m_size = -1,
+    .m_methods = SearchSortedMethods
+};
+
+
+#define SEARCHSORTEDL_DOCSTRING                                 \
+"searchsortedl(sortedarr, elements, ...)\n"                     \
+"\n"                                                            \
+"TODO...\n"                                                     \
+"\n"
+
+#define SEARCHSORTEDR_DOCSTRING                                 \
+"searchsortedl(sortedarr, elements, ...)\n"                     \
+"\n"                                                            \
+"TODO...\n"                                                     \
+"\n"
+
+
+PyMODINIT_FUNC PyInit__searchsorted(void)
+{
+    PyObject *module;
+    PyUFuncObject *searchsortedl_gufunc;
+    PyUFuncObject *searchsortedr_gufunc;
+    int nin, nout;
+    int status;
+
+    module = PyModule_Create(&moduledef);
+    if (!module) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the searchsorted gufuncs.
+
+    nin = 2;
+    nout = 1;
+
+    /**begin repeat
+     * #side = l, r #
+     * #SIDE = L, R #
+     */
+    searchsorted@side@_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndDataAndSignature(
+                            searchsorted@side@_funcs,
+                            searchsorted@side@_data,
+                            searchsorted_typecodes,
+                            SEARCHSORTED_NTYPES, nin, nout,
+                            PyUFunc_None, "searchsorted@side@",
+                            SEARCHSORTED@SIDE@_DOCSTRING, 0,
+                            "(m),()->()");
+    if (searchsorted@side@_gufunc == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    searchsorted@side@_gufunc->type_resolver = SearchSortedTypeResolver;
+
+    status = PyModule_AddObject(module, "searchsorted@side@",
+                                (PyObject *) searchsorted@side@_gufunc);
+    if (status == -1) {
+        Py_DECREF(searchsorted@side@_gufunc);
+        Py_DECREF(module);
+        return NULL;
+    }
+    /**end repeat**/
+
+    return module;
+}

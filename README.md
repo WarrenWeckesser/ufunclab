@@ -20,6 +20,8 @@ What's in ufunclab?
 | [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
 | [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.       |
 | [`findfirst`](#findfirst)               | Find the first occurrence of a target comparison |
+| [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.   |
+| [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.   |
 | [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                       |
 | [`minmax`](#minmax)                     | Minimum and maximum                              |
 | [`argminmax`](#argminmax)               | Indices of the min and the max                   |
@@ -144,6 +146,48 @@ columns:
 >>> findfirst(b, op.NE, np.uint8(0), axis=0)
 array([-1,  0,  2,  2])
 ```
+### `searchsortedl`
+
+`searchsortedl` is a gufunc with signature `(i),()->()`.  The function
+is equivalent to `numpy.searchsorted` with `side='left'`, but as a gufunc,
+it supports broadcasting of its arguments.  (Note that `searchsortedl`
+does not provide the `sorter` parameter.)
+
+```
+>>> import numpy as np
+>>> from ufunclab import searchsortedl
+>>> searchsortedl([1, 1, 2, 3, 5, 8, 13, 21], [1, 4, 15, 99])
+array([0, 4, 7, 8])
+>>> arr = np.array([[1, 1, 2, 3, 5, 8, 13, 21],
+...                 [1, 1, 1, 1, 2, 2, 10, 10]])
+>>> searchsortedl(arr, [7, 8])
+array([5, 6])
+>>> searchsorted(arr, [[2], [5]])
+array([[2, 4],
+       [4, 6]])
+```
+
+### `searchsortedr`
+
+`searchsortedr` is a gufunc with signature `(i),()->()`.  The function
+is equivalent to `numpy.searchsorted` with `side='right'`, but as a gufunc,
+it supports broadcasting of its arguments.  (Note that `searchsortedr`
+does not provide the `sorter` parameter.)
+
+```
+>>> import numpy as np
+>>> from ufunclab import searchsortedl
+>>> searchsortedr([1, 1, 2, 3, 5, 8, 13, 21], [1, 4, 15, 99])
+array([2, 4, 7, 8])
+>>> arr = np.array([[1, 1, 2, 3, 5, 8, 13, 21],
+...                 [1, 1, 1, 1, 2, 2, 10, 10]])
+>>> searchsortedr(arr, [7, 8])
+array([5, 6])
+>>> searchsorted(arr, [[2], [5]])
+array([[3, 6],
+       [5, 6]])
+```
+
 
 ### `peaktopeak`
 
