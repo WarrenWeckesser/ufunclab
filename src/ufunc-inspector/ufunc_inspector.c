@@ -204,8 +204,18 @@ ufunc_inspector(PyObject *self, PyObject *arg)
         while (PyDict_Next(ufunc->userloops, &pos, &key, &value)) {
             PyUFunc_Loop1d *current;
             // value is a PyCapsule
-            printf("  key: ");
+            printf("  typenum = ");
             PyObject_Print(key, stdout, 0);
+            long num_type = PyLong_AsLong(key);
+            if (!PyErr_Occurred()) {
+                PyArray_Descr *descr = PyArray_DescrFromType(num_type);
+                if (descr != NULL) {
+                    if (descr->typeobj->tp_name != NULL) {
+                        printf("; type name is '%s'", descr->typeobj->tp_name);
+                    }
+                    Py_DECREF(descr);
+                }
+            }
             printf("\n");
             current = (PyUFunc_Loop1d *) PyCapsule_GetPointer(value, NULL);
             while (current != NULL) {
