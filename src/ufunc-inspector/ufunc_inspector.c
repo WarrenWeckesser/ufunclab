@@ -36,6 +36,47 @@ void print_core_dim_flags(npy_uint32 flags)
 }
 
 
+static char
+get_typechar_from_typenum(int typenum)
+{
+    char c;
+
+    PyArray_Descr *descr = PyArray_DescrFromType(typenum);
+    if (descr != NULL) {
+        c = descr->type;
+        Py_DECREF(descr);
+    }
+    else {
+        // Something to indicate an error occurred.
+        c = '!';
+    }
+    return c;
+}
+
+static char null_name[] = "<NULL>";
+static char unknown_name[] = "<unknown>";
+
+static const char *
+get_typename_from_typenum(int typenum)
+{
+    const char *name;
+
+    PyArray_Descr *descr = PyArray_DescrFromType(typenum);
+    if (descr != NULL) {
+        name = descr->typeobj->tp_name;
+        Py_DECREF(descr);
+        if (name == NULL) {
+            name = null_name;
+        }
+    }
+    else {
+        // Something to indicate an error occurred.
+        name = unknown_name;
+    }
+    return name;
+}
+
+
 static PyObject *
 ufunc_inspector(PyObject *self, PyObject *arg)
 {
@@ -138,9 +179,8 @@ ufunc_inspector(PyObject *self, PyObject *arg)
         if (ufunc->nin == 1 && ufunc->nout == 1) {
             printf("%3d:  %3d -> %3d  ",
                    i, ufunc->types[2*i], ufunc->types[2*i+1]);
-            printf("(%c->%c)  ",
-                   PyArray_DescrFromType(ufunc->types[2*i])->type,
-                   PyArray_DescrFromType(ufunc->types[2*i+1])->type);
+            printf("(%c->%c)  ", get_typechar_from_typenum(ufunc->types[2*i]),
+                                 get_typechar_from_typenum(ufunc->types[2*i+1]));
             CHECKFOR(e_e)
             else CHECKFOR(e_e_As_f_f)
             else CHECKFOR(e_e_As_d_d)
@@ -162,10 +202,9 @@ ufunc_inspector(PyObject *self, PyObject *arg)
         else if (ufunc->nin == 2 && ufunc->nout == 1) {
             printf("%3d: (%3d, %3d) -> %3d  ",
                    i, ufunc->types[3*i], ufunc->types[3*i+1], ufunc->types[3*i+2]);
-            printf("(%c%c->%c)  ",
-                   PyArray_DescrFromType(ufunc->types[3*i])->type,
-                   PyArray_DescrFromType(ufunc->types[3*i+1])->type,
-                   PyArray_DescrFromType(ufunc->types[3*i+2])->type);
+            printf("(%c%c->%c)  ", get_typechar_from_typenum(ufunc->types[3*i]),
+                                   get_typechar_from_typenum(ufunc->types[3*i+1]),
+                                   get_typechar_from_typenum(ufunc->types[3*i+2]));
             CHECKFOR(ee_e)
             else CHECKFOR(ee_e_As_ff_f)
             else CHECKFOR(ee_e_As_dd_d)
@@ -187,11 +226,10 @@ ufunc_inspector(PyObject *self, PyObject *arg)
             printf("%3d: (%3d, %3d, %3d) -> %3d  ", i,
                    ufunc->types[4*i], ufunc->types[4*i+1], ufunc->types[4*i+2],
                    ufunc->types[4*i+3]);
-            printf("(%c%c%c->%c)  ",
-                   PyArray_DescrFromType(ufunc->types[4*i])->type,
-                   PyArray_DescrFromType(ufunc->types[4*i+1])->type,
-                   PyArray_DescrFromType(ufunc->types[4*i+2])->type,
-                   PyArray_DescrFromType(ufunc->types[4*i+3])->type);
+            printf("(%c%c%c->%c)  ", get_typechar_from_typenum(ufunc->types[4*i]),
+                                     get_typechar_from_typenum(ufunc->types[4*i+1]),
+                                     get_typechar_from_typenum(ufunc->types[4*i+2]),
+                                     get_typechar_from_typenum(ufunc->types[4*i+3]));
             printf("\n");
         }
     }
@@ -208,13 +246,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
             PyObject_Print(key, stdout, 0);
             long num_type = PyLong_AsLong(key);
             if (!PyErr_Occurred()) {
-                PyArray_Descr *descr = PyArray_DescrFromType(num_type);
-                if (descr != NULL) {
-                    if (descr->typeobj->tp_name != NULL) {
-                        printf("; type name is '%s'", descr->typeobj->tp_name);
-                    }
-                    Py_DECREF(descr);
-                }
+                printf("; type name is '%s'", get_typename_from_typenum(num_type));
             }
             printf("\n");
             current = (PyUFunc_Loop1d *) PyCapsule_GetPointer(value, NULL);
