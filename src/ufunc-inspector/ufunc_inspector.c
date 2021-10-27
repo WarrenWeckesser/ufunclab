@@ -81,7 +81,6 @@ static PyObject *
 ufunc_inspector(PyObject *self, PyObject *arg)
 {
     PyUFuncObject *ufunc;
-    PyObject *return_value = NULL;
 
     if (!PyObject_TypeCheck(arg, &PyUFunc_Type)) {
         printf("Not a ufunc.\n");
@@ -262,7 +261,6 @@ ufunc_inspector(PyObject *self, PyObject *arg)
                 current = current->next;
             }
         }
-        return_value = ufunc->userloops;
     }
 /*
     // Some experiments...
@@ -305,12 +303,8 @@ ufunc_inspector(PyObject *self, PyObject *arg)
     }
 */
 
-    if (return_value == NULL) {
-        Py_INCREF(Py_None);
-        return Py_None;
-    }
-    Py_INCREF(return_value);
-    return return_value;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyMethodDef module_methods[] = {
