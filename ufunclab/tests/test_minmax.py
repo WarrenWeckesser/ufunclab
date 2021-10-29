@@ -2,7 +2,30 @@ import pytest
 from fractions import Fraction
 import numpy as np
 from numpy.testing import assert_equal
-from ufunclab import minmax, min_argmin, max_argmax
+from ufunclab import argmin, argmax, minmax, min_argmin, max_argmax
+
+
+_numpy_types = [np.int8, np.uint8, np.int16, np.uint16,
+                np.int32, np.uint32, np.int64, np.uint64,
+                np.float32, np.float64, np.longdouble, object]
+
+
+@pytest.mark.parametrize('dtype', _numpy_types)
+@pytest.mark.parametrize('axis', [0, 1])
+def test_argmin_basic(dtype, axis):
+    x = np.array([[11, 10, 10, 23, 31],
+                  [19, 20, 21, 22, 23]], dtype=dtype)
+    i = argmin(x, axis=axis)
+    assert_equal(i, np.argmin(x, axis=axis))
+
+
+@pytest.mark.parametrize('dtype', _numpy_types)
+@pytest.mark.parametrize('axis', [0, 1])
+def test_argmax_basic(dtype, axis):
+    x = np.array([[11, 10, 10, 23, 31],
+                  [19, 20, 21, 22, 23]], dtype=dtype)
+    i = argmax(x, axis=axis)
+    assert_equal(i, np.argmax(x, axis=axis))
 
 
 @pytest.mark.parametrize('x, expected', [

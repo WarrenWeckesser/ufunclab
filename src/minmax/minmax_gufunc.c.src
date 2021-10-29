@@ -12,6 +12,7 @@
 #include "numpy/ndarraytypes.h"
 #include "numpy/ufuncobject.h"
 
+#include "../util/ufunc_tools.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for integer and floating point types.
@@ -107,6 +108,41 @@ static void argminmax_@typename@_loop(char **args, const npy_intp *dimensions,
  * #op = min, max#
  * #cmp = <, >#
  */
+
+static void arg@op@_@typename@_loop(char **args, const npy_intp *dimensions,
+                                    const npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp core_in_step = steps[2];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "arg@op@ requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        char *inner = in;
+        @ctype@ x_extreme = *(@ctype@ *) inner;
+        npy_intp x_index = 0;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            @ctype@ x = *(@ctype@ *) inner;
+            if (x @cmp@ x_extreme) {
+                x_extreme = x;
+                x_index = k;
+            }
+        }
+        *((npy_intp *) out) = x_index;
+    }
+}
+
 static void @op@_arg@op@_@typename@_loop(char **args, const npy_intp *dimensions,
                                          const npy_intp* steps, void* data)
 {
@@ -256,6 +292,44 @@ static void argminmax_object_loop(char **args, const npy_intp *dimensions,
  * #cmp = Py_LT, Py_GT#
  */
 
+
+static void arg@op@_object_loop(char **args, const npy_intp *dimensions,
+                                const npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    npy_intp core_in_step = steps[2];
+
+
+    if (dimensions[1] == 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "arg@op@ requires an input with length at least 1.");
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        char *inner = in;
+        PyObject *x_extreme = *(PyObject **) inner;
+        npy_intp x_index = 0;
+        inner += core_in_step;
+        for (npy_intp k = 1; k < dimensions[1]; ++k, inner += core_in_step) {
+            PyObject *x = *(PyObject **) inner;
+            int test = PyObject_RichCompareBool(x, x_extreme, @cmp@);
+            if (test == -1) {
+                return;
+            }
+            if (test == 1) {
+                x_extreme = x;
+                x_index = k;
+            }
+        }
+        *((npy_intp *) out) = x_index;
+    }
+}
+
+
 static void @op@_arg@op@_object_loop(char **args, const npy_intp *dimensions,
                                      const npy_intp* steps, void* data)
 {
@@ -303,19 +377,19 @@ static void @op@_arg@op@_object_loop(char **args, const npy_intp *dimensions,
 // ufunc configuration data.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static char minmax_types[] = {
-    NPY_INT8, NPY_INT8,
-    NPY_UINT8, NPY_UINT8,
-    NPY_INT16, NPY_INT16,
-    NPY_UINT16, NPY_UINT16,
-    NPY_INT32, NPY_INT32,
-    NPY_UINT32, NPY_UINT32,
-    NPY_INT64, NPY_INT64,
-    NPY_UINT64, NPY_UINT64,
-    NPY_FLOAT, NPY_FLOAT,
-    NPY_DOUBLE, NPY_DOUBLE,
+static char minmax_typecodes[] = {
+    NPY_INT8,       NPY_INT8,
+    NPY_UINT8,      NPY_UINT8,
+    NPY_INT16,      NPY_INT16,
+    NPY_UINT16,     NPY_UINT16,
+    NPY_INT32,      NPY_INT32,
+    NPY_UINT32,     NPY_UINT32,
+    NPY_INT64,      NPY_INT64,
+    NPY_UINT64,     NPY_UINT64,
+    NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE,
-    NPY_OBJECT, NPY_OBJECT
+    NPY_OBJECT,     NPY_OBJECT
 };
 
 static PyUFuncGenericFunction minmax_funcs[] = {
@@ -333,21 +407,22 @@ static PyUFuncGenericFunction minmax_funcs[] = {
     (PyUFuncGenericFunction) &minmax_object_loop
 };
 
-static void *minmax_data[sizeof(minmax_funcs)/sizeof(minmax_funcs[0])];
+#define MINMAX_NTYPES (sizeof(minmax_funcs)/sizeof(minmax_funcs[0]))
+static void *minmax_data[MINMAX_NTYPES];
 
-static char argminmax_types[] = {
-    NPY_INT8, NPY_INTP,
-    NPY_UINT8, NPY_INTP,
-    NPY_INT16, NPY_INTP,
-    NPY_UINT16, NPY_INTP,
-    NPY_INT32, NPY_INTP,
-    NPY_UINT32, NPY_INTP,
-    NPY_INT64, NPY_INTP,
-    NPY_UINT64, NPY_INTP,
-    NPY_FLOAT, NPY_INTP,
-    NPY_DOUBLE, NPY_INTP,
+static char argminmax_typecodes[] = {
+    NPY_INT8,       NPY_INTP,
+    NPY_UINT8,      NPY_INTP,
+    NPY_INT16,      NPY_INTP,
+    NPY_UINT16,     NPY_INTP,
+    NPY_INT32,      NPY_INTP,
+    NPY_UINT32,     NPY_INTP,
+    NPY_INT64,      NPY_INTP,
+    NPY_UINT64,     NPY_INTP,
+    NPY_FLOAT,      NPY_INTP,
+    NPY_DOUBLE,     NPY_INTP,
     NPY_LONGDOUBLE, NPY_INTP,
-    NPY_OBJECT, NPY_INTP
+    NPY_OBJECT,     NPY_INTP
 };
 
 static PyUFuncGenericFunction argminmax_funcs[] = {
@@ -365,27 +440,62 @@ static PyUFuncGenericFunction argminmax_funcs[] = {
     (PyUFuncGenericFunction) &argminmax_object_loop
 };
 
-static void *argminmax_data[sizeof(argminmax_funcs)/sizeof(argminmax_funcs[0])];
+#define ARGMINMAX_NTYPES (sizeof(argminmax_funcs)/sizeof(argminmax_funcs[0]))
+static void *argminmax_data[ARGMINMAX_NTYPES];
 
 
 /**begin repeat
  *
- * #op = min, max#
+ * #op = min, max #
+ * #OP = MIN, MAX #
  */
 
-static char @op@_arg@op@_types[] = {
-    NPY_INT8, NPY_INT8, NPY_INTP,
-    NPY_UINT8, NPY_UINT8, NPY_INTP,
-    NPY_INT16, NPY_INT16, NPY_INTP,
-    NPY_UINT16, NPY_UINT16, NPY_INTP,
-    NPY_INT32, NPY_INT32, NPY_INTP,
-    NPY_UINT32, NPY_UINT32, NPY_INTP,
-    NPY_INT64, NPY_INT64, NPY_INTP,
-    NPY_UINT64, NPY_UINT64, NPY_INTP,
-    NPY_FLOAT, NPY_FLOAT, NPY_INTP,
-    NPY_DOUBLE, NPY_DOUBLE, NPY_INTP,
+static char arg@op@_typecodes[] = {
+    NPY_INT8,       NPY_INTP,
+    NPY_UINT8,      NPY_INTP,
+    NPY_INT16,      NPY_INTP,
+    NPY_UINT16,     NPY_INTP,
+    NPY_INT32,      NPY_INTP,
+    NPY_UINT32,     NPY_INTP,
+    NPY_INT64,      NPY_INTP,
+    NPY_UINT64,     NPY_INTP,
+    NPY_FLOAT,      NPY_INTP,
+    NPY_DOUBLE,     NPY_INTP,
+    NPY_LONGDOUBLE, NPY_INTP,
+    NPY_OBJECT,     NPY_INTP
+};
+
+static PyUFuncGenericFunction arg@op@_funcs[] = {
+    (PyUFuncGenericFunction) arg@op@_int8_loop,
+    (PyUFuncGenericFunction) arg@op@_uint8_loop,
+    (PyUFuncGenericFunction) arg@op@_int16_loop,
+    (PyUFuncGenericFunction) arg@op@_uint16_loop,
+    (PyUFuncGenericFunction) arg@op@_int32_loop,
+    (PyUFuncGenericFunction) arg@op@_uint32_loop,
+    (PyUFuncGenericFunction) arg@op@_int64_loop,
+    (PyUFuncGenericFunction) arg@op@_uint64_loop,
+    (PyUFuncGenericFunction) arg@op@_float_loop,
+    (PyUFuncGenericFunction) arg@op@_double_loop,
+    (PyUFuncGenericFunction) arg@op@_longdouble_loop,
+    (PyUFuncGenericFunction) arg@op@_object_loop
+};
+
+#define ARG@OP@_NTYPES (sizeof(arg@op@_funcs) / sizeof(arg@op@_funcs[0]))
+static void *arg@op@_data[ARG@OP@_NTYPES];
+
+static char @op@_arg@op@_typecodes[] = {
+    NPY_INT8,       NPY_INT8,       NPY_INTP,
+    NPY_UINT8,      NPY_UINT8,      NPY_INTP,
+    NPY_INT16,      NPY_INT16,      NPY_INTP,
+    NPY_UINT16,     NPY_UINT16,     NPY_INTP,
+    NPY_INT32,      NPY_INT32,      NPY_INTP,
+    NPY_UINT32,     NPY_UINT32,     NPY_INTP,
+    NPY_INT64,      NPY_INT64,      NPY_INTP,
+    NPY_UINT64,     NPY_UINT64,     NPY_INTP,
+    NPY_FLOAT,      NPY_FLOAT,      NPY_INTP,
+    NPY_DOUBLE,     NPY_DOUBLE,     NPY_INTP,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_INTP,
-    NPY_OBJECT, NPY_OBJECT, NPY_INTP
+    NPY_OBJECT,     NPY_OBJECT,     NPY_INTP
 };
 
 static PyUFuncGenericFunction @op@_arg@op@_funcs[] = {
@@ -403,7 +513,8 @@ static PyUFuncGenericFunction @op@_arg@op@_funcs[] = {
     (PyUFuncGenericFunction) &@op@_arg@op@_object_loop
 };
 
-static void *@op@_arg@op@_data[sizeof(@op@_arg@op@_funcs)/sizeof(@op@_arg@op@_funcs[0])];
+#define @OP@_ARG@OP@_NTYPES (sizeof(@op@_arg@op@_funcs) / sizeof(@op@_arg@op@_funcs[0]))
+static void *@op@_arg@op@_data[@OP@_ARG@OP@_NTYPES];
 
 /**end repeat**/
 
@@ -422,6 +533,16 @@ static struct PyModuleDef moduledef = {
     .m_size = -1,
     .m_methods = MinMaxMethods
 };
+
+#define ARGMIN_DOCSTRING \
+"argmin(x, ...)\n"                                              \
+"\n"                                                            \
+"Compute the index of the minimum of the input.\n"
+
+#define ARGMAX_DOCSTRING \
+"argmax(x, ...)\n"                                              \
+"\n"                                                            \
+"Compute the index of the maximum of the input.\n"
 
 #define MINMAX_DOCSTRING \
 "minmax(x, ...)\n"                                              \
@@ -446,17 +567,10 @@ static struct PyModuleDef moduledef = {
 
 PyMODINIT_FUNC PyInit__minmax(void)
 {
-    PyObject *m;
-    PyObject *minmax_gufunc;
-    PyObject *argminmax_gufunc;
-    PyObject *min_argmin_gufunc;
-    PyObject *max_argmax_gufunc;
-    size_t ntypes;
-    int nin, nout;
-    int status;
+    PyObject *module;
 
-    m = PyModule_Create(&moduledef);
-    if (!m) {
+    module = PyModule_Create(&moduledef);
+    if (!module) {
         return NULL;
     }
 
@@ -464,48 +578,18 @@ PyMODINIT_FUNC PyInit__minmax(void)
     import_umath();
 
     // Create the minmax ufunc.
-
-    ntypes = sizeof(minmax_funcs) / sizeof(minmax_funcs[0]);
-    nin = 1;
-    nout = 1;
-    minmax_gufunc = PyUFunc_FromFuncAndDataAndSignature(
-                            minmax_funcs, minmax_data,
-                            minmax_types, ntypes, nin, nout,
-                            PyUFunc_None, "minmax",
-                            MINMAX_DOCSTRING, 0,
-                            "(i)->(2)");
-    if (minmax_gufunc == NULL) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    status = PyModule_AddObject(m, "minmax", (PyObject *) minmax_gufunc);
-    if (status == -1) {
-        Py_DECREF(minmax_gufunc);
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "minmax", MINMAX_DOCSTRING, "(i)->(2)",
+                         MINMAX_NTYPES,
+                         minmax_funcs, minmax_data, minmax_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
     // Create the argminmax ufunc.
-
-    ntypes = sizeof(argminmax_funcs) / sizeof(argminmax_funcs[0]);
-    nin = 1;
-    nout = 1;
-    argminmax_gufunc = PyUFunc_FromFuncAndDataAndSignature(
-                            argminmax_funcs, argminmax_data,
-                            argminmax_types, ntypes, nin, nout,
-                            PyUFunc_None, "argminmax",
-                            ARGMINMAX_DOCSTRING, 0,
-                            "(i)->(2)");
-    if (argminmax_gufunc == NULL) {
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    status = PyModule_AddObject(m, "argminmax", (PyObject *) argminmax_gufunc);
-    if (status == -1) {
-        Py_DECREF(argminmax_gufunc);
-        Py_DECREF(m);
+    if (ul_define_gufunc(module, "argminmax", ARGMINMAX_DOCSTRING, "(i)->(2)",
+                         ARGMINMAX_NTYPES,
+                         argminmax_funcs, argminmax_data, argminmax_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
@@ -514,30 +598,25 @@ PyMODINIT_FUNC PyInit__minmax(void)
  * #op = min, max#
  * #OP = MIN, MAX#
  */
-    // Create the @op@_arg@op@ ufunc.
 
-    ntypes = sizeof(@op@_arg@op@_funcs) / sizeof(@op@_arg@op@_funcs[0]);
-    nin = 1;
-    nout = 2;
-    @op@_arg@op@_gufunc = PyUFunc_FromFuncAndDataAndSignature(
-                            @op@_arg@op@_funcs, @op@_arg@op@_data,
-                            @op@_arg@op@_types, ntypes, nin, nout,
-                            PyUFunc_None, "@op@_arg@op@",
-                            @OP@_ARG@OP@_DOCSTRING, 0,
-                            "(i)->(),()");
-    if (@op@_arg@op@_gufunc == NULL) {
-        Py_DECREF(m);
+    // Create the arg@op@ ufunc.
+    if (ul_define_gufunc(module, "arg@op@", ARG@OP@_DOCSTRING, "(i)->()",
+                         ARG@OP@_NTYPES,
+                         arg@op@_funcs, arg@op@_data, arg@op@_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
-    status = PyModule_AddObject(m, "@op@_arg@op@", (PyObject *) @op@_arg@op@_gufunc);
-    if (status == -1) {
-        Py_DECREF(@op@_arg@op@_gufunc);
-        Py_DECREF(m);
+
+    // Create the @op@_arg@op@ ufunc.
+    if (ul_define_gufunc(module, "@op@_arg@op@", @OP@_ARG@OP@_DOCSTRING, "(i)->(),()",
+                         @OP@_ARG@OP@_NTYPES,
+                         @op@_arg@op@_funcs, @op@_arg@op@_data, @op@_arg@op@_typecodes) < 0) {
+        Py_DECREF(module);
         return NULL;
     }
 
 /**end repeat**/
 
-    return m;
+    return module;
 }

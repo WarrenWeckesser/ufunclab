@@ -8,7 +8,7 @@ from ._cross import cross3, cross2
 from ._first import argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
 from ._searchsorted import searchsortedl, searchsortedr
 from ._peaktopeak import peaktopeak
-from ._minmax import minmax, argminmax, min_argmin, max_argmax
+from ._minmax import argmin, argmax, minmax, argminmax, min_argmin, max_argmax
 from ._means import gmean, hmean
 from ._meanvar import meanvar
 from ._mad import mad, mad1, rmad, rmad1

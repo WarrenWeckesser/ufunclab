@@ -29,6 +29,8 @@ What's in ufunclab?
 | [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.        |
 | [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.        |
 | [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                            |
+| [`argmin`](#argmin)                     | Like `numpy.argmin`, but a gufunc                     |
+| [`argmax`](#argmax)                     | Like `numpy.argmax`, but a gufunc                     |
 | [`minmax`](#minmax)                     | Minimum and maximum                                   |
 | [`argminmax`](#argminmax)               | Indices of the min and the max                        |
 | [`min_argmin`](#min_argmin)             | Minimum value and its index                           |
@@ -102,6 +104,30 @@ it should).
 array([False,  True, False, False, False])
 ```
 
+### `deadzone`
+
+`deadzone(x, low, high)` is ufunc with three inputs and one output.
+It computes the "deadzone" response of a signal:
+
+           { 0         if low <= x <= high
+    f(x) = { x - low   if x < low
+           { x - high  if x > high
+
+The function is similar to the
+[deadzone block](https://www.mathworks.com/help/simulink/slref/deadzone.html)
+of Matlab's Simulink library.  The function is also known as
+a *soft threshold*.
+
+Here's a plot of `deadzone(x, -0.25, 0.5)`:
+
+![Deadzone plot1](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo1.png)
+
+The script `deadzone_demo2.py` in the `examples` directory generates
+the plot
+
+![Deadzone plot2](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo2.png)
+
+
 ### `argfirst`
 
 `argfirst` is a gufunc (signature `(i),(),()->()`) that finds the index of
@@ -154,6 +180,7 @@ columns:
 >>> argfirst(b, op.NE, np.uint8(0), axis=0)
 array([-1,  0,  2,  2])
 ```
+
 ### `searchsortedl`
 
 `searchsortedl` is a gufunc with signature `(i),()->()`.  The function
@@ -273,6 +300,32 @@ For example,
 array(303, dtype='timedelta64[D]')
 
 ```
+
+### `argmin`
+
+`argmin` is a `gufunc` with signature `(i)->()` that is similar to `numpy.argmin`.
+
+>>> from ufunclab import argmin
+>>> x = np.array([[11, 10, 10, 23, 31],
+...               [19, 20, 21, 22, 22],
+...               [16, 15, 16, 14, 14]])
+>>> argmin(x, axis=1)  # same as argmin(x)
+array([1, 0, 3])
+>>> argmin(x, axis=0)
+array([0, 0, 0, 2, 2])
+
+### `argmax`
+
+`argmax` is a `gufunc` with signature `(i)->()` that is similar to `numpy.argmax`.
+
+>>> from ufunclab import argmax
+>>> x = np.array([[11, 10, 10, 23, 31],
+...               [19, 20, 21, 22, 22],
+...               [16, 15, 16, 14, 14]])
+>>> argmax(x, axis=1)  # same as argmax(x)
+array([4, 3, 0])
+>>> argmax(x, axis=0)
+array([1, 1, 1, 0, 0])
 
 ### `minmax`
 
@@ -814,28 +867,6 @@ the plot
 
 ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/backlash_demo.png)
 
-### `deadzone`
-
-`deadzone(x, low, high)` is ufunc with three inputs and one output.
-It computes the "deadzone" response of a signal:
-
-           { 0         if low <= x <= high
-    f(x) = { x - low   if x < low
-           { x - high  if x > high
-
-The function is similar to the
-[deadzone block](https://www.mathworks.com/help/simulink/slref/deadzone.html)
-of Matlab's Simulink library.  The function is also known as
-a *soft threshold*.
-
-Here's a plot of `deadzone(x, -0.25, 0.5)`:
-
-![Deadzone plot1](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo1.png)
-
-The script `deadzone_demo2.py` in the `examples` directory generates
-the plot
-
-![Deadzone plot2](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo2.png)
 
 ### `hysteresis_relay`
 
