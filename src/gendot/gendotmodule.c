@@ -122,7 +122,13 @@ gendot_loop(char **args, const npy_intp *dimensions,
 
     char *tmp = malloc(dimensions[1] * itemsize);
     if (tmp == NULL) {
-        // XXX Set MemoryError exception and return.
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+            PyErr_Format(PyExc_MemoryError,
+                "Unable to allocate %ld bytes (%ld items, each with size %ld) "
+                "for intermediate calculation",
+                dimensions[1] * itemsize, dimensions[1], itemsize);
+        NPY_DISABLE_C_API
         return;
     }
 
