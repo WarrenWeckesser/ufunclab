@@ -71,7 +71,7 @@ def _check_ufunc2(func, argname):
 
 def gendot(prodfunc, sumfunc, name=None, doc=None):
     """
-    Compose two ufuncs to create a gufunc that generatlizes the dot product.
+    Compose two ufuncs to create a gufunc that generalizes the dot product.
 
     Parameters
     ----------
@@ -79,8 +79,9 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
         Must be a scalar ufunc (i.e. `ufunc.signature` is None), with two
         inputs and one output.
     sumfunc : ufunc
-        Must be a scalar ufunc (i.e. `ufunc.signature` is None), with two
-        inputs and one output.
+        Must be either a scalar ufunc (i.e. `ufunc.signature` is None),
+        with two inputs and one output, or a gufunc with signature
+        `(i)->()`.
     name : str, optional
         Name to assign to the `__name__` attribute of the gufunc.
     doc : str, optional
@@ -89,7 +90,7 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
     Returns
     -------
     dotfunc : gufunc
-        A gufunc with signature (n),(n)->() that is computed by applying
+        A gufunc with signature `(i),(i)->()` that is computed by applying
         prodfunc element-wise to the inputs, and then reducing the result
         with sumfunc.
 
@@ -105,7 +106,7 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
     Take a look at a couple of the gufunc attributes:
 
     >>> logical_dot.signature
-    '(n),(n)->()'
+    '(i),(i)->()'
     >>> print(logical_dot.types)
     ['??->?', 'bb->?', 'BB->?', 'hh->?', 'HH->?', 'ii->?', 'II->?', 'll->?',
     'LL->?', 'qq->?', 'QQ->?', 'ee->?', 'ff->?', 'dd->?', 'gg->?', 'FF->?',

@@ -887,9 +887,11 @@ the plot
 
 ### `gendot`
 
-`gendot` creates a new gufunc (with signature `(i),(i)->()`)
-that is the composition of two element-wise ufuncs that each
-have two inputs and one output.
+`gendot` creates a new gufunc (with signature `(i),(i)->()`) that is
+the composition of two ufuncs.  The first ufunc must be an element-wise
+ufunc with two inputs and one output.  The second must be either another
+element-wise ufunc with two inputs and one output, or a gufunc with
+signature `(i)->()`.
 
 The name `gendot` is from "generalized dot product".  The standard
 dot product is the composition of element-wise multiplication and
