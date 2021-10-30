@@ -31,12 +31,39 @@ reverse_typedict = {
 }
 
 
-def _check_ufunc(func, argname):
+def _check_ufunc1(func, argname):
     if not(isinstance(func, np.ufunc)
-            and func.signature is None
-            and func.nin == 2 and func.nout == 1):
-        raise ValueError(f"{argname} must be a ufunc with 2 inputs and "
-                         "1 output.")
+           and func.signature is None
+           and func.nin == 2 and func.nout == 1):
+        raise ValueError(f"{argname} must be an element-wise ufunc with 2 "
+                         "inputs and 1 output.")
+    if len(func.types) > 256:
+        raise ValueError(f"{argname} has {len(func.types)} ufunc inner loops! "
+                         "(Sorry, can't handle that many; max is 256.)")
+
+
+def _check_n_to_1(gufunc):
+    if not isinstance(gufunc, np.ufunc):
+        return False
+    if gufunc.signature is None:
+        return False
+    if gufunc.nin != 1 or gufunc.nout != 1:
+        return False
+    signature = gufunc.signature.replace(' ', '')
+    sigin, sigout = signature.split('->')
+    if sigout != '()':
+        return False
+    return sigin[1:-1].isidentifier()
+
+
+def _check_ufunc2(func, argname):
+    ok = (isinstance(func, np.ufunc) and
+          ((func.signature is None and func.nin == 2 and func.nout == 1) or
+           _check_n_to_1(func)))
+    if not ok:
+        raise ValueError(f"{argname} must be an element-wise ufunc with 2 "
+                         "inputs and 1 output, or a gufunc with signature "
+                         "'(i)->()'.")
     if len(func.types) > 256:
         raise ValueError(f"{argname} has {len(func.types)} ufunc inner loops! "
                          "(Sorry, can't handle that many; max is 256.)")
@@ -106,8 +133,8 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
     1.9
 
     """
-    _check_ufunc(prodfunc, 'prodfunc')
-    _check_ufunc(sumfunc, 'sumfunc')
+    _check_ufunc1(prodfunc, 'prodfunc')
+    _check_ufunc2(sumfunc, 'sumfunc')
     if name is None:
         name = '_'.join(['gendot', prodfunc.__name__, sumfunc.__name__])
     if doc is None:
@@ -123,7 +150,7 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
         prod_outtype = prod_type.replace(' ', '')[-1]
         for j, sum_type in enumerate(sumfunc.types):
             sum_intype = sum_type.replace(' ', '').split('->')[0]
-            if sum_intype == 2*prod_outtype:
+            if sum_intype == sumfunc.nin*prod_outtype:
                 loop_indices.append((i, j))
                 dot_types.append((prod_type, sum_type))
     typechars = [prod_type[:2] + sum_type[-1]

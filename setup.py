@@ -93,5 +93,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.5.dev5',
+          version='0.0.5.dev6',
           configuration=configuration)

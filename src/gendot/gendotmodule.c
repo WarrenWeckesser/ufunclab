@@ -18,6 +18,7 @@ typedef struct gendot_data_t {
     PyUFuncGenericFunction *sumfunc_loop;
     void *sumfunc_loop_data;
     npy_intp sumfunc_loop_itemsize;
+    npy_intp sumfunc_nin;
     npy_intp sumfunc_has_identity; // actual values are only 0 or 1.
     // sumfunc_identity_buffer is large enough to hold an instance
     // of np.complex256
@@ -29,6 +30,7 @@ typedef struct gendot_data_t {
 #define SUMFUNC_LOOP(p)             (((gendot_data_t *)(p))->sumfunc_loop)
 #define SUMFUNC_LOOP_DATA(p)        (((gendot_data_t *)(p))->sumfunc_loop_data)
 #define SUMFUNC_LOOP_ITEMSIZE(p)    (((gendot_data_t *)(p))->sumfunc_loop_itemsize)
+#define SUMFUNC_NIN(p)              (((gendot_data_t *)(p))->sumfunc_nin)
 #define SUMFUNC_HAS_IDENTITY(p)     (((gendot_data_t *)(p))->sumfunc_has_identity)
 #define SUMFUNC_IDENTITY_BUFFER(p)  (((gendot_data_t *)(p))->sumfunc_identity_buffer)
 
@@ -148,23 +150,51 @@ gendot_loop(char **args, const npy_intp *dimensions,
     PyUFuncGenericFunction * sumfunc_loop = SUMFUNC_LOOP(data);
     void *sumfunc_loop_data = SUMFUNC_LOOP_DATA(data);
 
-    for (int j = 0; j < nloops; ++j, px += steps[0],
-                                     py += steps[1],
-                                     pout += steps[2]) {
-        prodfunc_args[0] = px;
-        prodfunc_args[1] = py;
-        ((PyUFuncGenericFunction)prodfunc_loop)(prodfunc_args, prodfunc_dimensions, prodfunc_steps,
-                         prodfunc_data);
-        reduce(sumfunc_loop, sumfunc_loop_data,
-               tmp, dimensions[1], itemsize, itemsize, pout);
+    if (SUMFUNC_NIN(data) == 2) {
+        // sumfunc is an element-wise ufunc with 2 inputs and 1 output.
+
+        for (int j = 0; j < nloops; ++j, px += steps[0],
+                                         py += steps[1],
+                                         pout += steps[2]) {
+            prodfunc_args[0] = px;
+            prodfunc_args[1] = py;
+            ((PyUFuncGenericFunction)prodfunc_loop)(prodfunc_args, prodfunc_dimensions,
+                                                    prodfunc_steps, prodfunc_data);
+            reduce(sumfunc_loop, sumfunc_loop_data,
+                   tmp, dimensions[1], itemsize, itemsize, pout);
+        }
+    }
+    else {
+        // sumfunc is a gufunc with signature (n)->().  Call its loop
+        // function directly to compute the output value.
+
+        // sumfunc_args[1] is updated in each iteration of the loop below.
+        char *sumfunc_args[2] = {tmp, NULL};
+        npy_intp sumfunc_dimensions[2] = {1, dimensions[1]};
+        npy_intp sumfunc_steps[3] = {0, 0, itemsize};
+        // Note that sumfunc_steps[0] and sumfunc_steps[1] will not actually be
+        // used in sumfunc_loop, because sumfunc_dimensions[0] is 1.
+
+        for (int j = 0; j < nloops; ++j, px += steps[0],
+                                         py += steps[1],
+                                         pout += steps[2]) {
+            prodfunc_args[0] = px;
+            prodfunc_args[1] = py;
+            ((PyUFuncGenericFunction)prodfunc_loop)(prodfunc_args, prodfunc_dimensions,
+                                                    prodfunc_steps, prodfunc_data);
+            sumfunc_args[1] = pout;
+            ((PyUFuncGenericFunction)sumfunc_loop)(sumfunc_args, sumfunc_dimensions,
+                                                   sumfunc_steps, sumfunc_loop_data);
+        }
     }
     free(tmp);
 }
 
 
 //
-// This is the function that is exposed as a Python function.
-// It generates the 'gendot' gufunc.
+// This is the function that implements ufunclab.gendot.
+// It generates the gufunc that is the composition of the
+// two given ufuncs.
 //
 static PyObject *
 gendot(PyObject *self, PyObject *args, PyObject *kwargs)
@@ -284,6 +314,7 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
         gendot_data[i].prodfunc_loop_data = prodfunc->data[prod_index];
         gendot_data[i].sumfunc_loop = (PyUFuncGenericFunction *) sumfunc->functions[sum_index];
         gendot_data[i].sumfunc_loop_data = sumfunc->data[sum_index];
+        gendot_data[i].sumfunc_nin = (npy_intp) sumfunc->nin;
         gendot_data[i].sumfunc_loop_itemsize = gendot_itemsizes[i];
         gendot_data[i].sumfunc_has_identity = (npy_intp) sumfunc_has_identity;
         memcpy(gendot_data[i].sumfunc_identity_buffer,
@@ -348,7 +379,7 @@ static struct PyModuleDef gendotmodule = {
     "_gendot",
     "The _gendot module defines the function _gendot.\n\n"
     "The function _gendot creates a new gufunc (with signature (n),(n)->())\n"
-    "that is the composition of two ufuncs, each with 2 inputs and 1 output.\n",
+    "that is the composition of two ufuncs.\n",
     -1,
     gendot_methods
 };

@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_equal
-from ufunclab import gendot
+from ufunclab import gendot, gmean
 
 
 def test_minmaxdot_1d():
@@ -64,3 +64,17 @@ def test_no_identity():
     minmaxdot = gendot(np.minimum, np.maximum)
     with pytest.raises(ValueError, match='with no identity'):
         minmaxdot([], [])
+
+
+@pytest.mark.parametrize('dtype', [np.float32, np.float64,
+                                   np.uint8, np.uint16, np.uint32, np.uint64,
+                                   np.int8, np.int16, np.int32, np.int64])
+def test_gendot_with_n_to_1_gufunc(dtype):
+    f = gendot(np.add, gmean)
+    x = np.array([[1, 2, 3, 4], [1, 1, 0, 0]], dtype=dtype)
+    y = np.array([[3, 2, 7, 0], [1, 1, 2, 32]], dtype=dtype)
+    z = f(x, y)
+    # assert_equal should be OK for this test of floating point
+    # values, because ultimately the same underlying code should
+    # do the actual floating point calculation.
+    assert_equal(z, gmean(x + y))
