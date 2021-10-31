@@ -56,6 +56,7 @@ What's in ufunclab?
 | [`gendot`](#gendot)                     | Create a new gufunc that composes two ufuncs          |
 | [`ufunc_inspector`](#ufunc_inspector)   | Display ufunc information                             |
 
+-----
 
 ### `logfactorial`
 
