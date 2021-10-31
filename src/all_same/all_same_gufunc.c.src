@@ -152,7 +152,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define ALL_SAME_DOCSTRING \
-"all_same(x, ...)\n"                        \
+"all_same(x, /, ...)\n"                     \
 "\n"                                        \
 "Test for all values being the same."
 

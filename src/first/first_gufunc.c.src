@@ -219,7 +219,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define ARGFIRST_DOCSTRING \
-"argfirst(x, op, target, ...)\n"                                    \
+"argfirst(x, op, target, /, ...)\n"                                 \
 "\n"                                                                \
 "Find the index in `x` of the first value where `x op target`\n"    \
 "is true, where `op` is one of the basic comparison operators.\n"   \

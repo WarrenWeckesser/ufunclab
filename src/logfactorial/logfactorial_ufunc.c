@@ -111,7 +111,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define LOGFACTORIAL_DOCSTRING \
-"logfactorial(x, ...)\n"                                   \
+"logfactorial(x, /, ...)\n"                                \
 "\n"                                                       \
 "Natural logarithm of the factorial of the integer x."
 

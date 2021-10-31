@@ -107,7 +107,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define BACKLASH_DOCSTRING \
-"backlash(x, deadband, initial, ...)\n"                     \
+"backlash(x, deadband, initial, /, ...)\n"                  \
 "\n"                                                        \
 "Compute the backlash signal of the input signal x.\n"      \
 "\n"                                                        \

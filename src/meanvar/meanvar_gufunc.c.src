@@ -152,7 +152,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define MEANVAR_DOCSTRING \
-"meanvar(x, ddof, ...)\n"                                       \
+"meanvar(x, ddof, /, ...)\n"                                    \
 "\n"                                                            \
 "Simultaneous mean and variance calculation for x.\n"           \
 "\n"                                                            \

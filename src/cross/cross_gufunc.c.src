@@ -290,7 +290,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define CROSS3_DOCSTRING \
-"cross3(u, v, ...)\n"                                          \
+"cross3(u, v, /, ...)\n"                                       \
 "\n"                                                           \
 "Compute the 3-d vector cross product of u and v.\n"           \
 "\n"                                                           \
@@ -317,7 +317,7 @@ static struct PyModuleDef moduledef = {
 "\n"
 
 #define CROSS2_DOCSTRING \
-"cross2(u, v, ...)\n"                                          \
+"cross2(u, v, /, ...)\n"                                       \
 "\n"                                                           \
 "Compute the cross product of 2-d vectors u and v.\n"          \
 "The result is a scalar.\n"                                    \

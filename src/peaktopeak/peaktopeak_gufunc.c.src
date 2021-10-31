@@ -386,7 +386,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define PEAKTOPEAK_DOCSTRING                                    \
-"peaktopeak(x, ...)\n"                                          \
+"peaktopeak(x, /, ...)\n"                                       \
 "\n"                                                            \
 "Peak-to-peak value (i.e. maximum - minimum) of an array.\n"    \
 "\n"                                                            \

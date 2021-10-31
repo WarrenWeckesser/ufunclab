@@ -200,7 +200,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define GMEAN_DOCSTRING \
-"gmean(x, ...)\n"                                                       \
+"gmean(x, /, ...)\n"                                                    \
 "\n"                                                                    \
 "Geometric mean of x.\n"                                                \
 "\n"                                                                    \
@@ -209,7 +209,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define HMEAN_DOCSTRING \
-"hmean(x, ...)\n"                                                           \
+"hmean(x, /, ...)\n"                                                        \
 "\n"                                                                        \
 "Harmonic mean of x.\n"                                                     \
 "\n"                                                                        \

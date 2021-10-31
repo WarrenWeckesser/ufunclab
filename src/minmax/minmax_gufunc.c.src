@@ -535,32 +535,32 @@ static struct PyModuleDef moduledef = {
 };
 
 #define ARGMIN_DOCSTRING \
-"argmin(x, ...)\n"                                              \
+"argmin(x, /, ...)\n"                                           \
 "\n"                                                            \
 "Compute the index of the minimum of the input.\n"
 
 #define ARGMAX_DOCSTRING \
-"argmax(x, ...)\n"                                              \
+"argmax(x, /, ...)\n"                                           \
 "\n"                                                            \
 "Compute the index of the maximum of the input.\n"
 
 #define MINMAX_DOCSTRING \
-"minmax(x, ...)\n"                                              \
+"minmax(x, /, ...)\n"                                           \
 "\n"                                                            \
 "Compute minimum and maximum of the input.\n"
 
 #define ARGMINMAX_DOCSTRING \
-"argminmax(x, ...)\n"                                           \
+"argminmax(x, /, ...)\n"                                        \
 "\n"                                                            \
 "Compute indices of the minimum and maximum of the input.\n"
 
 #define MIN_ARGMIN_DOCSTRING \
-"min_argmin(x, ...)\n"                                          \
+"min_argmin(x, /, ...)\n"                                       \
 "\n"                                                            \
 "Compute the minimum and index of the minimum of the input.\n"
 
 #define MAX_ARGMAX_DOCSTRING \
-"max_argmax(x, ...)\n"                                          \
+"max_argmax(x, /, ...)\n"                                       \
 "\n"                                                            \
 "Compute the maximum and index of the maximum of the input.\n"
 

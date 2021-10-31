@@ -498,13 +498,13 @@ static struct PyModuleDef moduledef = {
 
 
 #define SEARCHSORTEDL_DOCSTRING                                 \
-"searchsortedl(sortedarr, elements, ...)\n"                     \
+"searchsortedl(sortedarr, elements, /, ...)\n"                  \
 "\n"                                                            \
 "TODO...\n"                                                     \
 "\n"
 
 #define SEARCHSORTEDR_DOCSTRING                                 \
-"searchsortedl(sortedarr, elements, ...)\n"                     \
+"searchsortedl(sortedarr, elements, /, ...)\n"                  \
 "\n"                                                            \
 "TODO...\n"                                                     \
 "\n"

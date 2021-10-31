@@ -338,22 +338,22 @@ static struct PyModuleDef moduledef = {
 
 
 #define MAD_DOCSTRING \
-"mad(x, ...)\n"                                         \
+"mad(x, /, ...)\n"                                      \
 "\n"                                                    \
 "Mean absolute difference."
 
 #define MAD1_DOCSTRING \
-"mad1(x, ...)\n"                                        \
+"mad1(x, /, ...)\n"                                     \
 "\n"                                                    \
 "Unbiased estimator of the mean absolute difference."
 
 #define RMAD_DOCSTRING \
-"rmad(x, ...)\n"                                        \
+"rmad(x, /, ...)\n"                                     \
 "\n"                                                    \
  "Relative mean absolute difference."
 
 #define RMAD1_DOCSTRING \
-"rmad1(x, ...)\n"                                                       \
+"rmad1(x, /, ...)\n"                                                    \
 "\n"                                                                    \
 "Estimator of the relative mean absolute difference.\n"                 \
 "\n"                                                                    \

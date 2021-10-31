@@ -137,7 +137,7 @@ static struct PyModuleDef moduledef = {
 
 
 #define ISSNAN_DOCSTRING \
-"issnan(x, ...)\n"                                      \
+"issnan(x, /, ...)\n"                                   \
 "\n"                                                    \
 "\nTest whether the values in x are signaling nans.\n"  \
 "\n"
