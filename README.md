@@ -133,9 +133,9 @@ the plot
 ### `first`
 
 `first` is a gufunc with signature `(i),(),(),()->()` that returns the first
-value that matches a given comparision.  The function signature is
+value that matches a given comparison.  The function signature is
 `first(x, op, target, otherwise)`, where `op` is one of the values in
-`ufunclab.op` that specifices the comparison to be made. `otherwise` is the
+`ufunclab.op` that specifies the comparison to be made. `otherwise` is the
 value to be returned if no value in `x` satisfies the given relation with
 `target`.
 
