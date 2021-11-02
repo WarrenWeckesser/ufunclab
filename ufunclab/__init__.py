@@ -5,7 +5,7 @@ NumPy ufuncs and utilities.
 from ._logfact import logfactorial
 from ._issnan import issnan
 from ._cross import cross3, cross2
-from ._first import argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
+from ._first import first, argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
 from ._searchsorted import searchsortedl, searchsortedr
 from ._peaktopeak import peaktopeak
 from ._minmax import argmin, argmax, minmax, argminmax, min_argmin, max_argmax

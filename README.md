@@ -25,6 +25,7 @@ What's in ufunclab?
 
 | Function                                | Description                                           |
 | --------                                | -----------                                           |
+| [`first`](#first)                       | First value that matches a target comparison          |
 | [`argfirst`](#argfirst)                 | Index of the first occurrence of a target comparison  |
 | [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.        |
 | [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.        |
@@ -128,6 +129,38 @@ the plot
 
 ![Deadzone plot2](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo2.png)
 
+
+### `first`
+
+`first` is a gufunc with signature `(i),(),(),()->()` that returns the first
+value that matches a given comparision.  The function signature is
+`first(x, op, target, otherwise)`, where `op` is one of the values in
+`ufunclab.op` that specifices the comparison to be made. `otherwise` is the
+value to be returned if no value in `x` satisfies the given relation with
+`target`.
+
+Find the first nonzero value in `a`:
+
+```
+>>> import numpy as np
+>>> from ufunclab import first, op
+
+>>> a = np.array([0, 0, 0, 0, 0, -0.5, 0, 1, 0.1])
+>>> first(a, op.NE, 0.0, 0.0)
+-0.5
+```
+
+Find the first value in each row of `b` that is less than 0.
+If there is no such value, return 0:
+
+```
+>>> b = np.array([[10, 23, -10, 0, -9],
+...               [18, 28, 42, 33, 71],
+...               [17, 29, 16, 14, -7]], dtype=np.int8)
+...
+>>> first(b, op.LT, 0, 0)
+array([-10,   0,  -7], dtype=int8)
+```
 
 ### `argfirst`
 

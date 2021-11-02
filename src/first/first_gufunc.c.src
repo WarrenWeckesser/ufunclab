@@ -34,10 +34,28 @@
  * #cmp = <, <=, ==, !=, >, >=#
  */
 
-static inline
-npy_intp argfirst_@op@_@typename@(const char *px,
-                                  npy_intp n, npy_intp stride,
-                                  const char *ptarget)
+static inline @ctype@
+first_@op@_@typename@(const char *px,
+                      npy_intp n, npy_intp stride,
+                      const char *ptarget,
+                      const char *potherwise)
+{
+    @ctype@ target = *(@ctype@ *) ptarget;
+    @ctype@ result = *(@ctype@ *) potherwise;
+    for (npy_intp k = 0; k < n; ++k) {
+        @ctype@ value = *(@ctype@ *) (px + k*stride);
+        if (value @cmp@ target) {
+            result = value;
+            break;
+        }
+    }
+    return result;
+}
+
+static inline npy_intp
+argfirst_@op@_@typename@(const char *px,
+                         npy_intp n, npy_intp stride,
+                         const char *ptarget)
 {
     npy_intp result = -1;
     for (npy_intp k = 0; k < n; ++k) {
@@ -51,6 +69,57 @@ npy_intp argfirst_@op@_@typename@(const char *px,
 
 /**end repeat1**/
 
+
+static void
+first_@typename@_loop(char **args, const npy_intp *dimensions,
+                      const npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array outer step
+    // steps[1]:  op step
+    // steps[2]:  target step
+    // steps[3]:  otherwise step
+    // steps[4]:  out step
+    // steps[5]:  inner (core) x array step
+    char *px = args[0];
+    char *pop = args[1];
+    char *ptarget = args[2];
+    char *potherwise = args[3];
+    char *pout = args[4];
+    npy_intp nloops = dimensions[0];
+    npy_intp xlen = dimensions[1];
+    npy_intp xstride = steps[5];
+
+    for (int j = 0; j < nloops; ++j, px += steps[0], pop += steps[1],
+                                     ptarget += steps[2], potherwise += steps[3],
+                                     pout += steps[4]) {
+        @ctype@ result = *(@ctype@ *) potherwise;
+        int8_t op = *(int8_t *) pop;
+
+        switch (op) {
+            case Py_LT:
+                result = first_LT_@typename@(px, xlen, xstride, ptarget, potherwise);
+                break;
+            case Py_LE:
+                result = first_LE_@typename@(px, xlen, xstride, ptarget, potherwise);
+                break;
+            case Py_EQ:
+                result = first_EQ_@typename@(px, xlen, xstride, ptarget, potherwise);
+                break;
+            case Py_NE:
+                result = first_NE_@typename@(px, xlen, xstride, ptarget, potherwise);
+                break;
+            case Py_GT:
+                result = first_GT_@typename@(px, xlen, xstride, ptarget, potherwise);
+                break;
+            case Py_GE:
+                result = first_GE_@typename@(px, xlen, xstride, ptarget, potherwise);
+                break;
+        }
+        *(@ctype@ *) pout = result;
+    }
+}
 
 static void argfirst_@typename@_loop(char **args, const npy_intp *dimensions,
                                      const npy_intp* steps, void* data)
@@ -101,12 +170,34 @@ static void argfirst_@typename@_loop(char **args, const npy_intp *dimensions,
 
 /**end repeat**/
 
+static inline PyObject *
+first_object(const char *px,
+             npy_intp n, npy_intp stride,
+             int py_op,
+             const char *ptarget,
+             const char *potherwise)
+{
+    PyObject *result = *(PyObject **) potherwise;
+    PyObject *target = *(PyObject **) ptarget;
+    for (npy_intp k = 0; k < n; ++k) {
+        PyObject *x = *(PyObject **) (px + k*stride);
+        int cmp = PyObject_RichCompareBool(x, target, py_op);
+        if (cmp == -1) {
+            return NULL;  // Error occurred in PyObject_RichCompareBool().
+        }
+        if (cmp == 1) {
+            result = x;
+            break;
+        }
+    }
+    return result;
+}
 
-static inline
-npy_intp argfirst_object(const char *px,
-                         npy_intp n, npy_intp stride,
-                         int py_op,
-                         const char *ptarget)
+static inline npy_intp
+argfirst_object(const char *px,
+                npy_intp n, npy_intp stride,
+                int py_op,
+                const char *ptarget)
 {
     npy_intp result = -1;
     PyObject *target = *(PyObject **) ptarget;
@@ -127,8 +218,48 @@ npy_intp argfirst_object(const char *px,
 // The object loop allows x and target to be object arrays.
 // op must still be int8, and the output is still npy_intp.
 
-static void argfirst_object_loop(char **args, const npy_intp *dimensions,
-                                 const npy_intp* steps, void* data)
+static void
+first_object_loop(char **args, const npy_intp *dimensions,
+                  const npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array outer step
+    // steps[1]:  op step
+    // steps[2]:  target step
+    // steps[3]:  otherwise step
+    // steps[4]:  out step
+    // steps[5]:  inner (core) x array step
+    char *px = args[0];
+    char *pop = args[1];
+    char *ptarget = args[2];
+    char *potherwise = args[3];
+    char *pout = args[4];
+    npy_intp nloops = dimensions[0];
+    npy_intp xlen = dimensions[1];
+    npy_intp xstride = steps[5];
+
+    for (int j = 0; j < nloops; ++j, px += steps[0], pop += steps[1],
+                                     ptarget += steps[2], potherwise += steps[3],
+                                     pout += steps[4]) {
+        PyObject *result = *(PyObject **) potherwise;  // ???
+        int8_t op = *(int8_t *) pop;
+
+        if (op >= 0 && op <= 5) {
+            result = first_object(px, xlen, xstride, op, ptarget, potherwise);
+            if (result == NULL) {
+                // Error occurred in PyObject_RichCompare().
+                return;  // XXX Need more clean up?
+            }
+        }
+        Py_INCREF(result);
+        *(PyObject **) pout = result;
+    }
+}
+
+static void
+argfirst_object_loop(char **args, const npy_intp *dimensions,
+                     const npy_intp* steps, void* data)
 {
     // dimensions[0]: Number of input arrays
     // dimensions[1]: Length of each array
@@ -165,31 +296,67 @@ static void argfirst_object_loop(char **args, const npy_intp *dimensions,
 // ufunc configuration data.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+// These are the input and return dtypes of first.
+static char first_typecodes[] = {
+    NPY_INT8,       NPY_INT8, NPY_INT8,       NPY_INT8,       NPY_INT8,
+    NPY_UINT8,      NPY_INT8, NPY_UINT8,      NPY_UINT8,      NPY_UINT8,
+    NPY_INT16,      NPY_INT8, NPY_INT16,      NPY_INT16,      NPY_INT16,
+    NPY_UINT16,     NPY_INT8, NPY_UINT16,     NPY_UINT16,     NPY_UINT16,
+    NPY_INT32,      NPY_INT8, NPY_INT32,      NPY_INT32,      NPY_INT32,
+    NPY_UINT32,     NPY_INT8, NPY_UINT32,     NPY_UINT32,     NPY_UINT32,
+    NPY_INT64,      NPY_INT8, NPY_INT64,      NPY_INT64,      NPY_INT64,
+    NPY_UINT64,     NPY_INT8, NPY_UINT64,     NPY_UINT64,     NPY_UINT64,
+    NPY_FLOAT,      NPY_INT8, NPY_FLOAT,      NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_INT8, NPY_DOUBLE,     NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_INT8, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+    NPY_OBJECT,     NPY_INT8, NPY_OBJECT,     NPY_OBJECT,     NPY_OBJECT
+};
+
+
+static PyUFuncGenericFunction first_funcs[] = {
+    (PyUFuncGenericFunction) &first_int8_loop,
+    (PyUFuncGenericFunction) &first_uint8_loop,
+    (PyUFuncGenericFunction) &first_int16_loop,
+    (PyUFuncGenericFunction) &first_uint16_loop,
+    (PyUFuncGenericFunction) &first_int32_loop,
+    (PyUFuncGenericFunction) &first_uint32_loop,
+    (PyUFuncGenericFunction) &first_int64_loop,
+    (PyUFuncGenericFunction) &first_uint64_loop,
+    (PyUFuncGenericFunction) &first_float_loop,
+    (PyUFuncGenericFunction) &first_double_loop,
+    (PyUFuncGenericFunction) &first_longdouble_loop,
+    (PyUFuncGenericFunction) &first_object_loop
+};
+
+#define FIRST_NTYPES (sizeof(first_funcs)/sizeof(first_funcs[0]))
+static void *first_data[FIRST_NTYPES];
+
+
 // These are the input and return dtypes of argfirst.
 static char argfirst_typecodes[] = {
-    NPY_INT8, NPY_INT8, NPY_INT8, NPY_INTP,
-    NPY_INT16, NPY_INT8, NPY_INT16, NPY_INTP,
-    NPY_INT32, NPY_INT8, NPY_INT32, NPY_INTP,
-    NPY_INT64, NPY_INT8, NPY_INT64, NPY_INTP,
-    NPY_UINT8, NPY_INT8, NPY_UINT8, NPY_INTP,
-    NPY_UINT16, NPY_INT8, NPY_UINT16, NPY_INTP,
-    NPY_UINT32, NPY_INT8, NPY_UINT32, NPY_INTP,
-    NPY_UINT64, NPY_INT8, NPY_UINT64, NPY_INTP,
-    NPY_FLOAT, NPY_INT8, NPY_FLOAT, NPY_INTP,
-    NPY_DOUBLE, NPY_INT8, NPY_DOUBLE, NPY_INTP,
+    NPY_INT8,       NPY_INT8, NPY_INT8,       NPY_INTP,
+    NPY_UINT8,      NPY_INT8, NPY_UINT8,      NPY_INTP,
+    NPY_INT16,      NPY_INT8, NPY_INT16,      NPY_INTP,
+    NPY_UINT16,     NPY_INT8, NPY_UINT16,     NPY_INTP,
+    NPY_INT32,      NPY_INT8, NPY_INT32,      NPY_INTP,
+    NPY_UINT32,     NPY_INT8, NPY_UINT32,     NPY_INTP,
+    NPY_INT64,      NPY_INT8, NPY_INT64,      NPY_INTP,
+    NPY_UINT64,     NPY_INT8, NPY_UINT64,     NPY_INTP,
+    NPY_FLOAT,      NPY_INT8, NPY_FLOAT,      NPY_INTP,
+    NPY_DOUBLE,     NPY_INT8, NPY_DOUBLE,     NPY_INTP,
     NPY_LONGDOUBLE, NPY_INT8, NPY_LONGDOUBLE, NPY_INTP,
-    NPY_OBJECT, NPY_INT8, NPY_OBJECT, NPY_INTP
+    NPY_OBJECT,     NPY_INT8, NPY_OBJECT,     NPY_INTP
 };
 
 
 static PyUFuncGenericFunction argfirst_funcs[] = {
     (PyUFuncGenericFunction) &argfirst_int8_loop,
-    (PyUFuncGenericFunction) &argfirst_int16_loop,
-    (PyUFuncGenericFunction) &argfirst_int32_loop,
-    (PyUFuncGenericFunction) &argfirst_int64_loop,
     (PyUFuncGenericFunction) &argfirst_uint8_loop,
+    (PyUFuncGenericFunction) &argfirst_int16_loop,
     (PyUFuncGenericFunction) &argfirst_uint16_loop,
+    (PyUFuncGenericFunction) &argfirst_int32_loop,
     (PyUFuncGenericFunction) &argfirst_uint32_loop,
+    (PyUFuncGenericFunction) &argfirst_int64_loop,
     (PyUFuncGenericFunction) &argfirst_uint64_loop,
     (PyUFuncGenericFunction) &argfirst_float_loop,
     (PyUFuncGenericFunction) &argfirst_double_loop,
@@ -212,11 +379,17 @@ static PyMethodDef FirstMethods[] = {
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_first",
-    .m_doc = "Module that defines the argfirst function.",
+    .m_doc = "Module that defines the first and argfirst functions.",
     .m_size = -1,
     .m_methods = FirstMethods
 };
 
+
+#define FIRST_DOCSTRING \
+"first(x, op, target, otherwise, /, ...)\n"                         \
+"\n"                                                                \
+"Find the first value that matches the given comparison.\n"         \
+"\n"
 
 #define ARGFIRST_DOCSTRING \
 "argfirst(x, op, target, /, ...)\n"                                 \
@@ -308,6 +481,14 @@ PyMODINIT_FUNC PyInit__first(void)
 
     import_array();
     import_umath();
+
+    // Create the first ufunc.
+    if (ul_define_gufunc(module, "first", FIRST_DOCSTRING, "(i),(),(),()->()",
+                         FIRST_NTYPES,
+                         first_funcs, first_data, first_typecodes) < 0) {
+        Py_DECREF(module);
+        return NULL;
+    }
 
     // Create the argfirst ufunc.
     if (ul_define_gufunc(module, "argfirst", ARGFIRST_DOCSTRING, "(i),(),()->()",
