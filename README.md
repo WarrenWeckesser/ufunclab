@@ -27,15 +27,15 @@ What's in ufunclab?
 | --------                                | -----------                                           |
 | [`first`](#first)                       | First value that matches a target comparison          |
 | [`argfirst`](#argfirst)                 | Index of the first occurrence of a target comparison  |
-| [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.        |
-| [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.        |
-| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                            |
 | [`argmin`](#argmin)                     | Like `numpy.argmin`, but a gufunc                     |
 | [`argmax`](#argmax)                     | Like `numpy.argmax`, but a gufunc                     |
 | [`minmax`](#minmax)                     | Minimum and maximum                                   |
 | [`argminmax`](#argminmax)               | Indices of the min and the max                        |
 | [`min_argmin`](#min_argmin)             | Minimum value and its index                           |
 | [`max_argmax`](#max_argmax)             | Maximum value and its index                           |
+| [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.        |
+| [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.        |
+| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                            |
 | [`all_same`](#all_same)                 | Check all values are the same                         |
 | [`gmean`](#gmean)                       | Geometric mean                                        |
 | [`hmean`](#hmean)                       | Harmonic mean                                         |
@@ -215,126 +215,6 @@ columns:
 array([-1,  0,  2,  2])
 ```
 
-### `searchsortedl`
-
-`searchsortedl` is a gufunc with signature `(i),()->()`.  The function
-is equivalent to `numpy.searchsorted` with `side='left'`, but as a gufunc,
-it supports broadcasting of its arguments.  (Note that `searchsortedl`
-does not provide the `sorter` parameter.)
-
-```
->>> import numpy as np
->>> from ufunclab import searchsortedl
->>> searchsortedl([1, 1, 2, 3, 5, 8, 13, 21], [1, 4, 15, 99])
-array([0, 4, 7, 8])
->>> arr = np.array([[1, 1, 2, 3, 5, 8, 13, 21],
-...                 [1, 1, 1, 1, 2, 2, 10, 10]])
->>> searchsortedl(arr, [7, 8])
-array([5, 6])
->>> searchsortedl(arr, [[2], [5]])
-array([[2, 4],
-       [4, 6]])
-```
-
-### `searchsortedr`
-
-`searchsortedr` is a gufunc with signature `(i),()->()`.  The function
-is equivalent to `numpy.searchsorted` with `side='right'`, but as a gufunc,
-it supports broadcasting of its arguments.  (Note that `searchsortedr`
-does not provide the `sorter` parameter.)
-
-```
->>> import numpy as np
->>> from ufunclab import searchsortedl
->>> searchsortedr([1, 1, 2, 3, 5, 8, 13, 21], [1, 4, 15, 99])
-array([2, 4, 7, 8])
->>> arr = np.array([[1, 1, 2, 3, 5, 8, 13, 21],
-...                 [1, 1, 1, 1, 2, 2, 10, 10]])
->>> searchsortedr(arr, [7, 8])
-array([5, 6])
->>> searchsortedr(arr, [[2], [5]])
-array([[3, 6],
-       [5, 6]])
-```
-
-
-### `peaktopeak`
-
-`peaktopeak` is a `gufunc` (signature `(i)->()`) that computes the
-peak-to-peak range of a NumPy array.  It is like the `ptp` method
-of a NumPy array, but when the input is signed integers, the output
-is an unsigned integer with the same bit width.
-
-The function handles the standard integer and floating point types,
-`datetime64`, `timedelta64`, and object arrays. The function does not
-accept complex arrays.  Also, the function does not implement any special
-handling of `nan`, so the behavior of this function with arrays containing
-`nan` is undefined (i.e. it might not do what you want, and the behavior
-might change in the next update of the software).
-
-```
->>> x = np.array([85, 125, 0, -75, -50], dtype=np.int8)
->>> p = peaktopeak(x)
->>> p
-200
->>> type(p)
-numpy.uint8
-```
-
-Compare that to the `ptp` method, which returns a value with the
-same data type as the input:
-
-```
->>> q = x.ptp()
->>> q
--56
->>> type(q)
-numpy.int8
-
-```
-
-`f` is an object array of `Fraction`s and has shape (2, 4).
-
-```
->>> from fractions import Fraction
->>> f = np.array([[Fraction(1, 3), Fraction(3, 5),
-...                Fraction(22, 7), Fraction(5, 2)],
-...               [Fraction(-2, 9), Fraction(1, 3),
-...                Fraction(2, 3), Fraction(5, 9)]], dtype=object)
->>> peaktopeak(x)
-array([Fraction(59, 21), Fraction(8, 9)], dtype=object)
-
-```
-
-`dates` is an array of `datetime64`.
-
-```
->>> dates = np.array([np.datetime64('2015-11-02T12:34:50'),
-...                   np.datetime64('2016-03-01T16:00:00'),
-...                   np.datetime64('2015-07-02T21:20:19'),
-...                   np.datetime64('2016-05-01T19:25:00')])
-
->>> dates
-array(['2015-11-02T12:34:50', '2016-03-01T16:00:00',
-       '2015-07-02T21:20:19', '2016-05-01T19:25:00'],
-      dtype='datetime64[s]')
->>> timespan = peaktopeak(dates)
->>> timespan
-numpy.timedelta64(26258681,'s')
->>> timespan / np.timedelta64(1, 'D')  # Convert to number of days.
-303.9199189814815
-```
-
-Casting works when the `out` argument is an array with dtype `timedelta64`.
-For example,
-
-```
->>> out = np.empty((), dtype='timedelta64[D]')
->>> peaktopeak(dates, out=out)
-array(303, dtype='timedelta64[D]')
-
-```
-
 ### `argmin`
 
 `argmin` is a `gufunc` with signature `(i)->()` that is similar to `numpy.argmin`.
@@ -478,6 +358,127 @@ the extreme value and the index of the extreme value.
 >>> max_argmax(y)
 (Fraction(3, 4), 1)
 ```
+
+### `searchsortedl`
+
+`searchsortedl` is a gufunc with signature `(i),()->()`.  The function
+is equivalent to `numpy.searchsorted` with `side='left'`, but as a gufunc,
+it supports broadcasting of its arguments.  (Note that `searchsortedl`
+does not provide the `sorter` parameter.)
+
+```
+>>> import numpy as np
+>>> from ufunclab import searchsortedl
+>>> searchsortedl([1, 1, 2, 3, 5, 8, 13, 21], [1, 4, 15, 99])
+array([0, 4, 7, 8])
+>>> arr = np.array([[1, 1, 2, 3, 5, 8, 13, 21],
+...                 [1, 1, 1, 1, 2, 2, 10, 10]])
+>>> searchsortedl(arr, [7, 8])
+array([5, 6])
+>>> searchsortedl(arr, [[2], [5]])
+array([[2, 4],
+       [4, 6]])
+```
+
+### `searchsortedr`
+
+`searchsortedr` is a gufunc with signature `(i),()->()`.  The function
+is equivalent to `numpy.searchsorted` with `side='right'`, but as a gufunc,
+it supports broadcasting of its arguments.  (Note that `searchsortedr`
+does not provide the `sorter` parameter.)
+
+```
+>>> import numpy as np
+>>> from ufunclab import searchsortedl
+>>> searchsortedr([1, 1, 2, 3, 5, 8, 13, 21], [1, 4, 15, 99])
+array([2, 4, 7, 8])
+>>> arr = np.array([[1, 1, 2, 3, 5, 8, 13, 21],
+...                 [1, 1, 1, 1, 2, 2, 10, 10]])
+>>> searchsortedr(arr, [7, 8])
+array([5, 6])
+>>> searchsortedr(arr, [[2], [5]])
+array([[3, 6],
+       [5, 6]])
+```
+
+
+### `peaktopeak`
+
+`peaktopeak` is a `gufunc` (signature `(i)->()`) that computes the
+peak-to-peak range of a NumPy array.  It is like the `ptp` method
+of a NumPy array, but when the input is signed integers, the output
+is an unsigned integer with the same bit width.
+
+The function handles the standard integer and floating point types,
+`datetime64`, `timedelta64`, and object arrays. The function does not
+accept complex arrays.  Also, the function does not implement any special
+handling of `nan`, so the behavior of this function with arrays containing
+`nan` is undefined (i.e. it might not do what you want, and the behavior
+might change in the next update of the software).
+
+```
+>>> x = np.array([85, 125, 0, -75, -50], dtype=np.int8)
+>>> p = peaktopeak(x)
+>>> p
+200
+>>> type(p)
+numpy.uint8
+```
+
+Compare that to the `ptp` method, which returns a value with the
+same data type as the input:
+
+```
+>>> q = x.ptp()
+>>> q
+-56
+>>> type(q)
+numpy.int8
+
+```
+
+`f` is an object array of `Fraction`s and has shape (2, 4).
+
+```
+>>> from fractions import Fraction
+>>> f = np.array([[Fraction(1, 3), Fraction(3, 5),
+...                Fraction(22, 7), Fraction(5, 2)],
+...               [Fraction(-2, 9), Fraction(1, 3),
+...                Fraction(2, 3), Fraction(5, 9)]], dtype=object)
+>>> peaktopeak(x)
+array([Fraction(59, 21), Fraction(8, 9)], dtype=object)
+
+```
+
+`dates` is an array of `datetime64`.
+
+```
+>>> dates = np.array([np.datetime64('2015-11-02T12:34:50'),
+...                   np.datetime64('2016-03-01T16:00:00'),
+...                   np.datetime64('2015-07-02T21:20:19'),
+...                   np.datetime64('2016-05-01T19:25:00')])
+
+>>> dates
+array(['2015-11-02T12:34:50', '2016-03-01T16:00:00',
+       '2015-07-02T21:20:19', '2016-05-01T19:25:00'],
+      dtype='datetime64[s]')
+>>> timespan = peaktopeak(dates)
+>>> timespan
+numpy.timedelta64(26258681,'s')
+>>> timespan / np.timedelta64(1, 'D')  # Convert to number of days.
+303.9199189814815
+```
+
+Casting works when the `out` argument is an array with dtype `timedelta64`.
+For example,
+
+```
+>>> out = np.empty((), dtype='timedelta64[D]')
+>>> peaktopeak(dates, out=out)
+array(303, dtype='timedelta64[D]')
+
+```
+
 
 ### `all_same`
 
