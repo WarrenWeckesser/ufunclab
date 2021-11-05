@@ -75,8 +75,8 @@ Out[48]: array([   0.        ,   15.10441257,  363.73937556, 5912.12817849])
 ### `issnan`
 
 `issnan` is an element-wise ufunc with a single input that acts like
-the standard `isnan` function, but it returns True only for *signaling*
-nans.
+the standard `isnan` function, but it returns True only for
+[*signaling* nans](https://en.wikipedia.org/wiki/NaN#Signaling_NaN).
 
 The current implementation only handles the floating point types `np.float16`,
 `np.float32` and `np.float64`.
@@ -515,7 +515,7 @@ array([ True, False, False])
 ### `gmean`
 
 `gmean` is a gufunc (signature `(i)->()`) that computes the
-geometric mean.
+[geometric mean](https://en.wikipedia.org/wiki/Geometric_mean).
 
 For example,
 
@@ -544,7 +544,7 @@ Out[31]: array([ 2.60517108,  7.87256685, 12.92252305])
 ### `hmean`
 
 `hmean` is a gufunc (signature `(i)->()`) that computes the
-harmonic mean.
+[harmonic mean](https://en.wikipedia.org/wiki/Harmonic_mean).
 
 For example,
 
@@ -617,10 +617,10 @@ Out[7]: array([ 4.5  , 10.125,  3.125,  0.   ])
 
 ### `mad`
 
-`mad` computes the mean absolute difference of a 1-d array
-(gufunc signature is `(i)->()`).  `mad` is the standard calculation
-(sum of the absolute differences divided by `n**2`), and `mad1` is
-the unbiased estimator (sum of the absolute differences divided by
+`mad` computes the [mean absolute difference](https://en.wikipedia.org/wiki/Mean_absolute_difference)
+of a 1-d array (gufunc signature is `(i)->()`).  `mad` is the standard
+calculation (sum of the absolute differences divided by `n**2`), and `mad1`
+is the unbiased estimator (sum of the absolute differences divided by
 `n*(n-1)`).
 
 For example,
@@ -648,12 +648,12 @@ Out[21]: array([0.03428571, 0.11428571, 0.19428571])
 
 ### `mad1`
 
-`mad1` computes the mean absolute difference of a 1-d array
-(gufunc signature is `(i)->()`).  This version is based on the unbiasd
-estimator of the mean absolute difference. `mad` is the standard
-calculation (sum of the absolute differences divided by `n**2`), and
-`mad1` is the unbiased estimator (sum of the absolute differences
-divided by `n*(n-1)`).
+`mad1` computes the [mean absolute difference](https://en.wikipedia.org/wiki/Mean_absolute_difference)
+of a 1-d array (gufunc signature is `(i)->()`).  This version is
+based on the unbiasd estimator of the mean absolute difference.
+`mad` is the standard calculation (sum of the absolute differences
+divided by `n**2`), and `mad1` is the unbiased estimator (sum of the
+absolute differences divided by `n*(n-1)`).
 
 For example,
 ```
@@ -687,7 +687,7 @@ signature is `(i)->()`).
 estimator of the mean absolute difference to compute the relative
 mean absolute difference.
 
-`rmad` is twice the Gini coefficient.
+`rmad` is twice the [Gini coefficient](https://en.wikipedia.org/wiki/Gini_coefficient).
 
 For example,
 ```
