@@ -87,6 +87,13 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'ufunc-inspector',
                                        'ufunc_inspector.c')])
+    config.add_extension('ufunclab._ufunkify',
+                         extra_compile_args=['-std=c99'],
+                         sources=[join('src', 'ufunkify',
+                                       '_ufunkify_opcodes.c'),
+                                  join('src', 'ufunkify',
+                                       '_ufunkify_c_function_wrappers.c'),
+                                  join('src', 'ufunkify', '_ufunkify.c')])
     return config
 
 

@@ -19,6 +19,7 @@ from ._hysteresis_relay import hysteresis_relay
 from ._all_same import all_same
 from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector
+from ._ufunkify_def import ufunkify
 
 import numpy as _np
 
