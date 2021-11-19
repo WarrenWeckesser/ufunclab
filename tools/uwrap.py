@@ -8,14 +8,31 @@
 # the signatures of the wrappers of `vnorm` and `backlash` are
 #
 #     vnorm(x, p, ...)
-#     backlash(x, deadband, initial)
+#     backlash(x, deadband, initial, ...)
 #
 # In fact, vnorm is wrapped so that a default value of p is provided:
 #
 #     vnorm(x, p=2, ...)
 
 
+# These are the functions that act like reductions on an unordered set.
+# In the wrappers, the processing of the `axis` parameter will be
+# extended to allow `axis` to accept `None` or a tuple.  In each case,
+# the first parameter is the only parameter with a nontrival dimension
+# so for now, we don't have to consider a signature such as `(i),(i)->()`.
+set_reduction_funcs = ['all_same', 'gmean', 'hmean', 'mad', 'mad1',
+                       'peaktopeak', 'rmad', 'rmad1']
+
+
 def get_input_sig_strings(ufunc):
+    """
+    Return the input items of a gufunc signature, with the
+    parentheses removed.  If ufunc is not a gufunc, `['']*ufunc.nin`
+    is returned.
+
+    For example, if the signature of ufunc is "(m,n),(),(n)->(n),()",
+    the return value is ['m,n', '', 'n'].
+    """
     if ufunc.signature is not None:
         return ufunc.signature.split('->')[0][1:-1].split('),(')
     else:
@@ -23,7 +40,11 @@ def get_input_sig_strings(ufunc):
 
 
 def make_self_assignment(s):
-    # `s` must be a string that contains one '='.
+    """
+    `s` must be a string that contains one '='.
+
+    Converts a string of the form "plate=shrimp" to "plate=plate".
+    """
     left, right = s.split('=')
     return '='.join([left, left])
 
@@ -34,7 +55,7 @@ def check_params(params, ufunc):
     else:
         multi_out_params = []
     # Note:
-    #  * `where` is a parameer of plain ufuncs only.
+    #  * `where` is a parameter of plain ufuncs only.
     #  * `axis`, `axes` and `keepdims` are parameters of gufuncs only.
     all_ufunc_params = ['out', 'casting', 'order', 'dtype', 'subok',
                         'signature', 'extobj', 'where',
@@ -84,19 +105,27 @@ def get_def_and_call_sig(ufunc, params):
     else:
         out_arg = "out=None"
     common_args = [out_arg, "casting='same_kind'", "order='K'", "dtype=None",
-                   "subok=True", "signature=None", "extobj=None"]
+                   "subok=True"]
+    # Common keyword parameters not explicitly include in the
+    # def signature: signature, extobj
     ufunc_only_args = ['where=True']
-    gufunc_only_args = ["axis=None", "axes=None", "keepdims=None"]
+    if ufunc.__name__ in set_reduction_funcs:
+        axis_arg = ['axis=None']
+    else:
+        axis_arg = []
+    # gufunc_only_args = ["axis=None", "axes=None", "keepdims=None"]
     if ufunc.signature is None:
         control_args = common_args + ufunc_only_args
     else:
-        control_args = common_args + gufunc_only_args
+        # control_args = common_args + gufunc_only_args
+        control_args = common_args + axis_arg
     args, kwargs = check_params(params, ufunc)
     kwdstrs = ([f'{name}={value!r}' for name, value in kwargs]
                + control_args)
-    def_sig = ', '.join(args + ['*'] + kwdstrs)
+    def_sig = ', '.join(args + ['*'] + kwdstrs) + ', **kwargs'
     call_sig = ', '.join(args + [kw[0] for kw in kwargs]
-                         + [make_self_assignment(arg) for arg in control_args])
+                         + [make_self_assignment(arg) for arg in control_args]
+                         + ['**kwargs'])
     return def_sig, call_sig
 
 
@@ -146,9 +175,20 @@ def uwrap(ufunc, namespace, params=None, name=None):
 
     # Copy the docstring.
     source.append('    """')
-    source.extend(['    ' + line for line in ufunc.__doc__.splitlines()])
+    doc_lines = [('    ' + line) if line != '' else ''
+                 for line in ufunc.__doc__.splitlines()]
+    source.extend(doc_lines)
     source.append('    """')
 
+    if name in set_reduction_funcs:
+        source.append('')
+        source.append('    # Handle axis is None or a tuple.')
+        source.append(f'    {params[0]}, axis = '
+                      f'_process_axis_for_set_reduction_func({params[0]}, '
+                      'axis)')
+        source.append('')
+
+    # Generate the return statement with the call of the unwrapped ufunc.
     ufunc_name = namespace + ('.' if namespace else '') + ufunc.__name__
     call_ufunc = f"    return {ufunc_name}({call_sig})"
     source.extend(to_lines(call_ufunc, offset=12+len(ufunc_name)))
@@ -171,7 +211,30 @@ purely positional arguments.
 
 """
 
+import numpy as np
 import ufunclab
+
+
+def _process_axis_for_set_reduction_func(x, axis):
+    """
+    This enables the wrapper to handle `axis=None` or axis being a
+    tuple. This function is intended to be applied *only* to functions
+    with the signature '(i)->()', and really only for those gufuncs for
+    with the input can be considered to be an unordered set.
+    (E.g. the result of `argmin` depends on the order of the input,
+    so it is not really useful for it to accept `axis=None` like
+    it does.)
+    """
+    if axis is None:
+        x = x.ravel()
+        axis = -1
+    elif isinstance(axis, tuple):
+        # Move the dimensions in axis to the end.
+        x = np.moveaxis(x, axis, tuple(range(-1, -1-len(axis), -1)))
+        # Flatten those final dimensions into a single dimension.
+        x = x.reshape(x.shape[:x.ndim - len(axis)] + (-1,))
+        axis = -1
+    return x, axis
 '''
 
 
@@ -200,6 +263,6 @@ if __name__ == "__main__":
                 params = ['x', ('p', 2)]
             else:
                 # Get the params from the docstring.
-                params=None
+                params = None
             s = uwrap(ufunc, namespace="ufunclab", params=params)
             f.write(s)
