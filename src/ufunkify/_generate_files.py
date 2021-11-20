@@ -1,3 +1,6 @@
+from os import path
+
+
 # These are the names of the basic ufunkify opcodes.
 basic_opcodes = [
     'RETURN',
@@ -75,11 +78,11 @@ c99math = [
 # Complex stuff is work in progress... not used yet.
 complex_c99math = [
     # These commented-out entries return real values, not complex.
-    #("cabs", 1),
-    #("carg", 1),
-    #("cimag", 1),
-    #("creal", 1),
-    #("cproj", 1),
+    # ("cabs", 1),
+    # ("carg", 1),
+    # ("cimag", 1),
+    # ("creal", 1),
+    # ("cproj", 1),
     ("conj", 1),
     ("cexp", 1),
     ("clog", 1),
@@ -99,12 +102,13 @@ complex_c99math = [
     ("catanh", 1),
 ]
 
-#mathf_opcodes = [f'MATH_{name.upper()}F' for name, narg in c99math]
+# mathf_opcodes = [f'MATH_{name.upper()}F' for name, narg in c99math]
 math_opcodes = [f'MATH_{name.upper()}' for name, narg in c99math]
-#mathl_opcodes = [f'MATH_{name.upper()}L' for name, narg in c99math]
+# mathl_opcodes = [f'MATH_{name.upper()}L' for name, narg in c99math]
 
-#opcodes = basic_opcodes + mathf_opcodes + math_opcodes + mathl_opcodes
+# opcodes = basic_opcodes + mathf_opcodes + math_opcodes + mathl_opcodes
 opcodes = basic_opcodes + math_opcodes
+
 
 def generate_opcode_files():
     """
@@ -113,7 +117,8 @@ def generate_opcode_files():
     #
     # Write the Python file.
     #
-    with open('_ufunkify_opcode_names.py', 'w') as f:
+    with open(path.join('..', '..', 'ufunclab', '_ufunkify_opcode_names.py'),
+              'w') as f:
         f.write('''
 # This file was generated automatically.  DO NOT EDIT!
 # The names and values defined here must match those in the
@@ -169,13 +174,13 @@ def generate_opcode_files():
         f.write('\n};\n')
 
 
-
 def generate_math_lib_files():
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Write the Python file.
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    with open('_ufunkify_math_lib_defs.py', 'w') as f:
+    with open(path.join('..', '..', 'ufunclab', '_ufunkify_math_lib_defs.py'),
+              'w') as f:
         f.write('''
 # This file was generated automatically.  DO NOT EDIT!
 # The names and values defined here must match those in the
@@ -307,6 +312,7 @@ f'''
                     ++pc;
                     break;
 ''')
+
 
 if __name__ == "__main__":
     generate_opcode_files()
