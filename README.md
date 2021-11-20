@@ -136,10 +136,15 @@ the plot
 
 `expint1(x)` computes the exponential integral E₁ for the real input x.
 
+```
+>>> from ufunclab import expint1
+>>> expint1([0.25, 2.5, 25])
+array([1.04428263e+00, 2.49149179e-02, 5.34889976e-13])
+```
 
 ### `logexpint1`
 
-`logexpint1(x)` computes the logaritham of the exponential integral E₁ for the real input x.
+`logexpint1(x)` computes the logarithm of the exponential integral E₁ for the real input x.
 
 `expint1(x)` underflows to 0 for sufficiently large x:
 
