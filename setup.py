@@ -1,4 +1,19 @@
+import os
 from os.path import join
+
+
+def generate_ufunkify_code():
+    import subprocess
+
+    cwd = os.getcwd()
+    os.chdir(join(cwd, 'src', 'ufunkify'))
+    os.system
+    subprocess.run(['python', '_generate_files.py'])
+    os.chdir(cwd)
+
+
+# This is probably *not* the best way to do this...
+generate_ufunkify_code()
 
 
 def configuration(parent_package='', top_path=None):
