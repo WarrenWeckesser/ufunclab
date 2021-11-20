@@ -1,0 +1,320 @@
+//
+// expint1_gufunc.c.src
+//
+// ufunc implementations of expint1 and logexpint1
+//
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
+#include <stddef.h>
+#include <stdint.h>
+#include <math.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+#define EULER 0.577215664901532860606512090082402431042159L
+
+/**begin repeat
+ * #typename      = float, double, longdouble  #
+ * #ctype         = float, double, long double #
+ * #char          =     f,       ,           l #
+ */
+
+static @ctype@
+expint1_01_@typename@(@ctype@ x)
+{
+    @ctype@ e1 = 1.0;
+    @ctype@ r = 1.0;
+    for (int k = 1; k < 26; ++k) {
+        r = -r * k * x/((k + 1)*(k + 1));
+        if (e1 + r == e1) {
+            break;
+        }
+        e1 = e1 + r;
+    }
+    e1 = -EULER - log@char@(x) + x*e1;
+    return e1;
+}
+
+// Compute a factor of the result of the exponential integral E1.
+// This is used in expint1 when x > 1.
+// If t = _expint1_t(x), then expint1(x) is exp(-x)*t.
+//
+// Uses the continued fraction expansion.
+//
+// This calculation is implemented as a separate function so it
+// can be used in both expint1 and logexpint1.
+
+static @ctype@
+expint1_t_@typename@(@ctype@ x)
+{
+    int m = 20 + (int) (80.0@char@ / x);
+    @ctype@ t0 = 0.0;
+    for (int k = m; k > 0; --k) {
+        t0 = k/(1 + k/(x + t0));
+    }
+    return 1/(x + t0);
+}
+
+
+// The exponential integral E1 for real x > 0.
+//
+// Returns inf if x = 0, and nan if x < 0.
+
+static @ctype@
+expint1_@typename@(@ctype@ x)
+{
+    if (x < 0.0) {
+        return (@ctype@) NAN;
+    }
+    if (x == 0) {
+        return (@ctype@) INFINITY;
+    }
+    if (x <= 1.0) {
+        return expint1_01_@typename@(x);
+    }
+    // else x > 1
+    @ctype@ t = expint1_t_@typename@(x);
+    return exp@char@(-x) * t;
+}
+
+// Log of the exponential integral function E1 (for real x only).
+
+static @ctype@
+logexpint1_@typename@(@ctype@ x)
+{
+    if (x < 0) {
+        return (@ctype@) NAN;
+    }
+    if (x == 0) {
+        return (@ctype@) INFINITY;
+    }
+    if (x <= 1.0) {
+        return log@char@(expint1_01_@typename@(x));
+    }
+    if (x <= 500) {
+        @ctype@ t = expint1_t_@typename@(x);
+        return -x + log@char@(t);
+    }
+    @ctype@ s = (-1 + (2 + (-6 + (24 - 120/x)/x)/x)/x)/x;
+    return -x - log@char@(x) + log1p@char@(s);
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = float, double, longdouble#
+ * #ctype         = float, double, long double#
+ */
+
+static void
+expint1_@typename@_loop(char **args, const npy_intp *dimensions,
+                        const npy_intp* steps, void* data)
+{
+    // args[0]: pointer to x array
+    // args[1]: pointer to output array
+    // dimensions[0]: Length of each array
+    // steps[0]:  x array step
+    // steps[1]:  output array step
+    char *px = args[0];
+    char *pout = args[1];
+    npy_intp n = dimensions[0];
+
+    for (int j = 0; j < n; ++j, px += steps[0], pout += steps[1]) {
+        @ctype@ x = *((@ctype@ *) px);
+        *((@ctype@ *) pout) = expint1_@typename@(x);
+    }
+}
+
+static void
+logexpint1_@typename@_loop(char **args, const npy_intp *dimensions,
+                           const npy_intp* steps, void* data)
+{
+    // args[0]: pointer to x array
+    // args[1]: pointer to output array
+    // dimensions[0]: Length of each array
+    // steps[0]:  x array step
+    // steps[1]:  output array step
+    char *px = args[0];
+    char *pout = args[1];
+    npy_intp n = dimensions[0];
+
+    for (int j = 0; j < n; ++j, px += steps[0], pout += steps[1]) {
+        @ctype@ x = *((@ctype@ *) px);
+        *((@ctype@ *) pout) = logexpint1_@typename@(x);
+    }
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of expint1 and logexpint1.
+static char types[] = {
+    NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE
+};
+
+static PyUFuncGenericFunction expint1_funcs[] = {
+    (PyUFuncGenericFunction) &expint1_float_loop,
+    (PyUFuncGenericFunction) &expint1_double_loop,
+    (PyUFuncGenericFunction) &expint1_longdouble_loop
+};
+
+static void *expint1_data[sizeof(expint1_funcs)/sizeof(expint1_funcs[0])];
+
+static PyUFuncGenericFunction logexpint1_funcs[] = {
+    (PyUFuncGenericFunction) &logexpint1_float_loop,
+    (PyUFuncGenericFunction) &logexpint1_double_loop,
+    (PyUFuncGenericFunction) &logexpint1_longdouble_loop
+};
+
+static void *logexpint1_data[sizeof(logexpint1_funcs)/sizeof(logexpint1_funcs[0])];
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef ExpInt1Methods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_expint1",
+    .m_doc = "Module that defines the functions expint1 and logexpint1.",
+    .m_size = -1,
+    .m_methods = ExpInt1Methods
+};
+
+
+#define EXPINT1_DOCSTRING \
+"expint1(x, /, ...)\n"                                      \
+"\n"                                                        \
+"Compute the exponential integral E1 of the input x.\n"     \
+"\n"                                                        \
+"Parameters\n"                                              \
+"----------\n"                                              \
+"x : array_like\n"                                          \
+"    Input values\n"                                        \
+"\n"                                                        \
+"Returns\n"                                                 \
+"-------\n"                                                 \
+"out : ndarray\n"                                           \
+"    The computed values of E1.\n"                          \
+"\n"                                                        \
+"Examples\n"                                                \
+"--------\n"                                                \
+">>> import numpy as np\n"                                  \
+">>> from ufunclab import expint1\n"                        \
+">>> expint1([0.25, 2.5, 25])\n"                            \
+"array([1.04428263e+00, 2.49149179e-02, 5.34889976e-13])\n" \
+"\n"
+
+
+#define LOGEXPINT1_DOCSTRING \
+"logexpint1(x, /, ...)\n"                                           \
+"\n"                                                                \
+"Compute the log of the exponential integral E1 of the input x.\n"  \
+"\n"                                                                \
+"Parameters\n"                                                      \
+"----------\n"                                                      \
+"x : array_like\n"                                                  \
+"    Input values\n"                                                \
+"\n"                                                                \
+"Returns\n"                                                         \
+"-------\n"                                                         \
+"out : ndarray\n"                                                   \
+"    The computed values of log E1.\n"                              \
+"\n"                                                                \
+"Examples\n"                                                        \
+"--------\n"                                                        \
+">>> import numpy as np\n"                                          \
+">>> from ufunclab import logexpint1\n"                             \
+">>> logexpint1([0.25, 2.5, 25])\n"                                 \
+"array([1.04428263e+00, 2.49149179e-02, 5.34889976e-13])\n"         \
+"\n"                                                                \
+"``expint1(x)`` underflows to 0 for sufficiently large x:\n"        \
+"\n"                                                                \
+">>> from ufunclab import expint1\n"                                \
+">>> expint1([650, 700, 750, 800])\n"                               \
+"array([7.85247922e-286, 1.40651877e-307, 0.00000000e+000, 0.00000000e+000])\n" \
+"\n"                                                                            \
+"``logexpint1`` avoids the underflow by computing the logarithm of\n"           \
+"the value:\n"                                                                  \
+"\n"                                                                            \
+">>> logexpint1([650, 700, 750, 800])\n"                                        \
+"array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])\n"         \
+"\n"
+
+
+PyMODINIT_FUNC PyInit__expint1(void)
+{
+    PyObject *module;
+    PyUFuncObject *expint1_gufunc;
+    PyUFuncObject *logexpint1_gufunc;
+    size_t ntypes;
+    int nin, nout;
+    int status;
+
+    module = PyModule_Create(&moduledef);
+    if (!module) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the expint1 ufunc.
+    ntypes = sizeof(expint1_funcs) / sizeof(expint1_funcs[0]);
+    nin = 1;
+    nout = 1;
+    expint1_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndData(
+                            expint1_funcs, expint1_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "expint1",
+                            EXPINT1_DOCSTRING, 0);
+    if (expint1_gufunc == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    status = PyModule_AddObject(module, "expint1", (PyObject *) expint1_gufunc);
+    if (status == -1) {
+        Py_DECREF(expint1_gufunc);
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    // Create the logexpint1 ufunc.
+    ntypes = sizeof(logexpint1_funcs) / sizeof(logexpint1_funcs[0]);
+    nin = 1;
+    nout = 1;
+    logexpint1_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndData(
+                            logexpint1_funcs, logexpint1_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "logexpint1",
+                            LOGEXPINT1_DOCSTRING, 0);
+    if (logexpint1_gufunc == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    status = PyModule_AddObject(module, "logexpint1", (PyObject *) logexpint1_gufunc);
+    if (status == -1) {
+        Py_DECREF(logexpint1_gufunc);
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    return module;
+}

@@ -18,6 +18,10 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'issnan',
                                        'issnan_ufunc.c.src')])
+    config.add_extension('ufunclab._expint1',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'expint1',
+                                       'expint1_ufunc.c.src')])
     config.add_extension('ufunclab._cross',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'cross',

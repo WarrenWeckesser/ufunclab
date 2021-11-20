@@ -20,6 +20,8 @@ What's in ufunclab?
 | [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
 | [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.       |
 | [`deadzone`](#deadzone)                 | Deadzone function                                |
+| [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs          |
+| [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁         |
 
 *Generalized ufuncs*
 
@@ -129,6 +131,30 @@ the plot
 
 ![Deadzone plot2](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo2.png)
 
+
+### `expint1`
+
+`expint1(x)` computes the exponential integral E₁ for the real input x.
+
+
+### `logexpint1`
+
+`logexpint1(x)` computes the logaritham of the exponential integral E₁ for the real input x.
+
+`expint1(x)` underflows to 0 for sufficiently large x:
+
+```
+>>> from ufunclab import expint1, logexpint1
+>>> expint1([650, 700, 750, 800])
+array([7.85247922e-286, 1.40651877e-307, 0.00000000e+000, 0.00000000e+000])
+```
+
+`logexpint1` avoids the underflow by computing the logarithm of the value:
+
+```
+>>> logexpint1([650, 700, 750, 800])
+array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
+```
 
 ### `first`
 
