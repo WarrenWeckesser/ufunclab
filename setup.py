@@ -7,7 +7,6 @@ def generate_ufunkify_code():
 
     cwd = os.getcwd()
     os.chdir(join(cwd, 'src', 'ufunkify'))
-    os.system
     subprocess.run(['python', '_generate_files.py'])
     os.chdir(cwd)
 
