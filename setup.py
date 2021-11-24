@@ -36,6 +36,10 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'expint1',
                                        'expint1_ufunc.c.src')])
+    config.add_extension('ufunclab._log_expit',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'log_expit',
+                                       'log_expit_ufunc.c.src')])
     config.add_extension('ufunclab._cross',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'cross',
@@ -118,5 +122,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.5.dev7',
+          version='0.0.5.dev8',
           configuration=configuration)

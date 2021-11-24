@@ -22,6 +22,7 @@ What's in ufunclab?
 | [`deadzone`](#deadzone)                 | Deadzone function                                |
 | [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs          |
 | [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁         |
+| [`log_expit`](#log_expit)               | Logarithm of the logistic sigmoid function       |
 
 *Generalized ufuncs*
 
@@ -159,6 +160,31 @@ array([7.85247922e-286, 1.40651877e-307, 0.00000000e+000, 0.00000000e+000])
 ```
 >>> logexpint1([650, 700, 750, 800])
 array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
+```
+
+### `log_expit`
+
+`log_expit` computes the logarithm of the logistic sigmoid function.
+The name `expit` is taken from the SciPy function `scipy.special.expit`
+which computes the logistic sigmoid function.
+
+```
+>>> import numpy as np
+>>> from ufunclab import log_expit
+
+>>> x = np.array([-800, -500, -0.5, 10, 250, 500])
+>>> log_expit(x)
+array([-8.00000000e+002, -5.00000000e+002, -9.74076984e-001,
+       -4.53988992e-005, -2.66919022e-109, -7.12457641e-218])
+
+Compare that to the output of `log(expit(x))`, which triggers a warning
+and loses all precision for inputs with large magnitudes:
+
+>>> from scipy.special import expit
+>>> np.log(expit(x))
+<stdin>:1: RuntimeWarning: divide by zero encountered in log
+array([           -inf, -5.00000000e+02, -9.74076984e-01,
+       -4.53988992e-05,  0.00000000e+00,  0.00000000e+00])
 ```
 
 ### `first`
