@@ -37,7 +37,7 @@ static @ctype@
 log_expit_@typename@(@ctype@ x)
 {
     if (x < 0.0) {
-        return x - log1p@char@(exp(x));
+        return x - log1p@char@(exp@char@(x));
     }
     else {
         return -log1p@char@(exp@char@(-x));
