@@ -26,6 +26,9 @@ from ._ufunkify_def import ufunkify
 import numpy as _np
 
 
+__version__ = "0.0.5.dev10"
+
+
 class op:
     """
     Allowed values for the `op` argument of `argfirst`.

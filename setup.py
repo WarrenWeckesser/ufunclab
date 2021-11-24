@@ -2,6 +2,24 @@ import os
 from os.path import join
 
 
+def get_version():
+    """
+    Find the value assigned to __version__ in ufunclab/__init__.py.
+
+    This function assumes that there is a line of the form
+
+        __version__ = "version-string"
+
+    in __init__.py.  It returns the string version-string, or None if such a
+    line is not found.
+    """
+    with open(join("ufunclab", "__init__.py"), "r") as f:
+        for line in f:
+            s = [w.strip() for w in line.split("=", 1)]
+            if len(s) == 2 and s[0] == "__version__":
+                return s[1][1:-1]
+
+
 def generate_ufunkify_code():
     import subprocess
 
@@ -122,5 +140,5 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
     setup(name='ufunclab',
-          version='0.0.5.dev9',
+          version=get_version(),
           configuration=configuration)
