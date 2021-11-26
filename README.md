@@ -23,6 +23,7 @@ What's in ufunclab?
 | [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs          |
 | [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁         |
 | [`log_expit`](#log_expit)               | Logarithm of the logistic sigmoid function       |
+| [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                       |
 
 *Generalized ufuncs*
 
@@ -185,6 +186,24 @@ and loses all precision for inputs with large magnitudes:
 <stdin>:1: RuntimeWarning: divide by zero encountered in log
 array([           -inf, -5.00000000e+02, -9.74076984e-01,
        -4.53988992e-05,  0.00000000e+00,  0.00000000e+00])
+```
+
+### `yeo_johnson`
+
+`yeo_johnson` computes the Yeo-Johnson transform.
+
+```
+>>> import numpy as np
+>>> from ufunclab import yeo_johnson
+
+>>> yeo_johnson([-1.5, -0.5, 2.8, 7, 7.1], 2.3)
+array([-0.80114069, -0.38177502,  8.93596922, 51.4905317 , 52.99552905])
+>>> yeo_johnson.outer([-1.5, -0.5, 2.8, 7, 7.1], [-2.5, 0.1, 2.3, 3])
+array([[-13.50294123,  -2.47514321,  -0.80114069,  -0.6       ],
+       [ -1.15561576,  -0.61083954,  -0.38177502,  -0.33333333],
+       [  0.38578977,   1.42821388,   8.93596922,  17.95733333],
+       [  0.39779029,   2.31144413,  51.4905317 , 170.33333333],
+       [  0.39785786,   2.32674755,  52.99552905, 176.81366667]])
 ```
 
 ### `first`
