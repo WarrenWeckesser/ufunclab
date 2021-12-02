@@ -167,7 +167,8 @@ array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
 
 `log_expit` computes the logarithm of the logistic sigmoid function.
 The name `expit` is taken from the SciPy function `scipy.special.expit`
-which computes the logistic sigmoid function.
+which computes the logistic sigmoid function. (A version of this ufunc
+was added to SciPy version 1.8.0 as `scipy.special.log_expit`.)
 
 ```
 >>> import numpy as np
