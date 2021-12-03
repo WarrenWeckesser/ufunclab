@@ -1,7 +1,7 @@
 //
 // yeo_johnson_gufunc.c.src
 //
-// ufunc implementation the Yeo-Johnson transform
+// ufunc implementations the Yeo-Johnson transform and its inverse.
 //
 
 #define PY_SSIZE_T_CLEAN
@@ -48,9 +48,45 @@ yeo_johnson_@typename@(@ctype@ x, @ctype@ lmbda)
     }
 }
 
+static @ctype@
+inv_yeo_johnson_@typename@(@ctype@ x, @ctype@ lmbda)
+{
+    if (x >= 0.0) {
+        if (lmbda == 0.0) {
+            return expm1@char@(x);
+        }
+        else {
+            if (lmbda < 0 && x >= -1/lmbda) {
+                return x > -1/lmbda ? NAN : INFINITY;
+            }
+            else {
+                return expm1@char@(log1p@char@(lmbda*x)/lmbda);
+            }
+        }
+    }
+    else {
+        // x < 0
+        if (lmbda == 2.0) {
+            return -expm1@char@(-x);
+        }
+        else {
+            if (lmbda > 2 && x <= 1/(2 - lmbda)) {
+                return x < 1/(2 - lmbda) ? NAN : -INFINITY;
+            }
+            else {
+                return -expm1@char@(log1p@char@(-(2 - lmbda)*x)/(2 - lmbda));
+            }
+        }
+    }
+}
+
+/**begin repeat1
+ * #prefix  =  , inv_ #
+ */
+
 static void
-yeo_johnson_@typename@_loop(char **args, const npy_intp *dimensions,
-                            const npy_intp* steps, void* data)
+@prefix@yeo_johnson_@typename@_loop(char **args, const npy_intp *dimensions,
+                                    const npy_intp* steps, void* data)
 {
     // args[0]: pointer to x array
     // args[1]: pointer to lmbda array
@@ -67,9 +103,11 @@ yeo_johnson_@typename@_loop(char **args, const npy_intp *dimensions,
     for (int j = 0; j < n; ++j, px += steps[0], plmbda += steps[1], pout += steps[2]) {
         @ctype@ x = *((@ctype@ *) px);
         @ctype@ lmbda = *((@ctype@ *) plmbda);
-        *((@ctype@ *) pout) = yeo_johnson_@typename@(x, lmbda);
+        *((@ctype@ *) pout) = @prefix@yeo_johnson_@typename@(x, lmbda);
     }
 }
+
+/**end repeat1**/
 
 /**end repeat**/
 
@@ -84,14 +122,18 @@ static char types[] = {
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
 };
 
-static PyUFuncGenericFunction yeo_johnson_funcs[] = {
-    (PyUFuncGenericFunction) &yeo_johnson_float_loop,
-    (PyUFuncGenericFunction) &yeo_johnson_double_loop,
-    (PyUFuncGenericFunction) &yeo_johnson_longdouble_loop
+/**begin repeat
+ * #prefix =   , inv_ #
+ */
+static PyUFuncGenericFunction @prefix@yeo_johnson_funcs[] = {
+    (PyUFuncGenericFunction) &@prefix@yeo_johnson_float_loop,
+    (PyUFuncGenericFunction) &@prefix@yeo_johnson_double_loop,
+    (PyUFuncGenericFunction) &@prefix@yeo_johnson_longdouble_loop
 };
 
-static void *yeo_johnson_data[sizeof(yeo_johnson_funcs)/sizeof(yeo_johnson_funcs[0])];
+static void *@prefix@yeo_johnson_data[sizeof(@prefix@yeo_johnson_funcs)/sizeof(@prefix@yeo_johnson_funcs[0])];
 
+/**end repeat**/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Python extension module definitions.
@@ -104,7 +146,7 @@ static PyMethodDef YeoJohnsonMethods[] = {
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_yeo_johnson",
-    .m_doc = "Module that defines the function yeo_johnson.",
+    .m_doc = "Module that defines the functions yeo_johnson and inv_yeo_johnson.",
     .m_size = -1,
     .m_methods = YeoJohnsonMethods
 };
@@ -132,16 +174,46 @@ static struct PyModuleDef moduledef = {
 ">>> import numpy as np\n"                                              \
 ">>> from ufunclab import yeo_johnson\n"                                \
 "\n"                                                                    \
-">>> yeojohnson([-1.5, -1.2, -1, 0.25, 1.1, 3.5, 4, 4.5], 2.5)\n"       \
+">>> yeo_johnson([-1.5, -1.2, -1, 0.25, 1.1, 3.5, 4, 4.5], 2.5)\n"          \
 "array([-0.73508894, -0.65160028, -0.58578644,  0.29877124,  2.15627886,\n" \
 "       16.78269478, 21.96067977, 27.97701535])\n"                          \
 "\n"
 
+#define INV_YEO_JOHNSON_DOCSTRING \
+"inv_yeo_johnson(x, lmbda, /, ...)\n"                                   \
+"\n"                                                                    \
+"Compute the inverse of the Yeo-Johnson transform of x.\n"              \
+"\n"                                                                    \
+"Parameters\n"                                                          \
+"----------\n"                                                          \
+"x : array_like\n"                                                      \
+"    Input values\n"                                                    \
+"lmbda : array_like\n"                                                  \
+"    Input values\n"                                                    \
+"\n"                                                                    \
+"Returns\n"                                                             \
+"-------\n"                                                             \
+"out : ndarray\n"                                                       \
+"    The computed values.\n"                                            \
+"\n"                                                                    \
+"Examples\n"                                                            \
+"--------\n"                                                            \
+">>> import numpy as np\n"                                              \
+">>> from ufunclab import inv_yeo_johnson, yeo_johnson\n"               \
+"\n"                                                                    \
+">>> x = inv_yeo_johnson([-1.5, -1.2, -1, 0.25, 1.1, 3.5, 4.5], 2.5)\n"     \
+">>> x\n"                                                                   \
+"array([-15.        ,  -5.25      ,  -3.        ,   0.21434292,\n"          \
+"         0.6967291 ,   1.48657662,   1.7242969 ])\n"                       \
+">>> inv_yeo_johnson(x, 2.5)\n"                                             \
+"array([-1.5 , -1.2 , -1.  ,  0.25,  1.1 ,  3.5 ,  4.5 ])\n"                \
+"\n"
 
 PyMODINIT_FUNC PyInit__yeo_johnson(void)
 {
     PyObject *module;
     PyUFuncObject *yeo_johnson_ufunc;
+    PyUFuncObject *inv_yeo_johnson_ufunc;
     size_t ntypes;
     int nin, nout;
     int status;
@@ -173,5 +245,23 @@ PyMODINIT_FUNC PyInit__yeo_johnson(void)
         return NULL;
     }
 
+    // Create the inv_yeo_johnson ufunc.
+    ntypes = sizeof(inv_yeo_johnson_funcs) / sizeof(inv_yeo_johnson_funcs[0]);
+    nin = 2;
+    nout = 1;
+    inv_yeo_johnson_ufunc = (PyUFuncObject *) PyUFunc_FromFuncAndData(
+                            inv_yeo_johnson_funcs, inv_yeo_johnson_data, types, ntypes, nin, nout,
+                            PyUFunc_None, "inv_yeo_johnson",
+                            INV_YEO_JOHNSON_DOCSTRING, 0);
+    if (inv_yeo_johnson_ufunc == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    status = PyModule_AddObject(module, "inv_yeo_johnson", (PyObject *) inv_yeo_johnson_ufunc);
+    if (status == -1) {
+        Py_DECREF(inv_yeo_johnson_ufunc);
+        Py_DECREF(module);
+        return NULL;
+    }
     return module;
 }

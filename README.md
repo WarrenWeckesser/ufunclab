@@ -24,6 +24,7 @@ What's in ufunclab?
 | [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁         |
 | [`log_expit`](#log_expit)               | Logarithm of the logistic sigmoid function       |
 | [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                       |
+| [`inv_yeo_johnson`](#inv_yeo_johnson)   | Inverse of the Yeo-Johnson transformation        |
 
 *Generalized ufuncs*
 
@@ -205,6 +206,22 @@ array([[-13.50294123,  -2.47514321,  -0.80114069,  -0.6       ],
        [  0.38578977,   1.42821388,   8.93596922,  17.95733333],
        [  0.39779029,   2.31144413,  51.4905317 , 170.33333333],
        [  0.39785786,   2.32674755,  52.99552905, 176.81366667]])
+```
+
+### `inv_yeo_johnson`
+
+`inv_yeo_johnson` computes the inverse of the Yeo-Johnson transform.
+
+```
+>>> import numpy as np
+>>> from ufunclab import inv_yeo_johnson, yeo_johnson
+
+>>> x = inv_yeo_johnson([-1.5, -0.5, 2.8, 7, 7.1], 2.5)
+>>> x
+array([-15.        ,  -0.77777778,   1.29739671,   2.21268904,
+         2.22998502])
+>>> yeo_johnson(y, 2.5)
+array([-1.5, -0.5,  2.8,  7. ,  7.1])
 ```
 
 ### `first`

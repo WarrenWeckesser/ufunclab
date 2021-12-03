@@ -6,7 +6,7 @@ from ._logfact import logfactorial
 from ._issnan import issnan
 from ._expint1 import expint1, logexpint1
 from ._log_expit import log_expit
-from ._yeo_johnson import yeo_johnson
+from ._yeo_johnson import yeo_johnson, inv_yeo_johnson
 from ._cross import cross3, cross2
 from ._first import first, argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
 from ._searchsorted import searchsortedl, searchsortedr
