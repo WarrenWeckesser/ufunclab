@@ -67,14 +67,15 @@ What's in ufunclab?
 ### `logfactorial`
 
 `logfactorial` is a ufunc that computes the natural logarithm of the
-factorial of the integer x.
+factorial of the nonnegative integer x.  (`nan` is returned for negative
+input.)
 
 For example,
 ```
-In [47]: from ufunclab import logfactorial
+>>> from ufunclab import logfactorial
 
-In [48]: logfactorial([1, 10, 100, 1000])
-Out[48]: array([   0.        ,   15.10441257,  363.73937556, 5912.12817849])
+>>> logfactorial([1, 10, 100, 1000])
+array([   0.        ,   15.10441257,  363.73937556, 5912.12817849])
 ```
 
 ### `issnan`
