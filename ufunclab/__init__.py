@@ -28,7 +28,7 @@ from ._ufunkify_def import ufunkify
 import numpy as _np
 
 
-__version__ = "0.0.5.dev11"
+__version__ = "0.0.5.dev12"
 
 
 class op:

@@ -1,5 +1,5 @@
 //
-// deadzone_gufunc.c.src
+// deadzone_ufunc.c.src
 //
 // ufunc implementation of deadzone(x, low, high)
 //
@@ -135,7 +135,7 @@ static struct PyModuleDef moduledef = {
 PyMODINIT_FUNC PyInit__deadzone(void)
 {
     PyObject *m;
-    PyUFuncObject *deadzone_gufunc;
+    PyUFuncObject *deadzone_ufunc;
     size_t ntypes;
     int nin, nout;
     int status;
@@ -152,17 +152,17 @@ PyMODINIT_FUNC PyInit__deadzone(void)
     ntypes = sizeof(deadzone_funcs) / sizeof(deadzone_funcs[0]);
     nin = 3;
     nout = 1;
-    deadzone_gufunc = (PyUFuncObject *) PyUFunc_FromFuncAndData(
+    deadzone_ufunc = (PyUFuncObject *) PyUFunc_FromFuncAndData(
                             deadzone_funcs, deadzone_data, types, ntypes, nin, nout,
                             PyUFunc_None, "deadzone",
                             DEADZONE_DOCSTRING, 0);
-    if (deadzone_gufunc == NULL) {
+    if (deadzone_ufunc == NULL) {
         Py_DECREF(m);
         return NULL;
     }
-    status = PyModule_AddObject(m, "deadzone", (PyObject *) deadzone_gufunc);
+    status = PyModule_AddObject(m, "deadzone", (PyObject *) deadzone_ufunc);
     if (status == -1) {
-        Py_DECREF(deadzone_gufunc);
+        Py_DECREF(deadzone_ufunc);
         Py_DECREF(m);
         return NULL;
     }
