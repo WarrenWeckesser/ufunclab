@@ -113,6 +113,10 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'deadzone',
                                        'deadzone_ufunc.c.src')])
+    config.add_extension('ufunclab._trapezoid_pulse',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'trapezoid_pulse',
+                                       'trapezoid_pulse_ufunc.c.src')])
     config.add_extension('ufunclab._hysteresis_relay',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'hysteresis_relay',
