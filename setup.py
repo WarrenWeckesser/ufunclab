@@ -38,7 +38,8 @@ def generate_cxxgen_code(dirnames):
 
     for dirname in dirnames:
         srcpath = join(cwd, 'src', dirname)
-        subprocess.run([sys.executable, 'generate_ufuncs.py', srcpath])
+        cmd = [sys.executable, 'generate_ufuncs.py', srcpath]
+        subprocess.run(cmd)
 
     os.chdir(cwd)
 
@@ -123,10 +124,13 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'deadzone',
                                        'deadzone_ufunc.c.src')])
+
+    _tp_srcs = ['trapezoid_pulse_concrete.cxx', '_trapezoid_pulsemodule.cxx']
     config.add_extension('ufunclab._trapezoid_pulse',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'trapezoid_pulse',
-                                       'trapezoid_pulse_ufunc.c.src')])
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'trapezoid_pulse', 'generated', name)
+                                  for name in _tp_srcs])
+
     config.add_extension('ufunclab._hysteresis_relay',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'hysteresis_relay',
@@ -168,7 +172,7 @@ if __name__ == "__main__":
     # This is probably *not* the best way to do this...
     generate_ufunkify_code()
 
-    generate_cxxgen_code(['step'])
+    generate_cxxgen_code(['step', 'trapezoid_pulse'])
 
     setup(name='ufunclab',
           version=get_version(),

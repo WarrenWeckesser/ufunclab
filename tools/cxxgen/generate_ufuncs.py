@@ -8,6 +8,7 @@ def generate(cxxgenpath):
     sys.path.append(cxxgendefpath)
     from define_cxxgen_extmods import extmods
     sys.path.pop()
+    del sys.modules['define_cxxgen_extmods']
     for extmod in extmods:
         modulename = extmod.modulename
         for header, funclist in extmod.funcs.items():
