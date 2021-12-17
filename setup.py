@@ -1,3 +1,4 @@
+import sys
 import os
 from os.path import join
 
@@ -25,12 +26,21 @@ def generate_ufunkify_code():
 
     cwd = os.getcwd()
     os.chdir(join(cwd, 'src', 'ufunkify'))
-    subprocess.run(['python', '_generate_files.py'])
+    subprocess.run([sys.executable, '_generate_files.py'])
     os.chdir(cwd)
 
 
-# This is probably *not* the best way to do this...
-generate_ufunkify_code()
+def generate_cxxgen_code(dirnames):
+    import subprocess
+
+    cwd = os.getcwd()
+    os.chdir(join(cwd, 'tools', 'cxxgen'))
+
+    for dirname in dirnames:
+        srcpath = join(cwd, 'src', dirname)
+        subprocess.run([sys.executable, 'generate_ufuncs.py', srcpath])
+
+    os.chdir(cwd)
 
 
 def configuration(parent_package='', top_path=None):
@@ -127,6 +137,13 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'all_same',
                                        'all_same_gufunc.c.src')],
                          include_dirs=[join('src', 'util')])
+
+    _step_srcs = ['step_funcs_concrete.cxx', '_stepmodule.cxx']
+    config.add_extension('ufunclab._step',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'step', 'generated', name)
+                                  for name in _step_srcs])
+
     config.add_extension('ufunclab._gendot',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'gendot',
@@ -147,6 +164,12 @@ def configuration(parent_package='', top_path=None):
 
 if __name__ == "__main__":
     from numpy.distutils.core import setup
+
+    # This is probably *not* the best way to do this...
+    generate_ufunkify_code()
+
+    generate_cxxgen_code(['step'])
+
     setup(name='ufunclab',
           version=get_version(),
           configuration=configuration)

@@ -20,6 +20,10 @@ What's in ufunclab?
 | [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
 | [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.       |
 | [`deadzone`](#deadzone)                 | Deadzone function                                |
+| [`step`](#step)                         | Step function                                    |
+| [`linearstep`](#linearstep)             | Piecewise linear step function                   |
+| [`smoothstep3`](#smoothstep3)           | Smooth step using a cubic polynomial             |
+| [`smoothstep5`](#smoothstep5)           | Smooth step using a degree 5 polynomial          |
 | [`trapezoid_pulse`](#trapezoid_pulse)   | Trapezoid pulse function                         |
 | [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs          |
 | [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁         |
@@ -136,6 +140,51 @@ the plot
 
 ![Deadzone plot2](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo2.png)
 
+### `step`
+
+The ufunc `step(x, a, flow, fa, fhigh)` returns `flow` for
+`x < a`, `fhigh` for `x > a`, and `fa` for `x = a`.
+
+The Heaviside function can be implemented as `step(x, 0, 0, 0.5, 1)`.
+
+The script `step_demo.py` in the `examples` directory generates
+the plot
+
+![step plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/step_demo.png)
+
+
+### `linearstep`
+
+The ufunc `linearstep(x, a, b, fa, fb)` returns `fa` for
+`x <= a`, `fb` for `x >= b`, and uses linear interpolation
+from `fa` to `fb` in the interval `a < x < b`.
+
+The script `linearstep_demo.py` in the `examples` directory generates
+the plot
+
+![linearstep plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/linearstep_demo.png)
+
+### `smoothstep3`
+
+The ufunc `smoothstep3(x, a, b, fa, fb)` returns `fa` for
+`x <= a`, `fb` for `x >= b`, and uses a cubic polynomial in
+the interval `a < x < b` to smoothly transition from `fa` to `fb`.
+
+The script `smoothstep3_demo.py` in the `examples` directory generates
+the plot
+
+![smoothstep3 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/smoothstep3_demo.png)
+
+### `smoothstep5`
+
+The function `smoothstep5(x, a, b, fa, fb)` returns `fa` for
+`x <= a`, `fb` for `x >= b`, and uses a degree 5 polynomial in
+the interval `a < x < b` to smoothly transition from `fa` to `fb`.
+
+The script `smoothstep5_demo.py` in the `examples` directory generates
+the plot
+
+![smoothstep5 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/smoothstep5_demo.png)
 
 ### `trapezoid_pulse`
 
