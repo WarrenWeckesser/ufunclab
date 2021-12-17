@@ -69,10 +69,13 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'log_expit',
                                        'log_expit_ufunc.c.src')])
+
+    _yj_srcs = ['yeo_johnson_concrete.cxx', '_yeo_johnsonmodule.cxx']
     config.add_extension('ufunclab._yeo_johnson',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'yeo_johnson',
-                                       'yeo_johnson_ufunc.c.src')])
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'yeo_johnson', 'generated', name)
+                                  for name in _yj_srcs])
+
     config.add_extension('ufunclab._cross',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'cross',
@@ -172,7 +175,7 @@ if __name__ == "__main__":
     # This is probably *not* the best way to do this...
     generate_ufunkify_code()
 
-    generate_cxxgen_code(['step', 'trapezoid_pulse'])
+    generate_cxxgen_code(['yeo_johnson', 'step', 'trapezoid_pulse'])
 
     setup(name='ufunclab',
           version=get_version(),
