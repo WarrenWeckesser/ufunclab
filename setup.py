@@ -125,10 +125,12 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'backlash',
                                        'backlash_gufunc.c.src')],
                          include_dirs=[join('src', 'util')])
+
+    _dz_srcs = ['deadzone_concrete.cxx', '_deadzonemodule.cxx']
     config.add_extension('ufunclab._deadzone',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'deadzone',
-                                       'deadzone_ufunc.c.src')])
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'deadzone', 'generated', name)
+                                  for name in _dz_srcs])
 
     _tp_srcs = ['trapezoid_pulse_concrete.cxx', '_trapezoid_pulsemodule.cxx']
     config.add_extension('ufunclab._trapezoid_pulse',
@@ -177,7 +179,7 @@ if __name__ == "__main__":
     # This is probably *not* the best way to do this...
     generate_ufunkify_code()
 
-    generate_cxxgen_code(['log_expit', 'yeo_johnson', 'step',
+    generate_cxxgen_code(['deadzone', 'log_expit', 'yeo_johnson', 'step',
                           'trapezoid_pulse'])
 
     setup(name='ufunclab',
