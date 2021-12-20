@@ -61,10 +61,12 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'issnan',
                                        'issnan_ufunc.c.src')])
+
+    _ei_srcs = ['expint1_concrete.cxx', '_expint1module.cxx']
     config.add_extension('ufunclab._expint1',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'expint1',
-                                       'expint1_ufunc.c.src')])
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'expint1', 'generated', name)
+                                  for name in _ei_srcs])
 
     _le_srcs = ['log_expit_concrete.cxx', '_log_expitmodule.cxx']
     config.add_extension('ufunclab._log_expit',
@@ -179,8 +181,8 @@ if __name__ == "__main__":
     # This is probably *not* the best way to do this...
     generate_ufunkify_code()
 
-    generate_cxxgen_code(['deadzone', 'log_expit', 'yeo_johnson', 'step',
-                          'trapezoid_pulse'])
+    generate_cxxgen_code(['deadzone', 'expint1', 'log_expit', 'step',
+                          'trapezoid_pulse', 'yeo_johnson',])
 
     setup(name='ufunclab',
           version=get_version(),
