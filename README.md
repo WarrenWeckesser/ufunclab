@@ -5,6 +5,8 @@ Some NumPy `ufuncs`, and some related tools.
 
 Requires at least Python 3.6.
 
+Require a C99-compatible C compiler and a C++11-compatible C++ compiler.
+
 The unit tests require pytest.
 
 Links to reference material related to NumPy's C API for ufuncs
@@ -14,6 +16,14 @@ What's in ufunclab?
 -------------------
 
 *Element-wise ufuncs*
+
+Most of the element-wise ufuncs are implemented by writing the core
+calculation as a templated C++ function, and using some Python code to
+automate the generation of all the necessary boilerplate and wrappers
+that implement a ufunc around the core calculation.  The exceptions
+are `logfactorial` and `issnan`, which are implemented in C, with all
+boilerplate code written "by hand" in the C file, and using NumPy's
+templating system to generate the loops for the different data types.
 
 | Function                                | Description                                      |
 | --------                                | -----------                                      |
