@@ -123,7 +123,7 @@ static struct PyModuleDef moduledef = {
 "Notes\n"                                                   \
 "-----\n"                                                   \
 "The function expects ``low <= high``.  It does not check\n"\
-"that this condition is satisifed.\n"                       \
+"that this condition is satisfied.\n"                       \
 "\n"                                                        \
 "Examples\n"                                                \
 "--------\n"                                                \
