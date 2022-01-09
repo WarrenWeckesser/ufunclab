@@ -25,21 +25,26 @@ are `logfactorial` and `issnan`, which are implemented in C, with all
 boilerplate code written "by hand" in the C file, and using NumPy's
 templating system to generate the loops for the different data types.
 
-| Function                                | Description                                      |
-| --------                                | -----------                                      |
-| [`logfactorial`](#logfactorial)         | Log of the factorial of integers                 |
-| [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.       |
-| [`deadzone`](#deadzone)                 | Deadzone function                                |
-| [`step`](#step)                         | Step function                                    |
-| [`linearstep`](#linearstep)             | Piecewise linear step function                   |
-| [`smoothstep3`](#smoothstep3)           | Smooth step using a cubic polynomial             |
-| [`smoothstep5`](#smoothstep5)           | Smooth step using a degree 5 polynomial          |
-| [`trapezoid_pulse`](#trapezoid_pulse)   | Trapezoid pulse function                         |
-| [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs          |
-| [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁         |
-| [`log_expit`](#log_expit)               | Logarithm of the logistic sigmoid function       |
-| [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                       |
-| [`inv_yeo_johnson`](#inv_yeo_johnson)   | Inverse of the Yeo-Johnson transformation        |
+| Function                                | Description                                                         |
+| --------                                | -----------                                                         |
+| [`logfactorial`](#logfactorial)         | Log of the factorial of integers                                    |
+| [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.                          |
+| [`deadzone`](#deadzone)                 | Deadzone function                                                   |
+| [`step`](#step)                         | Step function                                                       |
+| [`linearstep`](#linearstep)             | Piecewise linear step function                                      |
+| [`smoothstep3`](#smoothstep3)           | Smooth step using a cubic polynomial                                |
+| [`smoothstep5`](#smoothstep5)           | Smooth step using a degree 5 polynomial                             |
+| [`trapezoid_pulse`](#trapezoid_pulse)   | Trapezoid pulse function                                            |
+| [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs                             |
+| [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁                            |
+| [`log_expit`](#log_expit)               | Logarithm of the logistic sigmoid function                          |
+| [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                                          |
+| [`inv_yeo_johnson`](#inv_yeo_johnson)   | Inverse of the Yeo-Johnson transformation                           |
+| [`erfcx`](#erfcx)                       | Scaled complementary error function                                 |
+| [`normal_cdf`](#normal_cdf)             | CDF of the standard normal distribution                             |
+| [`normal_logcdf`](#normal_logcdf)       | Logarithm of the CDF of the standard normal distribution            |
+| [`normal_sf`](#normal_sf)               | Survival function of the standard normal distribution               |
+| [`normal_logsf`](#normal_logsf)         | Log of the survival function of the standard normal distribution    |
 
 *Generalized ufuncs*
 
@@ -298,6 +303,37 @@ array([-15.        ,  -0.77777778,   1.29739671,   2.21268904,
 >>> yeo_johnson(x, 2.5)
 array([-1.5, -0.5,  2.8,  7. ,  7.1])
 ```
+
+### `erfcx`
+
+`erfcx` computes the scaled complementary error function,
+`exp(x**2) * erfc(x)`.
+
+
+### `lognormal_cdf`
+
+`normal_cdf` computes the cumulative distribution funciton of the standard
+normal distribution.
+
+
+### `normal_logcdf`
+
+`normal_logcdf` computes the natural logarithm of the CDF of the standard
+normal distribution.
+
+
+### `normal_sf`
+
+`normal_sf` computes the survival function of the standard normal distribution.
+This function is also known as the complementary CDF, and is often abbreviated
+as `ccdf`.
+
+
+### `normal_logsf`
+
+`normal_logsf` computes the natural logarithm of the survival function of the
+standard normal distribution.
+
 
 ### `first`
 

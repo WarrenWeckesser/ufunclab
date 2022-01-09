@@ -13,6 +13,9 @@ _concrete_preamble = """
 // templated functions in {header}.
 // These are the functions that will be called in the ufunc loops.
 
+#ifndef GENERATED_{HEADER}_H_
+#define GENERATED_{HEADER}_H_
+
 #include "../{header}"
 
 extern "C" {{
@@ -33,8 +36,10 @@ def generate_concrete_cfuncs(cxxgenpath, header, funcs):
         else:
             header_qualifier = ''
         with open(filename, 'w') as f:
+            header_upper = header.split('.')[0].upper()
             print(_concrete_preamble.format(header=header,
-                                            header_qualifier=header_qualifier),
+                                            header_qualifier=header_qualifier,
+                                            HEADER=header_upper),
                   file=f)
             for func in funcs:
                 for typesig in func.types:
@@ -62,3 +67,5 @@ def generate_concrete_cfuncs(cxxgenpath, header, funcs):
                         print('}', file=f)
                     print(file=f)
             print('}  // extern "C"', file=f)
+            print(file=f)
+            print('#endif', file=f)

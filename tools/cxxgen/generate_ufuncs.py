@@ -10,10 +10,9 @@ def generate(cxxgenpath):
     sys.path.pop()
     del sys.modules['define_cxxgen_extmods']
     for extmod in extmods:
-        modulename = extmod.modulename
         for header, funclist in extmod.funcs.items():
             generate_concrete_cfuncs(cxxgenpath, header, funclist)
-            generate_ufunc_extmod(modulename, cxxgenpath, header, funclist)
+        generate_ufunc_extmod(cxxgenpath, extmod)
 
 
 if __name__ == "__main__":

@@ -80,6 +80,13 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'yeo_johnson', 'generated', name)
                                   for name in _yj_srcs])
 
+    _nm_srcs = ['normal_concrete.cxx', 'erfcx_concrete.cxx',
+                '_normalmodule.cxx']
+    config.add_extension('ufunclab._normal',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'normal', 'generated', name)
+                                  for name in _nm_srcs])
+
     config.add_extension('ufunclab._cross',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'cross',
@@ -137,7 +144,8 @@ def configuration(parent_package='', top_path=None):
     _tp_srcs = ['trapezoid_pulse_concrete.cxx', '_trapezoid_pulsemodule.cxx']
     config.add_extension('ufunclab._trapezoid_pulse',
                          extra_compile_args=['-std=c++11', '-Werror'],
-                         sources=[join('src', 'trapezoid_pulse', 'generated', name)
+                         sources=[join('src', 'trapezoid_pulse', 'generated',
+                                       name)
                                   for name in _tp_srcs])
 
     config.add_extension('ufunclab._hysteresis_relay',
@@ -181,8 +189,8 @@ if __name__ == "__main__":
     # This is probably *not* the best way to do this...
     generate_ufunkify_code()
 
-    generate_cxxgen_code(['deadzone', 'expint1', 'log_expit', 'step',
-                          'trapezoid_pulse', 'yeo_johnson',])
+    generate_cxxgen_code(['deadzone', 'expint1', 'log_expit', 'normal',
+                          'step', 'trapezoid_pulse', 'yeo_johnson'])
 
     setup(name='ufunclab',
           version=get_version(),
