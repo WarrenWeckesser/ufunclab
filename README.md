@@ -310,7 +310,7 @@ array([-1.5, -0.5,  2.8,  7. ,  7.1])
 `exp(x**2) * erfc(x)`.
 
 
-### `lognormal_cdf`
+### `normal_cdf`
 
 `normal_cdf` computes the cumulative distribution funciton of the standard
 normal distribution.
