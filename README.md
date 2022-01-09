@@ -306,32 +306,32 @@ array([-1.5, -0.5,  2.8,  7. ,  7.1])
 
 ### `erfcx`
 
-`erfcx` computes the scaled complementary error function,
+`erfcx(x)` computes the scaled complementary error function,
 `exp(x**2) * erfc(x)`.
 
 
 ### `normal_cdf`
 
-`normal_cdf` computes the cumulative distribution funciton of the standard
+`normal_cdf(x)` computes the cumulative distribution function of the standard
 normal distribution.
 
 
 ### `normal_logcdf`
 
-`normal_logcdf` computes the natural logarithm of the CDF of the standard
+`normal_logcdf(x)` computes the natural logarithm of the CDF of the standard
 normal distribution.
 
 
 ### `normal_sf`
 
-`normal_sf` computes the survival function of the standard normal distribution.
+`normal_sf(x)` computes the survival function of the standard normal distribution.
 This function is also known as the complementary CDF, and is often abbreviated
 as `ccdf`.
 
 
 ### `normal_logsf`
 
-`normal_logsf` computes the natural logarithm of the survival function of the
+`normal_logsf(x)` computes the natural logarithm of the survival function of the
 standard normal distribution.
 
 
