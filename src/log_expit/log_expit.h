@@ -5,9 +5,9 @@ template<typename T>
 T log_expit(T x)
 {
     if (x < 0.0) {
-        return x - log1p(exp(x));
+        return x - std::log1p(std::exp(x));
     }
     else {
-        return -log1p(exp(-x));
+        return -std::log1p(std::exp(-x));
     }
 }

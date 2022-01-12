@@ -1,9 +1,10 @@
+import pytest
 import numpy as np
 from numpy.testing import assert_equal, assert_allclose
 from ufunclab import log_expit
 
 
-# Currently the tests only run with np.float64 data type.s
+ldeps = np.finfo(np.longdouble).eps
 
 
 def test_large_negative():
@@ -52,3 +53,16 @@ def test_basic():
     # expected.  That was for x=1, and the y value differed from the
     # expected by 1 ULP.  For this test, however, I'll use rtol=1e-15.
     assert_allclose(y, expected, rtol=1e-15)
+
+
+@pytest.mark.parametrize('x, expected, rtol', [
+    ('-1000', '-1000', ldeps),
+    ('-1.0', '-1.313261687518222834048995494967855642', ldeps),
+    ('0.0', '-0.693147180559945309417232121458176568', ldeps),
+    ('1000', '-5.07595889754945676529180947957433692e-435', ldeps),
+])
+def test_longdouble(x, expected, rtol):
+    x = np.longdouble(x)
+    expected = np.longdouble(expected)
+    y = log_expit(x)
+    assert_allclose(y, expected, rtol=rtol)
