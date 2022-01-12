@@ -2,7 +2,7 @@
 #define NORMAL_H
 
 #include <cmath>
-#include "erfcx.h"
+#include "erfcx_funcs.h"
 
 #define RECIP_SQRT2 0.7071067811865475244008443621048490393L
 

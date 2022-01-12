@@ -58,10 +58,10 @@ normal_funcs = [
 erfcx_funcs = [
     Func(cxxname='erfcx',
          ufuncname='erfcx',
-         types=['f->f', 'd->d'],
+         types=['f->f', 'd->d', 'g->g'],
          docstring=erfcx_docstring),
 ]
 
 extmods = [ExtMod(modulename='_normal',
                   funcs={'normal.h': normal_funcs,
-                         'erfcx.h': erfcx_funcs})]
+                         'erfcx_funcs.h': erfcx_funcs})]

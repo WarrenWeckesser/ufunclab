@@ -80,12 +80,13 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'yeo_johnson', 'generated', name)
                                   for name in _yj_srcs])
 
-    _nm_srcs = ['normal_concrete.cxx', 'erfcx_concrete.cxx',
+    _nm_srcs = ['normal_concrete.cxx', 'erfcx_funcs_concrete.cxx',
                 '_normalmodule.cxx']
     config.add_extension('ufunclab._normal',
                          extra_compile_args=['-std=c++11', '-Werror'],
                          sources=[join('src', 'normal', 'generated', name)
-                                  for name in _nm_srcs])
+                                  for name in _nm_srcs] +
+                                 [join('src', 'normal', 'erfcx_funcs.cxx')])
 
     config.add_extension('ufunclab._cross',
                          extra_compile_args=compile_args,
