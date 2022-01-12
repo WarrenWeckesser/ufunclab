@@ -15,7 +15,7 @@ static T expint1_01(T x)
         }
         e1 = e1 + r;
     }
-    e1 = -EULER - log(x) + x*e1;
+    e1 = -EULER - std::log(x) + x*e1;
     return e1;
 }
 
@@ -59,7 +59,7 @@ T expint1(T x)
     }
     // else x > 1
     T t = expint1_t(x);
-    return exp(-x) * t;
+    return std::exp(-x) * t;
 }
 
 
@@ -75,12 +75,12 @@ T logexpint1(T x)
         return INFINITY;
     }
     if (x <= 1.0) {
-        return log(expint1_01(x));
+        return std::log(expint1_01(x));
     }
     if (x <= 500) {
         T t = expint1_t(x);
-        return -x + log(t);
+        return -x + std::log(t);
     }
     T s = (-1 + (2 + (-6 + (24 - 120/x)/x)/x)/x)/x;
-    return -x - log(x) + log1p(s);
+    return -x - std::log(x) + std::log1p(s);
 }
