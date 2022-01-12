@@ -16,10 +16,10 @@ T normal_cdf(T x)
 
     T x2 = x * RECIP_SQRT2;
     if (x2 > 0) {
-        return 1 - erfc(x2)/2;
+        return 1 - std::erfc(x2)/2;
     }
     else {
-        return erfc(-x2)/2;
+        return std::erfc(-x2)/2;
     }
 }
 
@@ -59,19 +59,15 @@ T normal_sf(T x)
  *            = log1p(-erfc(x/√2)/2)
  */
 
-//
-// NOTE: Currently erfcx handles type double only, so there is no point
-// in instantiating this function with the type long double.
-//
 template<typename T>
 T normal_logcdf(T x)
 {
     T t = x*RECIP_SQRT2;
     if (x < -1.0) {
-        return log(erfcx(-t)/2) - t*t;
+        return std::log(erfcx(-t)/2) - t*t;
     }
     else {
-        return log1p(-erfc(t)/2);
+        return std::log1p(-std::erfc(t)/2);
     }
 }
 
@@ -79,9 +75,6 @@ T normal_logcdf(T x)
 //
 // Logarithm of the survival function (aka complementary CDF) of the
 // standard normal distribution.
-//
-// NOTE: Currently erfcx handles type double only, so there is no point
-// in instantiating this function with the type long double.
 //
 template<typename T>
 T normal_logsf(T x)

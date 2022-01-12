@@ -133,7 +133,7 @@ erfcx({type_str} x)
            return INFINITY;
        }} else {{
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
-           return 2.0{sfx}*exp(x*x) - erfcx_y100(400.0{sfx}/(4.0{sfx} - x));
+           return 2.0{sfx}*std::exp(x*x) - erfcx_y100(400.0{sfx}/(4.0{sfx} - x));
        }}
     }}
 }}

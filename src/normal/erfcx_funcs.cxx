@@ -651,7 +651,7 @@ erfcx(float x)
            return INFINITY;
        } else {
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
-           return 2.0f*exp(x*x) - erfcx_y100(400.0f/(4.0f - x));
+           return 2.0f*std::exp(x*x) - erfcx_y100(400.0f/(4.0f - x));
        }
     }
 }
@@ -1593,7 +1593,7 @@ erfcx(double x)
            return INFINITY;
        } else {
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
-           return 2.0*exp(x*x) - erfcx_y100(400.0/(4.0 - x));
+           return 2.0*std::exp(x*x) - erfcx_y100(400.0/(4.0 - x));
        }
     }
 }
@@ -2635,7 +2635,7 @@ erfcx(long double x)
            return INFINITY;
        } else {
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
-           return 2.0L*exp(x*x) - erfcx_y100(400.0L/(4.0L - x));
+           return 2.0L*std::exp(x*x) - erfcx_y100(400.0L/(4.0L - x));
        }
     }
 }
