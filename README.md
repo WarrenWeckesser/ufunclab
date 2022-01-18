@@ -5,7 +5,8 @@ Some NumPy `ufuncs`, and some related tools.
 
 Requires at least Python 3.6.
 
-Require a C99-compatible C compiler and a C++11-compatible C++ compiler.
+To build `ufunclab`, a C99-compatible C compiler and a C++11-compatible C++ compiler
+are required.
 
 The unit tests require pytest.
 
@@ -283,10 +284,12 @@ was added to SciPy version 1.8.0 as `scipy.special.log_expit`.)
 >>> log_expit(x)
 array([-8.00000000e+002, -5.00000000e+002, -9.74076984e-001,
        -4.53988992e-005, -2.66919022e-109, -7.12457641e-218])
+```
 
 Compare that to the output of `log(expit(x))`, which triggers a warning
 and loses all precision for inputs with large magnitudes:
 
+```
 >>> from scipy.special import expit
 >>> np.log(expit(x))
 <stdin>:1: RuntimeWarning: divide by zero encountered in log
