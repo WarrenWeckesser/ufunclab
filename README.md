@@ -29,6 +29,7 @@ templating system to generate the loops for the different data types.
 | --------                                | -----------                                                         |
 | [`logfactorial`](#logfactorial)         | Log of the factorial of integers                                    |
 | [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.                          |
+| [`abs_squared`](#abs_squared)           | Squared absolute value                                              |
 | [`deadzone`](#deadzone)                 | Deadzone function                                                   |
 | [`step`](#step)                         | Step function                                                       |
 | [`linearstep`](#linearstep)             | Piecewise linear step function                                      |
@@ -130,6 +131,30 @@ it should).
 ```
 >>> issnan(x)
 array([False,  True, False, False, False])
+```
+
+### `abs_squared`
+
+`abs_squared(z)` computes the squared absolute value of `z`.
+This is an element-wise ufunc with types `'f->f'`, `'d->d'`,
+`'g->g'`, `'F->f'`, `'D->d'`, and `'G->g'`.  For real input,
+the result is just `z**2`.  For complex input, it is
+`z.real**2 + z.imag**2`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import abs_squared
+
+>>> abs_squared.types
+['f->f', 'd->d', 'g->g', 'F->f', 'D->d', 'G->g']
+
+>>> x = np.array([-1.5, 3.0, 9.0, -10.0], dtype=np.float32)
+>>> abs_squared(x)
+array([  2.25,   9.  ,  81.  , 100.  ], dtype=float32)
+
+>>> z = np.array([-3+4j, -1, 1j, 13, 0.5-1.5j])
+>>> abs_squared(z)
+array([ 25. ,   1. ,   1. , 169. ,   2.5])
 ```
 
 ### `deadzone`

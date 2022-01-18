@@ -62,6 +62,12 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'issnan',
                                        'issnan_ufunc.c.src')])
 
+    _as_srcs = ['abs_squared_concrete.cxx', '_abs_squaredmodule.cxx']
+    config.add_extension('ufunclab._abs_squared',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'abs_squared', 'generated', name)
+                                  for name in _as_srcs])
+
     _ei_srcs = ['expint1_concrete.cxx', '_expint1module.cxx']
     config.add_extension('ufunclab._expint1',
                          extra_compile_args=['-std=c++11', '-Werror'],
@@ -190,8 +196,8 @@ if __name__ == "__main__":
     # This is probably *not* the best way to do this...
     generate_ufunkify_code()
 
-    generate_cxxgen_code(['deadzone', 'expint1', 'log_expit', 'normal',
-                          'step', 'trapezoid_pulse', 'yeo_johnson'])
+    generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'log_expit',
+                          'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
 
     setup(name='ufunclab',
           version=get_version(),

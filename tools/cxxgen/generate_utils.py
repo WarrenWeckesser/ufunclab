@@ -7,12 +7,18 @@ typechar_to_ctype = dict(
     f='float',
     d='double',
     g='long double',
+    F='std::complex<float>',
+    D='std::complex<double>',
+    G='std::complex<long double>',
 )
 
 typechar_to_npy_type = dict(
     f='NPY_FLOAT',
     d='NPY_DOUBLE',
     g='NPY_LONGDOUBLE',
+    F='NPY_CFLOAT',
+    D='NPY_CDOUBLE',
+    G='NPY_CLONGDOUBLE',
 )
 
 
