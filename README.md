@@ -3,7 +3,10 @@ ufunclab
 
 Some NumPy `ufuncs`, and some related tools.
 
-Requires at least Python 3.6.
+The test suite is run with Python versions 3.8 to 3.10, with several
+recent releases of NumPy, and with the NumPy main development branch.
+`ufunclab` might work with older Python and NumPy versions, but they
+are not regularly tested.
 
 To build `ufunclab`, a C99-compatible C compiler and a C++11-compatible C++ compiler
 are required.
