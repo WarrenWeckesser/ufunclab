@@ -33,7 +33,7 @@ jobs:
         echo $LOCATION
         python -m pytest $LOCATION
 
-  test-py3.10:
+  test-py3-10:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
