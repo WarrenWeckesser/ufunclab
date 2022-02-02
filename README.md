@@ -338,8 +338,29 @@ array([-1.5, -0.5,  2.8,  7. ,  7.1])
 ### `erfcx`
 
 `erfcx(x)` computes the scaled complementary error function,
-`exp(x**2) * erfc(x)`.
+`exp(x**2) * erfc(x)`.  The function is implemented for NumPy types
+`float32`, `float64` and `longdouble` (also known as `float128`):
 
+```
+>>> from ufunclab import erfcx
+>>> erfcx.types
+['f->f', 'd->d', 'g->g']
+```
+
+This example is run on a platform where the `longdouble` type
+corresponds to a `float128` with 80 bits of precision:
+
+```
+>>> import numpy as np
+>>> b = np.longdouble('1.25e2000')
+>>> x = np.array([-40, -1.0, 0, 2.5, 3000.0, b])
+>>> x
+array([-4.00e+0001, -1.00e+0000,  0.00e+0000,  1.00e+0003,  1.25e+2000],
+      dtype=float128)
+>>> erfcx(x)
+array([1.48662366e+0695, 5.00898008e+0000, 1.00000000e+0000,
+       5.64189301e-0004, 4.51351667e-2001], dtype=float128)
+```
 
 ### `normal_cdf`
 
