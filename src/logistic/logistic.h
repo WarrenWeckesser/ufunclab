@@ -25,3 +25,10 @@ T log_logistic(T x)
         return -std::log1p(std::exp(-x));
     }
 }
+
+
+template<typename T>
+T swish(T x, T beta)
+{
+    return x * logistic(beta * x);
+}

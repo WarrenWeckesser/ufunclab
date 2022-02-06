@@ -196,6 +196,8 @@ def generate_ufunc_extmod(cxxgenpath, extmod):
                     print(f'        *(({out_ctype} *) pout) = {uname}_{ext}({args});',
                           file=f)
                     print('    }', file=f)
+                    print('    char dummy;', file=f)
+                    print('    npy_clear_floatstatus_barrier(&dummy);', file=f)
                     print('}', file=f)
                     print(file=f)
                 print('END_EXTERN_C', file=f)

@@ -45,6 +45,7 @@ templating system to generate the loops for the different data types.
 | [`logistic`](#logistic)                 | The standard logistic sigmoid function                              |
 | [`logistic_deriv`](#log_expit)          | Derivative of the standard logistic sigmoid function                |
 | [`log_logistic`](#log_expit)            | Logarithm of the standard logistic sigmoid function                 |
+| [`swish`](#swish)                       | The 'swish' function--a smoothed ramp                               |
 | [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                                          |
 | [`inv_yeo_johnson`](#inv_yeo_johnson)   | Inverse of the Yeo-Johnson transformation                           |
 | [`erfcx`](#erfcx)                       | Scaled complementary error function                                 |
@@ -311,6 +312,13 @@ and loses all precision for inputs with large magnitudes:
 array([           -inf, -5.00000000e+02, -9.74076984e-01,
        -4.53988992e-05,  0.00000000e+00,  0.00000000e+00])
 ```
+
+### `swish`
+
+`swish(x, beta)` computes `x * logistic(beta*x)`, where `logistic(x)`
+is the standard logistic sigmoid function.  The function is a type
+of smoothed ramp.
+
 
 ### `yeo_johnson`
 

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_equal, assert_allclose
-from ufunclab import logistic, logistic_deriv, log_logistic
+from ufunclab import logistic, logistic_deriv, log_logistic, swish
 
 
 ldeps = np.finfo(np.longdouble).eps
@@ -84,3 +84,15 @@ def test_log_logistic_longdouble(x, expected, rtol):
     expected = np.longdouble(expected)
     y = log_logistic(x)
     assert_allclose(y, expected, rtol=rtol)
+
+
+def test_swish_basic():
+    x = np.array([-3, 1e-6, 0, 1, 9])
+    beta = np.array([[1.0], [2.5]])
+    y = swish(x, beta)
+    # Expected values computed with mpmath.
+    expected = [[-0.14227761953270035, 5.000002499999999e-07, 0.0,
+                 0.7310585786300049, 8.998889448816124],
+                [-0.0016583359107707986, 5.00000625e-07, 0.0,
+                 0.9241418199787564, 8.999999998477293]]
+    assert_allclose(y, expected, rtol=1e-15)

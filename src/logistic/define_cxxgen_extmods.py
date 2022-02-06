@@ -87,6 +87,39 @@ Large positive values:
 array([-1.38879439e-011, -3.72007598e-044, -1.91516960e-174])
 """
 
+swish_docstring = """\
+swish(x, beta, /, ...)
+
+Compute the *swish* function (a smoothed ramp):
+
+    swish(x, beta) = x * logistic(beta*x)
+
+where logistic(x) is the standard logistic sigmoid functions.
+
+Parameters
+----------
+x : array_like
+    Input values
+beta : array_like
+    Coefficient of x in the argument to logistic.
+
+Returns
+-------
+out : ndarray
+    The computed 'swish' values.
+
+Examples
+--------
+>>> import numpy as np
+>>> from ufunclab import swish
+
+>>> x = np.array([-4, -1, 0, 1.5, 5])
+>>> beta = np.array([[1.0], [1.5]])
+>>> swish(x, beta)
+array([[-0.07194484, -0.26894142,  0.        ,  1.22636171,  4.96653575],
+       [-0.00989049, -0.18242552,  0.        ,  1.3569758 ,  4.99723611]])
+
+"""
 
 funcs = [
     Func(cxxname='logistic',
@@ -101,6 +134,10 @@ funcs = [
          ufuncname='log_logistic',
          types=['f->f', 'd->d', 'g->g'],
          docstring=log_logistic_docstring),
+    Func(cxxname='swish',
+         ufuncname='swish',
+         types=['ff->f', 'dd->d', 'gg->g'],
+         docstring=swish_docstring),
 ]
 
 extmods = [ExtMod(modulename='_logistic',
