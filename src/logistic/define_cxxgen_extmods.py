@@ -1,14 +1,62 @@
 
 from ufunc_config_types import ExtMod, Func
 
+logistic_docstring = """\
+logistic(x, /, ...)
 
-log_expit_docstring = """\
-log_expit(x, /, ...)
+Compute the standard logistic sigmoid function
 
-Compute the logarithm of the logistic sigmoid function.
+    logistic(x) = 1/(1 + exp(-x))
 
-The name `expit` is taken from SciPy, where `scipy.special.expit`
-implements the logistic sigmoid function.
+Parameters
+----------
+x : array_like
+    Input values
+
+Returns
+-------
+out : ndarray
+    The computed values of the logistic sigmoid function.
+
+Examples
+--------
+>>> import numpy as np
+>>> from ufunclab import logistic
+
+>>> logistic([-3, -0.25, 0, 0.25, 3])
+array([0.04742587, 0.4378235 , 0.5       , 0.5621765 , 0.95257413])
+
+"""
+
+logistic_deriv_docstring = """\
+logistic_deriv(x, /, ...)
+
+Compute the derivative of the standard logistic sigmoid function.
+
+Parameters
+----------
+x : array_like
+    Input values
+
+Returns
+-------
+out : ndarray
+    The computed derivatives of the logistic sigmoid function.
+
+Examples
+--------
+>>> import numpy as np
+>>> from ufunclab import logistic_deriv
+
+>>> logistic_deriv([-3, -0.25, 0, 0.25, 3])
+array([...])
+
+"""
+
+log_logistic_docstring = """\
+log_logistic(x, /, ...)
+
+Compute the logarithm of the standard logistic sigmoid function.
 
 Parameters
 ----------
@@ -41,11 +89,19 @@ array([-1.38879439e-011, -3.72007598e-044, -1.91516960e-174])
 
 
 funcs = [
-    Func(cxxname='log_expit',
-         ufuncname='log_expit',
+    Func(cxxname='logistic',
+         ufuncname='logistic',
          types=['f->f', 'd->d', 'g->g'],
-         docstring=log_expit_docstring),
+         docstring=logistic_docstring),
+    Func(cxxname='logistic_deriv',
+         ufuncname='logistic_deriv',
+         types=['f->f', 'd->d', 'g->g'],
+         docstring=logistic_deriv_docstring),
+    Func(cxxname='log_logistic',
+         ufuncname='log_logistic',
+         types=['f->f', 'd->d', 'g->g'],
+         docstring=log_logistic_docstring),
 ]
 
-extmods = [ExtMod(modulename='_log_expit',
-                  funcs={'log_expit.h': funcs})]
+extmods = [ExtMod(modulename='_logistic',
+                  funcs={'logistic.h': funcs})]

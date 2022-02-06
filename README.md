@@ -42,7 +42,9 @@ templating system to generate the loops for the different data types.
 | [`trapezoid_pulse`](#trapezoid_pulse)   | Trapezoid pulse function                                            |
 | [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs                             |
 | [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁                            |
-| [`log_expit`](#log_expit)               | Logarithm of the logistic sigmoid function                          |
+| [`logistic`](#logistic)                 | The standard logistic sigmoid function                              |
+| [`logistic_deriv`](#log_expit)          | Derivative of the standard logistic sigmoid function                |
+| [`log_logistic`](#log_expit)            | Logarithm of the standard logistic sigmoid function                 |
 | [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                                          |
 | [`inv_yeo_johnson`](#inv_yeo_johnson)   | Inverse of the Yeo-Johnson transformation                           |
 | [`erfcx`](#erfcx)                       | Scaled complementary error function                                 |
@@ -272,16 +274,26 @@ array([7.85247922e-286, 1.40651877e-307, 0.00000000e+000, 0.00000000e+000])
 array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
 ```
 
-### `log_expit`
 
-`log_expit` computes the logarithm of the logistic sigmoid function.
-The name `expit` is taken from the SciPy function `scipy.special.expit`
-which computes the logistic sigmoid function. (A version of this ufunc
-was added to SciPy version 1.8.0 as `scipy.special.log_expit`.)
+### `logistic`
+
+`logistic(x)` computes the standard logistic sigmoid function.
+
+
+### `logistic_deriv`
+
+`logistic_deriv(x)` computes the deriative of the standard logistic sigmoid
+function.
+
+
+### `log_logistic`
+
+`log_logistic(x)` computes the logarithm of the standard logistic sigmoid
+function.
 
 ```
 >>> import numpy as np
->>> from ufunclab import log_expit
+>>> from ufunclab import log_logistic
 
 >>> x = np.array([-800, -500, -0.5, 10, 250, 500])
 >>> log_expit(x)

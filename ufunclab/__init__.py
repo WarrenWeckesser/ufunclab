@@ -6,7 +6,7 @@ from ._logfact import logfactorial
 from ._issnan import issnan
 from ._abs_squared import abs_squared
 from ._expint1 import expint1, logexpint1
-from ._log_expit import log_expit
+from ._logistic import logistic, logistic_deriv, log_logistic
 from ._normal import normal_cdf, normal_logcdf, normal_sf, normal_logsf, erfcx
 from ._yeo_johnson import yeo_johnson, inv_yeo_johnson
 from ._cross import cross3, cross2
@@ -33,7 +33,7 @@ from ._ufunkify_def import ufunkify
 import numpy as _np
 
 
-__version__ = "0.0.5.dev24"
+__version__ = "0.0.5.dev25"
 
 
 class op:

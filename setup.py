@@ -74,10 +74,10 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'expint1', 'generated', name)
                                   for name in _ei_srcs])
 
-    _le_srcs = ['log_expit_concrete.cxx', '_log_expitmodule.cxx']
-    config.add_extension('ufunclab._log_expit',
+    _le_srcs = ['logistic_concrete.cxx', '_logisticmodule.cxx']
+    config.add_extension('ufunclab._logistic',
                          extra_compile_args=['-std=c++11', '-Werror'],
-                         sources=[join('src', 'log_expit', 'generated', name)
+                         sources=[join('src', 'logistic', 'generated', name)
                                   for name in _le_srcs])
 
     _yj_srcs = ['yeo_johnson_concrete.cxx', '_yeo_johnsonmodule.cxx']
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     # This is probably *not* the best way to do this...
     generate_ufunkify_code()
 
-    generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'log_expit',
+    generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
 
     setup(name='ufunclab',
