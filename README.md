@@ -43,8 +43,8 @@ templating system to generate the loops for the different data types.
 | [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs                             |
 | [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁                            |
 | [`logistic`](#logistic)                 | The standard logistic sigmoid function                              |
-| [`logistic_deriv`](#log_expit)          | Derivative of the standard logistic sigmoid function                |
-| [`log_logistic`](#log_expit)            | Logarithm of the standard logistic sigmoid function                 |
+| [`logistic_deriv`](#logistic_deriv)     | Derivative of the standard logistic sigmoid function                |
+| [`log_logistic`](#log_logistic)         | Logarithm of the standard logistic sigmoid function                 |
 | [`swish`](#swish)                       | The 'swish' function--a smoothed ramp                               |
 | [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                                          |
 | [`inv_yeo_johnson`](#inv_yeo_johnson)   | Inverse of the Yeo-Johnson transformation                           |
