@@ -280,11 +280,18 @@ array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
 
 `logistic(x)` computes the standard logistic sigmoid function.
 
+The script `logistic_demo.py` in the `examples` directory generates
+this plot:
+
+![logistic plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/logistic_demo.png)
+
 
 ### `logistic_deriv`
 
 `logistic_deriv(x)` computes the deriative of the standard logistic sigmoid
 function.
+
+See `logistic` (above) for a plot.
 
 
 ### `log_logistic`
