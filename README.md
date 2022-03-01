@@ -1166,7 +1166,7 @@ array([[[ -1.,   0.,   0.],
 
 ### `fillnan1d`
 
-`fillnand1d(x)` is a gufunc with signature `(i)->(i)`.  It uses linear
+`fillnan1d(x)` is a gufunc with signature `(i)->(i)`.  It uses linear
 interpolation to replace occurrences of `nan` in `x`.
 
 ```
