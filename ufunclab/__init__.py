@@ -19,6 +19,7 @@ from ._meanvar import meanvar
 from ._mad import mad, mad1, rmad, rmad1
 from ._vnorm import vnorm
 from ._backlash import backlash
+from ._fillnan1d import fillnan1d
 from ._deadzone import deadzone
 from ._trapezoid_pulse import trapezoid_pulse
 from ._hysteresis_relay import hysteresis_relay

@@ -158,6 +158,12 @@ def configuration(parent_package='', top_path=None):
                                        'backlash_gufunc.c.src')],
                          include_dirs=[join('src', 'util')])
 
+    config.add_extension('ufunclab._fillnan1d',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'fillnan1d',
+                                       'fillnan1d_gufunc.c.src')],
+                         include_dirs=[join('src', 'util')])
+
     _dz_srcs = ['deadzone_concrete.cxx', '_deadzonemodule.cxx']
     config.add_extension('ufunclab._deadzone',
                          extra_compile_args=['-std=c++11', '-Werror'],

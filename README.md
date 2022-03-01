@@ -80,6 +80,7 @@ templating system to generate the loops for the different data types.
 | [`vnorm`](#vnorm)                       | Vector norm                                           |
 | [`cross2`](#cross2)                     | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                     | 3-d vector cross product                              |
+| [`fillnan1d`](#fillnan1d)               | Replace `nan` using linear interpolation              |
 | [`backlash`](#backlash)                 | Backlash operator                                     |
 | [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis (Schmitt trigger)               |
 
@@ -1161,6 +1162,28 @@ array([[[ -1.,   0.,   0.],
         [-17.,  18.,  -3.],
         [-20.,  18.,   0.],
         [-23.,  18.,   3.]]])
+```
+
+### `fillnan1d`
+
+`fillnand1d(x)` is a gufunc with signature `(i)->(i)`.  It uses linear
+interpolation to replace occurrences of `nan` in `x`.
+
+```
+In [14]: x = np.array([1.0, 2.0, np.nan, np.nan, 3.5, 5.0, np.nan, 7.5])
+
+In [15]: fillnan1d(x)
+Out[15]: array([1.  , 2.  , 2.5 , 3.  , 3.5 , 5.  , 6.25, 7.5 ])
+```
+
+`nan` values at the ends of `x` are replaced with the nearest non-`nan`
+value:
+
+```
+In [16]: x = np.array([np.nan, 2.0, np.nan, 5.0, np.nan, np.nan])
+
+In [17]: fillnan1d(x)
+Out[17]: array([2. , 2. , 3.5, 5. , 5. , 5. ])
 ```
 
 ### `backlash`
