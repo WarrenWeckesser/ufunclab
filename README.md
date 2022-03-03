@@ -327,6 +327,7 @@ array([           -inf, -5.00000000e+02, -9.74076984e-01,
 is the standard logistic sigmoid function.  The function is a type
 of smoothed ramp.
 
+![swish plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/swish_demo.png)
 
 ### `yeo_johnson`
 
