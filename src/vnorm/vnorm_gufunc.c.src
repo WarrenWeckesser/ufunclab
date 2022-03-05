@@ -131,7 +131,7 @@ static void vnorm_@typename@_loop(char **args, const npy_intp *dimensions,
         }
 
         for (int k = 0; k < dimensions[1]; ++k) {
-            @ccplxtype@ current_x = ((@ccplxtype@ *) px)[k];
+            @ccplxtype@ current_x = *((@ccplxtype@ *) (px + k*steps[3]));
             @crealtype@ mag = cabs@c@(current_x);
             if (mag > maxmag) {
                 maxmag = mag;

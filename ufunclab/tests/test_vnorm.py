@@ -89,8 +89,10 @@ def test_axis_z(dtype):
     assert_allclose(nrm, [2, np.sqrt(30), 3, np.sqrt(204)])
 
 
-def test_nontrivial_strided():
-    a = np.zeros((3, 8))
+@pytest.mark.parametrize('dtype', [np.float64, np.float128,
+                                   np.complex64, np.complex128])
+def test_nontrivial_strides(dtype):
+    a = np.zeros((3, 8), dtype=dtype)
     a[:,6:] = 10
     b = a[::2, ::2]
     n1 = vnorm(b, 2, axis=1)
