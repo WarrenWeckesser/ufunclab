@@ -138,7 +138,7 @@ static void vnorm_@typename@_loop(char **args, const npy_intp *dimensions,
             }
         }
         if (maxmag == 0) {
-            ((@ccplxtype@ *) pout)[0] = 0;
+            ((@crealtype@ *) pout)[0] = 0;
         }
         else {
             @crealtype@ sum = 0;
