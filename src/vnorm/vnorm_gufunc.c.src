@@ -55,7 +55,7 @@ static void vnorm_@typename@_loop(char **args, const npy_intp *dimensions,
         }
 
         for (int k = 0; k < dimensions[1]; ++k) {
-            @ctype@ current_x = ((@ctype@ *) px)[k];
+            @ctype@ current_x = *((@ctype@ *) (px + k*steps[3]));
             if (current_x < 0) {
                 current_x = -current_x;
             }

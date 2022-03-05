@@ -87,3 +87,11 @@ def test_axis_z(dtype):
                   [0j, 1-2j, -3j, 2-2j]], dtype=dtype)
     nrm = vnorm(z, 2, axis=0)
     assert_allclose(nrm, [2, np.sqrt(30), 3, np.sqrt(204)])
+
+
+def test_nontrivial_strided():
+    a = np.zeros((3, 8))
+    a[:,6:] = 10
+    b = a[::2, ::2]
+    n1 = vnorm(b, 2, axis=1)
+    assert_array_equal(n1, [10.0, 10.0])
