@@ -13,6 +13,10 @@
 #include "numpy/ufuncobject.h"
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Compute nin and nout from the signature.
 // This counts the number of opening parenthesis
 // characters ('(') before and after the '-' character.
@@ -67,3 +71,8 @@ ul_define_gufunc(PyObject *module, const char *name, const char *doc,
     }
     return 0;
 }
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif
+

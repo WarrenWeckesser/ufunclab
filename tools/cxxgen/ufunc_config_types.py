@@ -1,5 +1,5 @@
 
-from typing import List
+from typing import List, Dict
 from dataclasses import dataclass
 
 
@@ -15,3 +15,14 @@ class Func:
 class ExtMod:
     modulename: str
     funcs: List[Func]
+
+
+@dataclass
+class GUFuncExtMod:
+    module: str
+    ufuncname: str
+    docstring: str
+    signature: str
+    corefile: str
+    corefuncs: Dict[str, List[str]]
+    header: str

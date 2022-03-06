@@ -12,14 +12,24 @@ typechar_to_ctype = dict(
     G='std::complex<long double>',
 )
 
-typechar_to_npy_type = dict(
-    f='NPY_FLOAT',
-    d='NPY_DOUBLE',
-    g='NPY_LONGDOUBLE',
-    F='NPY_CFLOAT',
-    D='NPY_CDOUBLE',
-    G='NPY_CLONGDOUBLE',
-)
+
+typechar_to_npy_type = {
+    '?': 'NPY_BOOL',
+    'b': 'NPY_BYTE',
+    'h': 'NPY_SHORT',
+    'i': 'NPY_INT',
+    'l': 'NPY_LONG',
+    'B': 'NPY_UBYTE',
+    'H': 'NPY_USHORT',
+    'I': 'NPY_UINT',
+    'L': 'NPY_ULONG',
+    'f': 'NPY_FLOAT',
+    'd': 'NPY_DOUBLE',
+    'g': 'NPY_LONGDOUBLE',
+    'F': 'NPY_CFLOAT',
+    'D': 'NPY_CDOUBLE',
+    'G': 'NPY_CLONGDOUBLE',
+}
 
 
 def typesig_to_ext(typesig):

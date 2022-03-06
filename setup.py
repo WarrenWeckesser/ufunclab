@@ -44,6 +44,20 @@ def generate_cxxgen_code(dirnames):
     os.chdir(cwd)
 
 
+def generate_cxx_gufunc_extmods(dirnames):
+    import subprocess
+
+    cwd = os.getcwd()
+    os.chdir(join(cwd, 'tools', 'cxxgen'))
+
+    for dirname in dirnames:
+        srcpath = join(cwd, 'src', dirname)
+        cmd = [sys.executable, 'generate_gufunc.py', srcpath]
+        subprocess.run(cmd)
+
+    os.chdir(cwd)
+
+
 def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration, get_info
 
@@ -146,10 +160,11 @@ def configuration(parent_package='', top_path=None):
                          extra_compile_args=compile_args,
                          sources=[join('src', 'mad', 'mad_gufunc.c.src')])
 
+    _vnorm_srcs = ['vnorm_gufunc.h', '_vnormmodule.cxx']
     config.add_extension('ufunclab._vnorm',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'vnorm',
-                                       'vnorm_gufunc.c.src')],
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'vnorm', name)
+                                  for name in _vnorm_srcs],
                          include_dirs=[join('src', 'util')])
 
     config.add_extension('ufunclab._backlash',
@@ -226,6 +241,8 @@ if __name__ == "__main__":
 
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
+
+    generate_cxx_gufunc_extmods(['vnorm'])
 
     setup(name='ufunclab',
           version=get_version(),
