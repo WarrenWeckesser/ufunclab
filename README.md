@@ -56,6 +56,12 @@ templating system to generate the loops for the different data types.
 
 *Generalized ufuncs*
 
+All these gufuncs except `vnorm` are implemented as custom extension modules.
+In `vnorm`, only the core calculations are implemented (as templated C++
+functions), and code generation tools are used to automatically generate the
+extension module source code based on a configuration file.  More gufuncs
+will be moved to this system eventually.
+
 | Function                                | Description                                           |
 | --------                                | -----------                                           |
 | [`first`](#first)                       | First value that matches a target comparison          |
