@@ -11,7 +11,7 @@ are not regularly tested.
 To build `ufunclab`, a C99-compatible C compiler and a C++11-compatible C++ compiler
 are required.
 
-The unit tests require pytest.
+The unit tests require [pytest](https://docs.pytest.org/).
 
 Links to reference material related to NumPy's C API for ufuncs
 and gufuncs are given [below](#resources).
