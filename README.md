@@ -56,13 +56,14 @@ templating system to generate the loops for the different data types.
 
 *Generalized ufuncs*
 
-All these gufuncs except `all_same` and  `vnorm` are implemented as custom
-extension modules.
+All these gufuncs except `all_same`, `meanvar` and  `vnorm` are
+implemented as custom extension modules.
 
-In `all_same` and `vnorm`, only the core calculations are implemented (as
-templated C++ functions), and code generation tools are used to automatically
-generate the extension module source code based on a configuration file.
-More gufuncs will be moved to this system eventually.
+In `all_same`, `meanvar` and `vnorm`, the core calculations are
+implemented as templated C++ functions, and code generation tools are
+used to automatically generate the extension module source code based
+on a configuration file.  More gufuncs will be moved to this system
+eventually.
 
 | Function                                | Description                                           |
 | --------                                | -----------                                           |
