@@ -4,11 +4,6 @@
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
-#include <stdio.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <math.h>
-
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
@@ -29,7 +24,6 @@ static void meanvar_core(
     U mean = 0.0;
     U var = 0.0;
     U c1 = 0.0, m2 = 0.0, c2 = 0.0;
-    // char *pxk = px;
     for (npy_intp k = 0; k < n; ++k) {
         U y1, t1, y2, t2;
         T xk = GET(T, p_x, x_stride, k);
@@ -48,6 +42,5 @@ static void meanvar_core(
     *p_out = mean;
     SET(U, p_out, out_stride, 1, var);
 }
-
 
 #endif
