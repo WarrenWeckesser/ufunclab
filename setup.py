@@ -204,11 +204,12 @@ def configuration(parent_package='', top_path=None):
                                        'hysteresis_relay_gufunc.c.src')],
                          include_dirs=[util_include_dir])
 
+    _all_same_srcs = ['all_same_gufunc.h', '_all_samemodule.cxx']
     config.add_extension('ufunclab._all_same',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'all_same',
-                                       'all_same_gufunc.c.src')],
-                         include_dirs=[util_include_dir])
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'all_same', name)
+                                  for name in _all_same_srcs],
+                         **npymath_info)
 
     _step_srcs = ['step_funcs_concrete.cxx', '_stepmodule.cxx']
     config.add_extension('ufunclab._step',
@@ -246,7 +247,7 @@ if __name__ == "__main__":
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
 
-    generate_cxx_gufunc_extmods(['vnorm'])
+    generate_cxx_gufunc_extmods(['all_same', 'vnorm'])
 
     setup(name='ufunclab',
           version=get_version(),

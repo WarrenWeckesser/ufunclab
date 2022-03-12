@@ -1,6 +1,7 @@
 import numpy as np
 
 from generate_utils import typechar_to_npy_type as npy_types
+from generate_utils import typechar_to_npy_ctype
 
 
 def classify_typenames(types):
@@ -54,19 +55,43 @@ def flatten(parts):
 
 
 def parse_gufunc_signature(sig):
+    """
+    Parameters
+    ----------
+    sig : gufunc shape signature (i.e. the string stored in the
+          `signature` attribute of the Python gufunc object)
+
+    Returns
+    -------
+    core_dim_names : List[str]
+        unique set of symbols used in `sig`
+    shapes_in : List[{int, str, List[{int, str}]]
+        "Shape"-portion of the items on the left of '->' in `sig`
+    shapes_out : List[{int, str, List[{int, str}]]
+        "Shape"-portion of the iterms on the right of '->' in sig.
+
+    Examples
+    --------
+    >>> parse_gufunc_signature('(n)->()')
+    (['n'], ['n'], [''])
+
+    >>> parse_gufunc_signature('(m, n), (2), () -> (m, 2), (n)')
+    (['m', 'n'], [['m', 'n'], 2, ''], [['m', 2], 'n'])
+
+    """
     sig = sig.replace(' ', '')
     left, right = sig.split('->')
-    leftparts = split_parts(left)
-    rightparts = split_parts(right)
+    shapes_in = split_parts(left)
+    shapes_out = split_parts(right)
     core_dim_names = []
-    for name in flatten(leftparts) + flatten(rightparts):
+    for name in flatten(shapes_in) + flatten(shapes_out):
         try:
             name = int(name)
         except ValueError:
             pass
         if isinstance(name, str) and name != '' and name not in core_dim_names:
             core_dim_names.append(name)
-    return core_dim_names, leftparts, rightparts
+    return core_dim_names, shapes_in, shapes_out
 
 
 def shape_name_str(shape_name):
@@ -109,6 +134,194 @@ def get_varnames_from_docstring_and_sig(docstring, signature):
     return varnames
 
 
+def generate_declaration(name, signature,
+                         template_types, var_types,
+                         varnames, core_dim_names, shapes,
+                         corename, coretypes):
+    nct = len(coretypes)
+    if nct == 0:
+        return ''
+
+    text = []
+
+    text.append('')
+    text.append('//')
+    text.append(f'// Prototype for `{corename}`, the C++ core function')
+    text.append(f"// for the gufunc `{name}` with signature '{signature}'")
+    text.append(f'// for types {coretypes}.')
+    text.append('//')
+
+    text.append('/*')
+    if len(template_types) > 0:
+        template_type_names = [chr(ord('T') + j)
+                               for j in range(len(template_types))]
+        if nct > 1:
+            s = ', '.join(['typename ' + tn for tn in template_type_names])
+            text.append(f"template<{s}>")
+    text.append(f"static void {corename}(")
+
+    vardecls = []
+
+    for k, core_dim_name in enumerate(core_dim_names):
+        vardecls.append((f'npy_intp {core_dim_name}',
+                         f'// core dimension {core_dim_name}'))
+
+    vt = [template_type_names[j] if isinstance(j, int)
+          else typechar_to_npy_ctype(j) for j in var_types]
+    for k, (shape_name, varname, vct) in enumerate(zip(shapes,
+                                                       varnames,
+                                                       vt)):
+        if isinstance(shape_name, str):
+            if shape_name == '':
+                insert1 = ' '
+                insert2 = ''
+            else:
+                insert1 = ' first element of '
+                insert2 = (f', a strided 1-d array with {shape_name}'
+                           ' elements')
+            vardecls.append((f'{vct} *p_{varname}',
+                             f'// pointer to{insert1}{varname}{insert2}'))
+            if shape_name != '':
+                vardecls.append((f'npy_intp {varname}_stride',
+                                 ('// stride (in bytes) for elements of '
+                                  f'{varname}')))
+        elif isinstance(shape_name, int):
+            if shape_name == 1:
+                insert1 = ' '
+                insert2 = ''
+            else:
+                insert1 = ' first element of '
+                insert2 = (f', a strided 1-d array with {shape_name}'
+                           ' elements')
+            vardecls.append((f'{vct} *p_{varname}',
+                             f'// pointer to{insert1}{varname}{insert2}'))
+            if shape_name != 1:
+                vardecls.append((f'npy_intp {varname}_stride',
+                                 ('// stride (in bytes) for elements of '
+                                  f'{varname}')))
+        else:
+            vardecls.append((f'{vct} *p_{varname}',
+                             f'// pointer to first element of {varname}, '
+                             f'a strided {len(shape_name)}-d array with '
+                             f'shape ({shape_name_str(shape_name)})'))
+            vardecls.append(((f'npy_intp {varname}_strides'
+                              f'[{len(shape_name)}]'),
+                             (f'// array of length {len(shape_name)}'
+                              ' of strides (in bytes) of '
+                              f'{varname}')))
+
+    dlen = max([len(d) for d, c in vardecls])
+    for j, (d, c) in enumerate(vardecls):
+        trail = ',' if j < len(vardecls) - 1 else ' '
+        s = f"        {d}{trail}" + ' '*(dlen - len(d) + 2) + c
+        text.append(s)
+    text.append(');')
+    text.append('*/')
+    return '\n'.join(text)
+
+
+def concrete_loop_function_name(corename, typecodes):
+    ctypes = [typechar_to_npy_ctype(c) for c in typecodes]
+    ctypes_id = [r.replace(' ', '').replace('npy_', '')
+                 for r in ctypes]
+    loop_func_name = '_'.join(['loop', corename] + ctypes_id)
+    return loop_func_name
+
+
+def generate_concrete_loop(corename, varnames, template_typecodes, var_types,
+                           core_dim_names, shapes):
+    loop_func_name = concrete_loop_function_name(corename, template_typecodes)
+    # loop_func_names.append(loop_func_name)
+    text = []
+    text.append('')
+    text.append(f'static void {loop_func_name}(')
+    text.append('        char **args, const npy_intp *dimensions,')
+    text.append('        const npy_intp* steps, void* data)')
+    text.append('{')
+
+    ctypes = [typechar_to_npy_ctype(c) for c in template_typecodes]
+
+    var_ctypes = []
+    for vt in var_types:
+        if isinstance(vt, int):
+            c = template_typecodes[vt]
+        else:
+            c = vt
+        var_ctypes.append(typechar_to_npy_ctype(c))
+
+    for k, (vct, varname) in enumerate(zip(var_ctypes, varnames)):
+        text.append(f'    char *p_{varname} = args[{k}];')
+
+    text.append('    npy_intp nloops = dimensions[0];')
+    for k, core_dim_name in enumerate(core_dim_names):
+        text.append('    '
+                    f'npy_intp {core_dim_name} = dimensions[{k+1}];'
+                    '  // core dimension')
+
+    text.append('')
+    text.append('    for (int j = 0; j < nloops; ++j, ')
+    for k, varname in enumerate(varnames):
+        line = []
+        line.append(' '*32)
+        line.append(f'p_{varname} += steps[{k}]')
+        if k == len(varnames) - 1:
+            line.append(') {')
+        else:
+            line.append(',')
+        text.append(''.join(line))
+    if len(ctypes) > 0:
+        template_params = '<' + ', '.join(ctypes) + '>'
+    else:
+        template_params = ''
+    text.append(f'        {corename}{template_params}(')
+    if len(core_dim_names) > 0:
+        sp = ' '*16
+        text.append(sp + f'{", ".join(core_dim_names)},  '
+                         '// core dimension')
+    istep = len(varnames)
+
+    for k, (shape_name, varname, vct) in enumerate(zip(shapes,
+                                                       varnames,
+                                                       var_ctypes)):
+        line = [' '*16]
+        line.append(f'({vct} *) p_{varname}')
+        if isinstance(shape_name, str):
+            if shape_name != '':
+                line.append(f', steps[{istep}]')
+                istep += 1
+        elif isinstance(shape_name, int):
+            line.append(f', steps[{istep}]')
+            istep += 1
+        else:
+            # shape_name is a sequence
+            line.append(f', &steps[{istep}]')
+            istep += len(shape_name)
+        if k == len(varnames) - 1:
+            line.append(');')
+        else:
+            line.append(', ')
+        text.append(''.join(line))
+
+    text.append('    }')
+
+    text.append('}')
+
+    return loop_func_name, '\n'.join(text)
+
+
+def create_c_docstring_def(name, docstring):
+    text = []
+    NAME = name.upper()
+    text.append(f'#define {NAME}_DOCSTRING \\')
+    doclines = docstring.splitlines()
+    llen = max([len(line) for line in doclines])
+    for line in doclines:
+        pad = llen - len(line) + 2
+        text.append(f'"{line}\\n"' + ' '*pad + '\\')
+    text.append('""')
+    return '\n'.join(text)
+
+
 def gen(name, signature, corefuncs, docstring, header):
     """
     Generate C++ code to implement a gufunc.  The core operation of the
@@ -141,11 +354,12 @@ def gen(name, signature, corefuncs, docstring, header):
     """
     varnames = get_varnames_from_docstring_and_sig(docstring, signature)
 
-    core_dim_names, leftparts, rightparts = parse_gufunc_signature(signature)
-    nin = len(leftparts)
-    nout = len(rightparts)
+    core_dim_names, shapes_in, shapes_out = parse_gufunc_signature(signature)
+    nin = len(shapes_in)
+    nout = len(shapes_out)
     if nin + nout != len(varnames):
         raise ValueError('len(varnames) does not match the given signature')
+    shapes = shapes_in + shapes_out
 
     text = []
     text.append('// This file was generated automatically.  Do not edit!')
@@ -163,158 +377,35 @@ def gen(name, signature, corefuncs, docstring, header):
     for corename, coretypes in corefuncs.items():
         template_types, var_types = classify_typenames(coretypes)
 
+        dec = generate_declaration(name, signature,
+                                   template_types, var_types,
+                                   varnames, core_dim_names,
+                                   shapes,
+                                   corename, coretypes)
+        text.append(dec)
+
         text.append('')
-        text.append('//')
-        text.append(f'// Prototype for `{corename}`, the C++ core function')
-        text.append(f"// for the gufunc `{name}` with signature '{signature}'")
-        text.append(f'// for types {coretypes}.')
-        text.append('//')
-
-        text.append('/*')
-        template_type_names = [chr(ord('T') + j)
-                               for j in range(len(template_types))]
-        s = ', '.join(['typename ' + tn for tn in template_type_names])
-        text.append(f"template<{s}>")
-        text.append(f"static void {corename}(")
-
-        vardecls = []
-
-        for k, core_dim_name in enumerate(core_dim_names):
-            vardecls.append((f'npy_intp {core_dim_name}',
-                             f'// core dimension {core_dim_name}'))
-
-        vt = [template_type_names[j] if isinstance(j, int)
-              else npy_types[j].lower() for j in var_types]
-        parts = leftparts + rightparts
-        for k, (shape_name, varname, vct) in enumerate(zip(parts,
-                                                           varnames,
-                                                           vt)):
-            if isinstance(shape_name, str):
-                if shape_name == '':
-                    insert1 = ' '
-                    insert2 = ''
-                else:
-                    insert1 = ' first element of '
-                    insert2 = (f', a strided 1-d array with {shape_name}'
-                               ' elements')
-                vardecls.append((f'{vct} *p_{varname}',
-                                 f'// pointer to{insert1}{varname}{insert2}'))
-                if shape_name != '':
-                    vardecls.append((f'npy_intp {varname}_stride',
-                                     ('// stride (in bytes) for elements of '
-                                      f'{varname}')))
-            elif isinstance(shape_name, int):
-                if shape_name == 1:
-                    insert1 = ' '
-                    insert2 = ''
-                else:
-                    insert1 = ' first element of '
-                    insert2 = (f', a strided 1-d array with {shape_name}'
-                               ' elements')
-                vardecls.append((f'{vct} *p_{varname}',
-                                 f'// pointer to{insert1}{varname}{insert2}'))
-                if shape_name != 1:
-                    vardecls.append((f'npy_intp {varname}_stride',
-                                     ('// stride (in bytes) for elements of '
-                                      f'{varname}')))
-            else:
-                vardecls.append((f'{vct} *p_{varname}',
-                                 f'// pointer to first element of {varname}, '
-                                 f'a strided {len(shape_name)}-d array with '
-                                 f'shape ({shape_name_str(shape_name)})'))
-                vardecls.append(((f'npy_intp {varname}_strides'
-                                  f'[{len(shape_name)}]'),
-                                 (f'// array of length {len(shape_name)}'
-                                  ' of strides (in bytes) of '
-                                  f'{varname}')))
-
-        dlen = max([len(d) for d, c in vardecls])
-        for j, (d, c) in enumerate(vardecls):
-            trail = ',' if j < len(vardecls) - 1 else ' '
-            s = f"        {d}{trail}" + ' '*(dlen - len(d) + 2) + c
-            text.append(s)
-        text.append(');')
-        text.append('*/')
-
         text.append('//')
         text.append('// Instantiated loop functions with C calling convention')
         text.append('//')
         text.append('')
         text.append('extern "C" {')
 
-        for template_typecodes in zip(*template_types):
-            print('*** template_typecodes:', template_typecodes)
-            ctypes = [npy_types[c].lower() for c in template_typecodes]
-            text.append('')
-            ctypes_id = '_'.join([r.replace(' ', '').replace('npy_', '')
-                                  for r in ctypes])
-            loop_func_name = f'loop_{ctypes_id}'
-            loop_func_names.append(loop_func_name)
-            text.append(f'static void {loop_func_name}(')
-            text.append('        char **args, const npy_intp *dimensions,')
-            text.append('        const npy_intp* steps, void* data)')
-            text.append('{')
+        if len(template_types) == 0:
+            loopname, code = generate_concrete_loop(corename, varnames,
+                                                    [], var_types,
+                                                    core_dim_names, shapes)
+            loop_func_names.append(loopname)
+            text.append(code)
+        else:
+            for template_typecodes in zip(*template_types):
+                loopname, code = generate_concrete_loop(corename, varnames,
+                                                        template_typecodes,
+                                                        var_types,
+                                                        core_dim_names, shapes)
+                loop_func_names.append(loopname)
+                text.append(code)
 
-            var_ctypes = []
-            for vt in var_types:
-                if isinstance(vt, int):
-                    c = template_typecodes[vt]
-                else:
-                    c = vt
-                var_ctypes.append(npy_types[c].lower())
-
-            for k, (vct, varname) in enumerate(zip(var_ctypes, varnames)):
-                text.append(f'    char *p_{varname} = args[{k}];')
-
-            text.append('    npy_intp nloops = dimensions[0];')
-            for k, core_dim_name in enumerate(core_dim_names):
-                text.append('    '
-                            f'npy_intp {core_dim_name} = dimensions[{k+1}];'
-                            '  // core dimension')
-            text.append('')
-            text.append('    for (int j = 0; j < nloops; ++j, ')
-            for k, varname in enumerate(varnames):
-                line = []
-                line.append(' '*32)
-                line.append(f'p_{varname} += steps[{k}]')
-                if k == len(varnames) - 1:
-                    line.append(') {')
-                else:
-                    line.append(',')
-                text.append(''.join(line))
-            ttypes = ', '.join(ctypes)
-            text.append(f'        {corename}<{ttypes}>(')
-            if len(core_dim_names) > 0:
-                sp = ' '*16
-                text.append(sp + f'{", ".join(core_dim_names)},  '
-                                 '// core dimension')
-            istep = len(varnames)
-
-            parts = leftparts + rightparts
-            for k, (shape_name, varname, vct) in enumerate(zip(parts,
-                                                               varnames,
-                                                               var_ctypes)):
-                line = [' '*16]
-                line.append(f'({vct} *) p_{varname}')
-                if isinstance(shape_name, str):
-                    if shape_name != '':
-                        line.append(f', steps[{istep}]')
-                        istep += 1
-                elif isinstance(shape_name, int):
-                    line.append(f', steps[{istep}]')
-                    istep += 1
-                else:
-                    # shape_name is a sequence
-                    line.append(f', &steps[{istep}]')
-                    istep += len(shape_name)
-                if k == len(varnames) - 1:
-                    line.append(');')
-                else:
-                    line.append(', ')
-                text.append(''.join(line))
-
-            text.append('    }')
-            text.append('}')
         text.append('')
 
         text.append('}  // extern "C"')
@@ -341,8 +432,6 @@ def gen(name, signature, corefuncs, docstring, header):
     text.append(f'static void *{name}_data[{len(loop_func_names)}];')
     text.append('')
 
-    NAME = name.upper()
-
     text.append(f"""
 static PyMethodDef {name}_methods[] = {{
         {{NULL, NULL, 0, NULL}}
@@ -356,14 +445,7 @@ static struct PyModuleDef moduledef = {{
     .m_methods = {name}_methods
 }};
 """)
-    text.append(f'#define {NAME}_DOCSTRING \\')
-    doclines = docstring.splitlines()
-    llen = max([len(line) for line in doclines])
-    for line in doclines:
-        pad = llen - len(line) + 2
-        text.append(f'"{line}\\n"' + ' '*pad + '\\')
-    text.append('""')
-
+    text.append(create_c_docstring_def(name, docstring))
     text.append(f"""
 PyMODINIT_FUNC PyInit__{name}(void)
 {{
@@ -379,7 +461,7 @@ PyMODINIT_FUNC PyInit__{name}(void)
     import_umath();
 
     // Create the {name} ufunc.
-    if (ul_define_gufunc(module, "{name}", {NAME}_DOCSTRING, "{signature}",
+    if (ul_define_gufunc(module, "{name}", {name.upper()}_DOCSTRING, "{signature}",
                          num_loop_funcs,
                          {name}_funcs, {name}_data, {name}_typecodes) < 0) {{
         Py_DECREF(module);
@@ -410,7 +492,8 @@ if __name__ == "__main__":
     signature = '(n),(),()->(),(n)'
     varnames = ['x', 'order', 'code', 'out1', 'out2']
     corefuncs = dict(func=['ffi->ff', 'ddi->dd', 'ggi->gg'])
-    text = gen('vnorm', varnames, signature, corefuncs,
+    text = gen('vnorm', signature, corefuncs,
+               "func(x, y, n, /, ...)\n"
                "This is the docstring. Testing 1 2 3.\nLorem ipsit.",
                "vnorm_gufunc.h")
     print(text)

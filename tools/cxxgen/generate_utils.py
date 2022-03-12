@@ -29,7 +29,16 @@ typechar_to_npy_type = {
     'F': 'NPY_CFLOAT',
     'D': 'NPY_CDOUBLE',
     'G': 'NPY_CLONGDOUBLE',
+    'O': 'NPY_OBJECT',
 }
+
+
+def typechar_to_npy_ctype(c):
+    if c != 'O':
+        ctype = typechar_to_npy_type[c].lower()
+    else:
+        ctype = "PyObject *"
+    return ctype
 
 
 def typesig_to_ext(typesig):
