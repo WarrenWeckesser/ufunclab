@@ -26,3 +26,4 @@ class GUFuncExtMod:
     corefile: str
     corefuncs: Dict[str, List[str]]
     header: str
+    nonzero_coredims: List[str] = None

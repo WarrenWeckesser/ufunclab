@@ -13,6 +13,7 @@ def generate_gufunc(cxxgenpath):
     text = gen(name=extmod.ufuncname,
                # varnames=varnames,
                signature=extmod.signature,
+               nonzero_coredims=extmod.nonzero_coredims,
                corefuncs=extmod.corefuncs,
                docstring=extmod.docstring,
                header=extmod.header)

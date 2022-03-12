@@ -154,11 +154,12 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'means', 'means_gufunc.c.src')],
                          include_dirs=[util_include_dir])
 
+    _meanvar_srcs = ['meanvar_gufunc.h', '_meanvarmodule.cxx']
     config.add_extension('ufunclab._meanvar',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'meanvar',
-                                       'meanvar_gufunc.c.src')],
-                         include_dirs=[util_include_dir])
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'meanvar', name)
+                                  for name in _meanvar_srcs],
+                         **npymath_info)
 
     config.add_extension('ufunclab._mad',
                          extra_compile_args=compile_args,
@@ -247,7 +248,7 @@ if __name__ == "__main__":
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
 
-    generate_cxx_gufunc_extmods(['all_same', 'vnorm'])
+    generate_cxx_gufunc_extmods(['all_same', 'meanvar', 'vnorm'])
 
     setup(name='ufunclab',
           version=get_version(),

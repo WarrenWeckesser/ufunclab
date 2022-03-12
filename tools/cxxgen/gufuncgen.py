@@ -228,8 +228,9 @@ def concrete_loop_function_name(corename, typecodes):
     return loop_func_name
 
 
-def generate_concrete_loop(corename, varnames, template_typecodes, var_types,
-                           core_dim_names, shapes):
+def generate_concrete_loop(name, corename, varnames,
+                           template_typecodes, var_types,
+                           core_dim_names, nonzero_coredims, shapes):
     loop_func_name = concrete_loop_function_name(corename, template_typecodes)
     # loop_func_names.append(loop_func_name)
     text = []
@@ -257,6 +258,20 @@ def generate_concrete_loop(corename, varnames, template_typecodes, var_types,
         text.append('    '
                     f'npy_intp {core_dim_name} = dimensions[{k+1}];'
                     '  // core dimension')
+
+    if nonzero_coredims is not None:
+        for nonzero_coredim in nonzero_coredims:
+            k = core_dim_names.index(nonzero_coredim)
+            code = f"""
+    if ({nonzero_coredim} == 0) {{
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "{name} core dimension {nonzero_coredim} must be at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }}"""
+            text.append(code)
 
     text.append('')
     text.append('    for (int j = 0; j < nloops; ++j, ')
@@ -322,7 +337,8 @@ def create_c_docstring_def(name, docstring):
     return '\n'.join(text)
 
 
-def gen(name, signature, corefuncs, docstring, header):
+def gen(name, signature, nonzero_coredims,
+        corefuncs, docstring, header):
     """
     Generate C++ code to implement a gufunc.  The core operation of the
     gufunc must be implemented separately as C++ templated functions.
@@ -333,6 +349,8 @@ def gen(name, signature, corefuncs, docstring, header):
         gufunc name; this will be the name exposed in Python
     signature : str
         gufunc signature, e.g. '(m),()->()'
+    nonzero_coredims : List[str]
+        List of core dimension names whose length must be at least 1.
     corefuncs : Dict[str, List[str]]
         Dictionary that contains the core function names and the list
         of types that the core function handles.  The list of types
@@ -392,17 +410,23 @@ def gen(name, signature, corefuncs, docstring, header):
         text.append('extern "C" {')
 
         if len(template_types) == 0:
-            loopname, code = generate_concrete_loop(corename, varnames,
+            loopname, code = generate_concrete_loop(name,
+                                                    corename, varnames,
                                                     [], var_types,
-                                                    core_dim_names, shapes)
+                                                    core_dim_names,
+                                                    nonzero_coredims,
+                                                    shapes)
             loop_func_names.append(loopname)
             text.append(code)
         else:
             for template_typecodes in zip(*template_types):
-                loopname, code = generate_concrete_loop(corename, varnames,
+                loopname, code = generate_concrete_loop(name,
+                                                        corename, varnames,
                                                         template_typecodes,
                                                         var_types,
-                                                        core_dim_names, shapes)
+                                                        core_dim_names,
+                                                        nonzero_coredims,
+                                                        shapes)
                 loop_func_names.append(loopname)
                 text.append(code)
 

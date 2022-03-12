@@ -866,7 +866,7 @@ Out[31]: array([ 2.18978102,  7.74431469, 12.84486077])
 
 ### `meanvar`
 
-`meanvar` is a gufunc (signature `(i),()->(2)`) that computes both
+`meanvar` is a gufunc (signature `(n),()->(2)`) that computes both
 the mean and variance in one function call.
 
 For example,
@@ -880,7 +880,7 @@ In [3]: meanvar([1, 2, 4, 5], 0)  # Use ddof=0.
 Out[3]: array([3. , 2.5])
 ```
 
-Appy `meanvar` with `ddof=1` to the rows of a 2-d array.
+Apply `meanvar` with `ddof=1` to the rows of a 2-d array.
 The output has shape `(4, 2)`; the first column holds the
 means, and the second column holds the variances.
 
