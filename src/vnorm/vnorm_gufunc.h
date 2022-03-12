@@ -27,7 +27,7 @@ complex_abs(npy_clongdouble z) {
     return npy_cabsl(z);
 }
 
-#define GET(T, px, stride, index) (*((T *) ((char *) px + k*stride)))
+#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
 
 //
 // `vnorm_core_calc`, the C++ core function

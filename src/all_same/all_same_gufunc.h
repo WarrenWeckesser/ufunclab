@@ -8,7 +8,7 @@
 #include "numpy/ndarraytypes.h"
 
 
-#define GET(T, px, stride, index) (*((T *) ((char *) px + k*stride)))
+#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
 
 
 template<typename T>
