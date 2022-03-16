@@ -23,7 +23,6 @@ class GUFuncExtMod:
     ufuncname: str
     docstring: str
     signature: str
-    corefile: str
     corefuncs: Dict[str, List[str]]
     header: str
     nonzero_coredims: List[str] = None
