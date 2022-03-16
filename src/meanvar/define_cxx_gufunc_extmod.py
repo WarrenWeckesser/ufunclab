@@ -66,7 +66,6 @@ extmod = GUFuncExtMod(
     ufuncname='meanvar',
     docstring=MEANVAR_DOCSTRING,
     signature='(n),()->(2)',
-    corefile='meanvar_gufunc.h',
     corefuncs={'meanvar_core': ['bl->d', 'Bl->d', 'hl->d', 'Hl->d', 'il->d',
                                 'Il->d', 'll->d', 'Ll->d', 'fl->f', 'dl->d',
                                 'gl->g']},

@@ -13,7 +13,6 @@ extmod = GUFuncExtMod(
     ufuncname='all_same',
     docstring=ALL_SAME_DOCSTRING,
     signature='(n)->()',
-    corefile='all_same_gufunc.h',
     corefuncs={'all_same_core': ['b->?','B->?', 'h->?', 'H->?', 'i->?', 'I->?',
                                  'l->?', 'L->?', 'f->?', 'd->?', 'g->?'],
                'all_same_core_object': ['O->?'],

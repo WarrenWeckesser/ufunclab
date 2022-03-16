@@ -37,7 +37,6 @@ extmod = GUFuncExtMod(
     ufuncname='vnorm',
     docstring=VNORM_DOCSTRING,
     signature='(n),()->()',
-    corefile='vnorm_gufunc.h',
     corefuncs={'vnorm_core_calc': ['ff->f', 'dd->d', 'gg->g'],
                'cvnorm_core_calc': ['Ff->f', 'Dd->d', 'Gg->g']},
     header='vnorm_gufunc.h',
