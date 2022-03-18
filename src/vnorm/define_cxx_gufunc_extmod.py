@@ -1,5 +1,5 @@
 
-from ufunc_config_types import GUFuncExtMod
+from ufunc_config_types import UFuncExtMod, UFunc, UFuncSource
 
 
 VNORM_DOCSTRING = """\
@@ -32,12 +32,26 @@ array([15.        , 13.03840481])
 array([ 3.60555128, 13.        ,  3.        , 14.28285686])
 """
 
-extmod = GUFuncExtMod(
-    module='_vnorm',
-    ufuncname='vnorm',
+ufunc_src_real = UFuncSource(
+    funcname='vnorm_core_calc',
+    typesignatures=['ff->f', 'dd->d', 'gg->g'],
+)
+
+ufunc_src_cplx = UFuncSource(
+    funcname='cvnorm_core_calc',
+    typesignatures=['Ff->f', 'Dd->d', 'Gg->g'],
+)
+
+ufunc = UFunc(
+    name='vnorm',
+    header='vnorm_gufunc.h',
     docstring=VNORM_DOCSTRING,
     signature='(n),()->()',
-    corefuncs={'vnorm_core_calc': ['ff->f', 'dd->d', 'gg->g'],
-               'cvnorm_core_calc': ['Ff->f', 'Dd->d', 'Gg->g']},
-    header='vnorm_gufunc.h',
+    sources=[ufunc_src_real, ufunc_src_cplx],
+)
+
+extmod = UFuncExtMod(
+    module='_vnorm',
+    docstring="This extension module defines the gufunc 'vnorm'.",
+    ufuncs=[ufunc],
 )

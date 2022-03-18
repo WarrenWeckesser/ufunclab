@@ -337,144 +337,141 @@ def create_c_docstring_def(name, docstring):
     return '\n'.join(text)
 
 
-def gen(name, signature, nonzero_coredims,
-        corefuncs, docstring, header):
+def gen(extmod):
     """
     Generate C++ code to implement a gufunc.  The core operation of the
     gufunc must be implemented separately as C++ templated functions.
     `gen` will generate the function prototypes for the core functions
     that must be implemented.
 
-    name : str
-        gufunc name; this will be the name exposed in Python
-    signature : str
-        gufunc signature, e.g. '(m),()->()'
-    nonzero_coredims : List[str]
-        List of core dimension names whose length must be at least 1.
-    corefuncs : Dict[str, List[str]]
-        Dictionary that contains the core function names and the list
-        of types that the core function handles.  The list of types
-        corresponds to the types that are stored in the `types`
-        attribute of a gufunc.  `corefuncs` is a dictionary of functions
-        because in general, different core implementations of a gufunc
-        might be necessary to handle different classes of types, even
-        when templating is taken into account.  For example, the vector
-        norm gufunc `vnorm` has two core implementations, one to handle
-        real vectors and the other to handle complex vectors.  `corefuncs`
-        for `vnorm` might be
-
-            {'realvnorm': ['ff->f', 'dd->d', 'gg->g'],
-             'complexvnorm': ['Ff->f', 'Dd->D', 'Gg->G']}
-    docstring : str
-        Docstring for the gufunc.
-    header : str
-        Filename of C++ .h file that defines the core functions.
+    `extmod` must be an instance of UFuncExtMod.
     """
-    varnames = get_varnames_from_docstring_and_sig(docstring, signature)
-
-    core_dim_names, shapes_in, shapes_out = parse_gufunc_signature(signature)
-    nin = len(shapes_in)
-    nout = len(shapes_out)
-    if nin + nout != len(varnames):
-        raise ValueError('len(varnames) does not match the given signature')
-    shapes = shapes_in + shapes_out
-
+    header_files = []
     text = []
-    text.append('// This file was generated automatically.  Do not edit!')
-    text.append('')
-    text.append('//')
-    text.append(f'// Python extension module to implement the {name} gufunc.')
-    text.append('//')
+    text.append("// This file was generated automatically.  Do not edit!\n")
     text.append(_include)
+    ufunc_nloops = []
+    for ufunc in extmod.ufuncs:
+        varnames = get_varnames_from_docstring_and_sig(ufunc.docstring,
+                                                       ufunc.signature)
+        c_docstring_def = create_c_docstring_def(ufunc.name, ufunc.docstring)
+        core_dim_names, shapes_in, shapes_out = parse_gufunc_signature(ufunc.signature)
 
-    text.append('')
-    text.append(f'#include "{header}"')
+        nin = len(shapes_in)
+        nout = len(shapes_out)
+        if nin + nout != len(varnames):
+            raise ValueError('len(varnames) does not match the given signature')
+        shapes = shapes_in + shapes_out
 
-    loop_func_names = []
+        loop_func_names = []
 
-    for corename, coretypes in corefuncs.items():
-        template_types, var_types = classify_typenames(coretypes)
-
-        dec = generate_declaration(name, signature,
-                                   template_types, var_types,
-                                   varnames, core_dim_names,
-                                   shapes,
-                                   corename, coretypes)
-        text.append(dec)
-
-        text.append('')
         text.append('//')
-        text.append('// Instantiated loop functions with C calling convention')
+        text.append(f"// code for ufunc '{ufunc.name}'")
         text.append('//')
-        text.append('')
-        text.append('extern "C" {')
+        if ufunc.header not in header_files:
+            header_files.append(ufunc.header)
+            text.append('')
+            text.append(f'#include "{ufunc.header}"')
+            text.append('')
+        text.append(c_docstring_def)
 
-        if len(template_types) == 0:
-            loopname, code = generate_concrete_loop(name,
-                                                    corename, varnames,
-                                                    [], var_types,
-                                                    core_dim_names,
-                                                    nonzero_coredims,
-                                                    shapes)
-            loop_func_names.append(loopname)
-            text.append(code)
-        else:
-            for template_typecodes in zip(*template_types):
-                loopname, code = generate_concrete_loop(name,
+        for ufunc_source in ufunc.sources:
+            corename = ufunc_source.funcname
+            coretypes = ufunc_source.typesignatures
+
+            template_types, var_types = classify_typenames(coretypes)
+
+            dec = generate_declaration(ufunc.name, ufunc.signature,
+                                       template_types, var_types,
+                                       varnames, core_dim_names,
+                                       shapes,
+                                       corename, coretypes)
+            text.append(dec)
+
+            text.append('')
+            text.append('//')
+            text.append('// Instantiated loop functions with C calling convention')
+            text.append('//')
+            text.append('')
+            text.append('extern "C" {')
+
+            if len(template_types) == 0:
+                loopname, code = generate_concrete_loop(ufunc.name,
                                                         corename, varnames,
-                                                        template_typecodes,
-                                                        var_types,
+                                                        [], var_types,
                                                         core_dim_names,
-                                                        nonzero_coredims,
+                                                        ufunc.nonzero_coredims,
                                                         shapes)
                 loop_func_names.append(loopname)
                 text.append(code)
+            else:
+                for template_typecodes in zip(*template_types):
+                    loopname, code = generate_concrete_loop(ufunc.name,
+                                                            corename, varnames,
+                                                            template_typecodes,
+                                                            var_types,
+                                                            core_dim_names,
+                                                            ufunc.nonzero_coredims,
+                                                            shapes)
+                    loop_func_names.append(loopname)
+                    text.append(code)
 
+            text.append('')
+            text.append('}  // extern "C"')
+
+        # Generate the array of typecodes for the ufunc.
+        text.append('')
+        text.append(f"// Typecodes for the ufunc '{ufunc.name}'")
+        text.append(f'static char {ufunc.name}_typecodes[] = {{')
+        lines = []
+        for ufunc_source in ufunc.sources:
+            corename = ufunc_source.funcname
+            coretypes = ufunc_source.typesignatures
+            for typesig in coretypes:
+                charcodes = list(typesig.replace('->', ''))
+                npy_typecodes = [npy_types[c] for c in charcodes]
+                lines.append('    ' + ', '.join(npy_typecodes))
+        text.append(',\n'.join(lines))
+        text.append('};')
+
+        # Generate the array loop function pointer for the ufunc.
+        text.append('')
+        text.append(f'static PyUFuncGenericFunction {ufunc.name}_funcs[] = {{')
+        lines = []
+        for loop_func_name in loop_func_names:
+            lines.append(f'    (PyUFuncGenericFunction) &{loop_func_name}')
+        text.append(',\n'.join(lines))
+        text.append('};')
+
+        ufunc_nloops.append(len(loop_func_names))
+
+        # Generate the array of auxiliary data for the ufunc.
+        text.append('')
+        text.append(f'static void *{ufunc.name}_data[{len(loop_func_names)}];')
         text.append('')
 
-        text.append('}  // extern "C"')
+        c_module_docstring_def = create_c_docstring_def("MODULE", extmod.docstring)
+        text.append(c_module_docstring_def)
+        text.append('')
 
-    text.append('')
-    text.append(f'static char {name}_typecodes[] = {{')
-    lines = []
-    for corename, coretypes in corefuncs.items():
-        for typesig in coretypes:
-            charcodes = list(typesig.replace('->', ''))
-            npy_typecodes = [npy_types[c] for c in charcodes]
-            lines.append('    ' + ', '.join(npy_typecodes))
-    text.append(',\n'.join(lines))
-    text.append('};')
-
-    text.append('')
-    text.append(f'static PyUFuncGenericFunction {name}_funcs[] = {{')
-    lines = []
-    for loop_func_name in loop_func_names:
-        lines.append(f'    (PyUFuncGenericFunction) &{loop_func_name}')
-    text.append(',\n'.join(lines))
-    text.append('};')
-    text.append('')
-    text.append(f'static void *{name}_data[{len(loop_func_names)}];')
-    text.append('')
-
-    text.append(f"""
-static PyMethodDef {name}_methods[] = {{
+        text.append(f"""
+static PyMethodDef {extmod.module}_methods[] = {{
         {{NULL, NULL, 0, NULL}}
 }};
 
 static struct PyModuleDef moduledef = {{
     PyModuleDef_HEAD_INIT,
-    .m_name = "_{name}",
-    .m_doc = "Module that defines the {name} function.",
+    .m_name = "{extmod.module}",
+    .m_doc = MODULE_DOCSTRING,
     .m_size = -1,
-    .m_methods = {name}_methods
+    .m_methods = {extmod.module}_methods
 }};
 """)
-    text.append(create_c_docstring_def(name, docstring))
+
     text.append(f"""
-PyMODINIT_FUNC PyInit__{name}(void)
+PyMODINIT_FUNC PyInit_{extmod.module}(void)
 {{
     PyObject *module;
-    int num_loop_funcs = {len(loop_func_names)};
 
     module = PyModule_Create(&moduledef);
     if (!module) {{
@@ -483,11 +480,18 @@ PyMODINIT_FUNC PyInit__{name}(void)
 
     import_array();
     import_umath();
+""")
 
-    // Create the {name} ufunc.
-    if (ul_define_gufunc(module, "{name}", {name.upper()}_DOCSTRING, "{signature}",
-                         num_loop_funcs,
-                         {name}_funcs, {name}_data, {name}_typecodes) < 0) {{
+    for nloops, ufunc in zip(ufunc_nloops, extmod.ufuncs):
+        text.append(f"""
+    // Create the {ufunc.name} ufunc.
+    if (ul_define_gufunc(module, "{ufunc.name}",
+                         {ufunc.name.upper()}_DOCSTRING,
+                         "{ufunc.signature}",
+                         {nloops},
+                         {ufunc.name}_funcs,
+                         {ufunc.name}_data,
+                         {ufunc.name}_typecodes) < 0) {{
         Py_DECREF(module);
         return NULL;
     }}
@@ -497,27 +501,3 @@ PyMODINIT_FUNC PyInit__{name}(void)
 """)
 
     return '\n'.join(text)
-
-
-if __name__ == "__main__":
-    """
-    # vnorm
-    signature = '(n),()->()'
-    varnames = ['x', 'order', 'out']
-    corefuncs = dict(vnorm_core_calc=['ff->f', 'dd->d', 'gg->g'],
-                     cvnorm_core_calc=['Ff->f', 'Dd->d', 'Gg->g'])
-
-    text = gen('vnorm', varnames, signature, corefuncs,
-               "This is the docstring. Testing 1 2 3.\nLorem ipsit.",
-               "vnorm_gufunc.h")
-    print(text)
-    """
-
-    signature = '(n),(),()->(),(n)'
-    varnames = ['x', 'order', 'code', 'out1', 'out2']
-    corefuncs = dict(func=['ffi->ff', 'ddi->dd', 'ggi->gg'])
-    text = gen('vnorm', signature, corefuncs,
-               "func(x, y, n, /, ...)\n"
-               "This is the docstring. Testing 1 2 3.\nLorem ipsit.",
-               "vnorm_gufunc.h")
-    print(text)

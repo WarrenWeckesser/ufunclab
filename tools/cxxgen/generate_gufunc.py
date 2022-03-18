@@ -10,13 +10,7 @@ def generate_gufunc(cxxgenpath):
     del sys.modules['define_cxx_gufunc_extmod']
 
     module_name = os.path.join(cxxgenpath, extmod.module + 'module.cxx')
-    text = gen(name=extmod.ufuncname,
-               # varnames=varnames,
-               signature=extmod.signature,
-               nonzero_coredims=extmod.nonzero_coredims,
-               corefuncs=extmod.corefuncs,
-               docstring=extmod.docstring,
-               header=extmod.header)
+    text = gen(extmod)
     with open(module_name, 'w') as f:
         f.write(text)
     f.close()

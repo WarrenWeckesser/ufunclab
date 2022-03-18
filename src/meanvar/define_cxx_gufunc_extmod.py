@@ -1,5 +1,4 @@
-
-from ufunc_config_types import GUFuncExtMod
+from ufunc_config_types import UFuncExtMod, UFunc, UFuncSource
 
 
 MEANVAR_DOCSTRING = """\
@@ -59,16 +58,23 @@ array([[ 3.5       , 13.66666667],
        [ 4.        ,  6.66666667]])
 """
 
+ufunc_src = UFuncSource(
+    funcname='meanvar_core',
+    typesignatures=['bl->d', 'Bl->d', 'hl->d', 'Hl->d', 'il->d', 'Il->d',
+                    'll->d', 'Ll->d', 'fl->f', 'dl->d', 'gl->g'],
+)
 
-
-extmod = GUFuncExtMod(
-    module='_meanvar',
-    ufuncname='meanvar',
+ufunc = UFunc(
+    name='meanvar',
+    header='meanvar_gufunc.h',
     docstring=MEANVAR_DOCSTRING,
     signature='(n),()->(2)',
-    corefuncs={'meanvar_core': ['bl->d', 'Bl->d', 'hl->d', 'Hl->d', 'il->d',
-                                'Il->d', 'll->d', 'Ll->d', 'fl->f', 'dl->d',
-                                'gl->g']},
-    header='meanvar_gufunc.h',
+    sources=[ufunc_src],
     nonzero_coredims=['n'],  # n must be at least 1.
+)
+
+extmod = UFuncExtMod(
+    module='_meanvar',
+    docstring="This extension module defines the gufunc 'meanvar'.",
+    ufuncs=[ufunc],
 )
