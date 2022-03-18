@@ -29,12 +29,11 @@ from ._step import step, linearstep, smoothstep3, smoothstep5
 
 from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector
-from ._ufunkify_def import ufunkify
 
 import numpy as _np
 
 
-__version__ = "0.0.5.dev28"
+__version__ = "0.0.6.dev1"
 
 
 class op:

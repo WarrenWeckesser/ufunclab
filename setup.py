@@ -21,15 +21,6 @@ def get_version():
                 return s[1][1:-1]
 
 
-def generate_ufunkify_code():
-    import subprocess
-
-    cwd = os.getcwd()
-    os.chdir(join(cwd, 'src', 'ufunkify'))
-    subprocess.run([sys.executable, '_generate_files.py'])
-    os.chdir(cwd)
-
-
 def generate_cxxgen_code(dirnames):
     import subprocess
 
@@ -229,21 +220,11 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'ufunc-inspector',
                                        'ufunc_inspector.c')])
 
-    config.add_extension('ufunclab._ufunkify',
-                         extra_compile_args=['-std=c99'],
-                         sources=[join('src', 'ufunkify',
-                                       '_ufunkify_opcodes.c'),
-                                  join('src', 'ufunkify',
-                                       '_ufunkify_c_function_wrappers.c'),
-                                  join('src', 'ufunkify', '_ufunkify.c')])
     return config
 
 
 if __name__ == "__main__":
     from numpy.distutils.core import setup
-
-    # This is probably *not* the best way to do this...
-    generate_ufunkify_code()
 
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
