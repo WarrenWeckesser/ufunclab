@@ -56,42 +56,44 @@ templating system to generate the loops for the different data types.
 
 *Generalized ufuncs*
 
-All these gufuncs except `all_same`, `meanvar` and  `vnorm` are
-implemented as custom extension modules.
+Most of these gufuncs are implemented as custom extension modules.
 
-In `all_same`, `meanvar` and `vnorm`, the core calculations are
-implemented as templated C++ functions, and code generation tools are
-used to automatically generate the extension module source code based
-on a configuration file.  More gufuncs will be moved to this system
-eventually.
+In `all_same`, `meanvar`, `sosfilter`, `sosfilter_ic`, `sosfilter_ic_contig`
+and `vnorm`, the core calculations are implemented as templated C++ functions,
+and code generation tools are used to automatically generate the extension
+module source code based on a configuration file.  More gufuncs will be moved
+to this system eventually.
 
-| Function                                | Description                                           |
-| --------                                | -----------                                           |
-| [`first`](#first)                       | First value that matches a target comparison          |
-| [`argfirst`](#argfirst)                 | Index of the first occurrence of a target comparison  |
-| [`argmin`](#argmin)                     | Like `numpy.argmin`, but a gufunc                     |
-| [`argmax`](#argmax)                     | Like `numpy.argmax`, but a gufunc                     |
-| [`minmax`](#minmax)                     | Minimum and maximum                                   |
-| [`argminmax`](#argminmax)               | Indices of the min and the max                        |
-| [`min_argmin`](#min_argmin)             | Minimum value and its index                           |
-| [`max_argmax`](#max_argmax)             | Maximum value and its index                           |
-| [`searchsortedl`](#searchsortedl)       | Find position for given element in sorted seq.        |
-| [`searchsortedr`](#searchsortedr)       | Find position for given element in sorted seq.        |
-| [`peaktopeak`](#peaktopeak)             | Alternative to `numpy.ptp`                            |
-| [`all_same`](#all_same)                 | Check all values are the same                         |
-| [`gmean`](#gmean)                       | Geometric mean                                        |
-| [`hmean`](#hmean)                       | Harmonic mean                                         |
-| [`meanvar`](#meanvar)                   | Mean and variance                                     |
-| [`mad`](#mad)                           | Mean absolute difference (MAD)                        |
-| [`mad1`](#mad1)                         | Unbiased estimator of the MAD                         |
-| [`rmad`](#rmad)                         | Relative mean absolute difference (RMAD)              |
-| [`rmad1`](#rmad1)                       | RMAD based on unbiased MAD                            |
-| [`vnorm`](#vnorm)                       | Vector norm                                           |
-| [`cross2`](#cross2)                     | 2-d vector cross product (returns scalar)             |
-| [`cross3`](#cross3)                     | 3-d vector cross product                              |
-| [`fillnan1d`](#fillnan1d)               | Replace `nan` using linear interpolation              |
-| [`backlash`](#backlash)                 | Backlash operator                                     |
-| [`hysteresis_relay`](#hysteresis_relay) | Relay with hysteresis (Schmitt trigger)               |
+| Function                                      | Description                                           |
+| --------                                      | -----------                                           |
+| [`first`](#first)                             | First value that matches a target comparison          |
+| [`argfirst`](#argfirst)                       | Index of the first occurrence of a target comparison  |
+| [`argmin`](#argmin)                           | Like `numpy.argmin`, but a gufunc                     |
+| [`argmax`](#argmax)                           | Like `numpy.argmax`, but a gufunc                     |
+| [`minmax`](#minmax)                           | Minimum and maximum                                   |
+| [`argminmax`](#argminmax)                     | Indices of the min and the max                        |
+| [`min_argmin`](#min_argmin)                   | Minimum value and its index                           |
+| [`max_argmax`](#max_argmax)                   | Maximum value and its index                           |
+| [`searchsortedl`](#searchsortedl)             | Find position for given element in sorted seq.        |
+| [`searchsortedr`](#searchsortedr)             | Find position for given element in sorted seq.        |
+| [`peaktopeak`](#peaktopeak)                   | Alternative to `numpy.ptp`                            |
+| [`all_same`](#all_same)                       | Check all values are the same                         |
+| [`gmean`](#gmean)                             | Geometric mean                                        |
+| [`hmean`](#hmean)                             | Harmonic mean                                         |
+| [`meanvar`](#meanvar)                         | Mean and variance                                     |
+| [`mad`](#mad)                                 | Mean absolute difference (MAD)                        |
+| [`mad1`](#mad1)                               | Unbiased estimator of the MAD                         |
+| [`rmad`](#rmad)                               | Relative mean absolute difference (RMAD)              |
+| [`rmad1`](#rmad1)                             | RMAD based on unbiased MAD                            |
+| [`vnorm`](#vnorm)                             | Vector norm                                           |
+| [`cross2`](#cross2)                           | 2-d vector cross product (returns scalar)             |
+| [`cross3`](#cross3)                           | 3-d vector cross product                              |
+| [`fillnan1d`](#fillnan1d)                     | Replace `nan` using linear interpolation              |
+| [`backlash`](#backlash)                       | Backlash operator                                     |
+| [`hysteresis_relay`](#hysteresis_relay)       | Relay with hysteresis (Schmitt trigger)               |
+| [`sosfilter`](#sosfilter)                     | SOS (second order sections) linear filter             |
+| [`sosfilter_ic`](#sosfilter_ic)               | SOS linear filter with initial condition              |
+| [`sosfilter_ic_contig`](#sosfilter_ic_contig) | SOS linear filter with contiguous array inputs        |
 
 *Other tools*
 
@@ -1241,6 +1243,39 @@ The script `hysteresis_relay_demo.py` in the `examples` directory generates
 the plot
 
 ![hysteresis_replay plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hysteresis_relay_demo.png)
+
+### `sosfilter`
+
+`sosfilter(sos, x)` is a gufunc with signature `(m,6),(n)->(n)`.
+The function applies a discrete time linear filter to the input
+array `x`.  The array `sos` with shape `(m,6)` represents the
+linear filter using the *second order sections* format.
+
+The function is like `scipy.signal.sosfilt`, but this version does
+not accept the `zi` parameter.  See `sosfilter_ic` for a function
+that accepts `zi`.
+
+### `sosfilter_ic`
+
+`sosfilter_ic(sos, x, zi)` is a gufunc with signature
+`(m,6),(n),(m,2)->(n),(m,2)`.  Like `sosfilter`, the function applies
+a discrete time linear filter to the input array `x`.  The array `sos`
+with shape `(m,6)` represents the linear filter using the *second order
+sections* format.
+
+This function is like `scipy.signal.sosfilt`, but for `sosfilter_ic`,
+the `zi` parameter is *required*.  Also, because `sosfilter_ic` is a gufunc,
+it uses the gufunc rules for broadcasting.  `scipy.signal.sosfilt` handles
+broadcasting of the `zi` parameter differently.
+
+### `sosfilter_ic_contig`
+
+`sosfilter_ic_contig(sos, x, zi)` is a gufunc with signature
+`(m,6),(n),(m,2)->(n),(m,2)`.  This function has the same inputs and
+performs the same calculation as `sosfilter_ic`, but it assumes that the
+array inputs are all C-contiguous.  It does not verify this; if an array
+input is *not* C-contiguous, the resuls will be incorrect, and the program
+might crash.
 
 ### `gendot`
 

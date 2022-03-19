@@ -24,6 +24,7 @@ from ._deadzone import deadzone
 from ._trapezoid_pulse import trapezoid_pulse
 from ._hysteresis_relay import hysteresis_relay
 from ._all_same import all_same
+from ._sosfilter import sosfilter, sosfilter_ic, sosfilter_ic_contig
 
 from ._step import step, linearstep, smoothstep3, smoothstep5
 

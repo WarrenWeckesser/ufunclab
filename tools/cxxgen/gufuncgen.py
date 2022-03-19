@@ -106,7 +106,6 @@ def suffix(k, n):
 
 
 _include = """
-
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 

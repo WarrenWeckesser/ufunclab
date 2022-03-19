@@ -210,6 +210,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _step_srcs],
                          **npymath_info)
 
+    _sosfilter_srcs = ['sosfilter_gufunc.h', '_sosfiltermodule.cxx']
+    config.add_extension('ufunclab._sosfilter',
+                         extra_compile_args=['-std=c++11', '-Werror', '-O3'],
+                         sources=[join('src', 'sosfilter', name)
+                                  for name in _sosfilter_srcs],
+                         **npymath_info)
+
     config.add_extension('ufunclab._gendot',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'gendot',
@@ -229,7 +236,7 @@ if __name__ == "__main__":
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
 
-    generate_cxx_gufunc_extmods(['all_same', 'meanvar', 'vnorm'])
+    generate_cxx_gufunc_extmods(['all_same', 'meanvar', 'sosfilter', 'vnorm'])
 
     setup(name='ufunclab',
           version=get_version(),
