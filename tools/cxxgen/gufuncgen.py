@@ -63,8 +63,8 @@ def parse_gufunc_signature(sig):
 
     Returns
     -------
-    core_dim_names : List[str]
-        unique set of symbols used in `sig`
+    core_dims : List[Union[str,int]]
+        unique set of core dimension symbols or constants used in `sig`
     shapes_in : List[{int, str, List[{int, str}]]
         "Shape"-portion of the items on the left of '->' in `sig`
     shapes_out : List[{int, str, List[{int, str}]]
@@ -76,22 +76,22 @@ def parse_gufunc_signature(sig):
     (['n'], ['n'], [''])
 
     >>> parse_gufunc_signature('(m, n), (2), () -> (m, 2), (n)')
-    (['m', 'n'], [['m', 'n'], 2, ''], [['m', 2], 'n'])
+    (['m', 'n', 2], [['m', 'n'], 2, ''], [['m', 2], 'n'])
 
     """
     sig = sig.replace(' ', '')
     left, right = sig.split('->')
     shapes_in = split_parts(left)
     shapes_out = split_parts(right)
-    core_dim_names = []
+    core_dims = []
     for name in flatten(shapes_in) + flatten(shapes_out):
         try:
             name = int(name)
         except ValueError:
             pass
-        if isinstance(name, str) and name != '' and name not in core_dim_names:
-            core_dim_names.append(name)
-    return core_dim_names, shapes_in, shapes_out
+        if name != '' and name not in core_dims:
+            core_dims.append(name)
+    return core_dims, shapes_in, shapes_out
 
 
 def shape_name_str(shape_name):
@@ -109,6 +109,8 @@ _include = """
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
+
+#include <assert.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -136,7 +138,7 @@ def get_varnames_from_docstring_and_sig(docstring, signature):
 
 def generate_declaration(name, signature,
                          template_types, var_types,
-                         varnames, core_dim_names, shapes,
+                         varnames, core_dims, shapes,
                          corename, coretypes):
     nct = len(coretypes)
     if nct == 0:
@@ -162,9 +164,10 @@ def generate_declaration(name, signature,
 
     vardecls = []
 
-    for k, core_dim_name in enumerate(core_dim_names):
-        vardecls.append((f'npy_intp {core_dim_name}',
-                         f'// core dimension {core_dim_name}'))
+    for k, core_dim in enumerate(core_dims):
+        if not isinstance(core_dim, int):
+            vardecls.append((f'npy_intp {core_dim}',
+                             f'// core dimension {core_dim}'))
 
     vt = [template_type_names[j] if isinstance(j, int)
           else typechar_to_npy_ctype(j) for j in var_types]
@@ -204,7 +207,7 @@ def generate_declaration(name, signature,
                              f'// pointer to first element of {varname}, '
                              f'a strided {len(shape_name)}-d array with '
                              f'shape ({shape_name_str(shape_name)})'))
-            vardecls.append(((f'npy_intp {varname}_strides'
+            vardecls.append(((f'const npy_intp {varname}_strides'
                               f'[{len(shape_name)}]'),
                              (f'// array of length {len(shape_name)}'
                               ' of strides (in bytes) of '
@@ -230,9 +233,8 @@ def concrete_loop_function_name(corename, typecodes):
 
 def generate_concrete_loop(name, corename, varnames,
                            template_typecodes, var_types,
-                           core_dim_names, nonzero_coredims, shapes):
+                           core_dims, nonzero_coredims, shapes):
     loop_func_name = concrete_loop_function_name(corename, template_typecodes)
-    # loop_func_names.append(loop_func_name)
     text = []
     text.append('')
     text.append(f'static void {loop_func_name}(')
@@ -254,14 +256,24 @@ def generate_concrete_loop(name, corename, varnames,
         text.append(f'    char *p_{varname} = args[{k}];')
 
     text.append('    npy_intp nloops = dimensions[0];')
-    for k, core_dim_name in enumerate(core_dim_names):
-        text.append('    '
-                    f'npy_intp {core_dim_name} = dimensions[{k+1}];'
-                    '  // core dimension')
+
+    dim_asserts = []
+    for k, core_dim in enumerate(core_dims):
+        if isinstance(core_dim, int):
+            dim_asserts.append('    '
+                               f'assert(dimensions[{k+1}] == {core_dim});')
+        else:
+            text.append('    '
+                        f'npy_intp {core_dim} = dimensions[{k+1}];'
+                        '  // core dimension')
+
+    if len(dim_asserts) > 0:
+        text.append('')
+        text.append('\n'.join(dim_asserts))
 
     if nonzero_coredims is not None:
         for nonzero_coredim in nonzero_coredims:
-            k = core_dim_names.index(nonzero_coredim)
+            k = core_dims.index(nonzero_coredim)
             code = f"""
     if ({nonzero_coredim} == 0) {{
         NPY_ALLOW_C_API_DEF
@@ -289,9 +301,10 @@ def generate_concrete_loop(name, corename, varnames,
     else:
         template_params = ''
     text.append(f'        {corename}{template_params}(')
-    if len(core_dim_names) > 0:
+    core_dim_symbols = [dim for dim in core_dims if not isinstance(dim, int)]
+    if len(core_dim_symbols) > 0:
         sp = ' '*16
-        text.append(sp + f'{", ".join(core_dim_names)},  '
+        text.append(sp + f'{", ".join(core_dim_symbols)},  '
                          '// core dimension')
     istep = len(varnames)
 
@@ -355,7 +368,7 @@ def gen(extmod):
         varnames = get_varnames_from_docstring_and_sig(ufunc.docstring,
                                                        ufunc.signature)
         c_docstring_def = create_c_docstring_def(ufunc.name, ufunc.docstring)
-        core_dim_names, shapes_in, shapes_out = parse_gufunc_signature(ufunc.signature)
+        core_dims, shapes_in, shapes_out = parse_gufunc_signature(ufunc.signature)
 
         nin = len(shapes_in)
         nout = len(shapes_out)
@@ -368,9 +381,9 @@ def gen(extmod):
         text.append('//')
         text.append(f"// code for ufunc '{ufunc.name}'")
         text.append('//')
+        text.append('')
         if ufunc.header not in header_files:
             header_files.append(ufunc.header)
-            text.append('')
             text.append(f'#include "{ufunc.header}"')
             text.append('')
         text.append(c_docstring_def)
@@ -383,7 +396,7 @@ def gen(extmod):
 
             dec = generate_declaration(ufunc.name, ufunc.signature,
                                        template_types, var_types,
-                                       varnames, core_dim_names,
+                                       varnames, core_dims,
                                        shapes,
                                        corename, coretypes)
             text.append(dec)
@@ -399,7 +412,7 @@ def gen(extmod):
                 loopname, code = generate_concrete_loop(ufunc.name,
                                                         corename, varnames,
                                                         [], var_types,
-                                                        core_dim_names,
+                                                        core_dims,
                                                         ufunc.nonzero_coredims,
                                                         shapes)
                 loop_func_names.append(loopname)
@@ -410,7 +423,7 @@ def gen(extmod):
                                                             corename, varnames,
                                                             template_typecodes,
                                                             var_types,
-                                                            core_dim_names,
+                                                            core_dims,
                                                             ufunc.nonzero_coredims,
                                                             shapes)
                     loop_func_names.append(loopname)
@@ -450,11 +463,11 @@ def gen(extmod):
         text.append(f'static void *{ufunc.name}_data[{len(loop_func_names)}];')
         text.append('')
 
-        c_module_docstring_def = create_c_docstring_def("MODULE", extmod.docstring)
-        text.append(c_module_docstring_def)
-        text.append('')
+    c_module_docstring_def = create_c_docstring_def("MODULE", extmod.docstring)
+    text.append(c_module_docstring_def)
+    text.append('')
 
-        text.append(f"""
+    text.append(f"""
 static PyMethodDef {extmod.module}_methods[] = {{
         {{NULL, NULL, 0, NULL}}
 }};
@@ -495,9 +508,9 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
         Py_DECREF(module);
         return NULL;
     }}
-
-    return module;
-}}
 """)
+
+    text.append('    return module;')
+    text.append('}')
 
     return '\n'.join(text)
