@@ -1274,7 +1274,7 @@ broadcasting of the `zi` parameter differently.
 `(m,6),(n),(m,2)->(n),(m,2)`.  This function has the same inputs and
 performs the same calculation as `sosfilter_ic`, but it assumes that the
 array inputs are all C-contiguous.  It does not verify this; if an array
-input is *not* C-contiguous, the resuls will be incorrect, and the program
+input is *not* C-contiguous, the results will be incorrect, and the program
 might crash.
 
 ### `gendot`

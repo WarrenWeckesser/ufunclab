@@ -68,7 +68,7 @@ def parse_gufunc_signature(sig):
     shapes_in : List[{int, str, List[{int, str}]]
         "Shape"-portion of the items on the left of '->' in `sig`
     shapes_out : List[{int, str, List[{int, str}]]
-        "Shape"-portion of the iterms on the right of '->' in sig.
+        "Shape"-portion of the items on the right of '->' in sig.
 
     Examples
     --------
