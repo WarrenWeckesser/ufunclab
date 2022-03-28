@@ -300,7 +300,7 @@ this plot:
 
 ### `logistic_deriv`
 
-`logistic_deriv(x)` computes the deriative of the standard logistic sigmoid
+`logistic_deriv(x)` computes the derivative of the standard logistic sigmoid
 function.
 
 See `logistic` (above) for a plot.
