@@ -1255,6 +1255,11 @@ The function is like `scipy.signal.sosfilt`, but this version does
 not accept the `zi` parameter.  See `sosfilter_ic` for a function
 that accepts `zi`.
 
+The script `sofilter_demo.py` in the `examples` directory generates
+the plot
+
+![sosfilter plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/sosfilter_demo.png)
+
 ### `sosfilter_ic`
 
 `sosfilter_ic(sos, x, zi)` is a gufunc with signature
