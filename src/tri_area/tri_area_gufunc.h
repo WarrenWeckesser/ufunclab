@@ -30,7 +30,7 @@ static T norm_diff(npy_intp n, T *p_p, const npy_intp p_strides[2], npy_intp i1,
 //
 // `tri_area_core_calc`, the C++ core function
 // for the gufunc `tri_area` with signature '(3,n)->()'
-// for types ['ff->f', 'dd->d', 'gg->g'].
+// for types ['f->f', 'd->d', 'g->g'].
 //
 template<typename T>
 static void tri_area_core_calc(
