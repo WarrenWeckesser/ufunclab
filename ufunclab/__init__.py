@@ -18,6 +18,7 @@ from ._means import gmean, hmean
 from ._meanvar import meanvar
 from ._mad import mad, mad1, rmad, rmad1
 from ._vnorm import vnorm
+from ._tri_area import tri_area
 from ._backlash import backlash
 from ._fillnan1d import fillnan1d
 from ._deadzone import deadzone
@@ -34,7 +35,7 @@ from ._ufunc_inspector import ufunc_inspector
 import numpy as _np
 
 
-__version__ = "0.0.6.dev1"
+__version__ = "0.0.6.dev2"
 
 
 class op:

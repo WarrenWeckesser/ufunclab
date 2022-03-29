@@ -58,11 +58,11 @@ templating system to generate the loops for the different data types.
 
 Most of these gufuncs are implemented as custom extension modules.
 
-In `all_same`, `meanvar`, `sosfilter`, `sosfilter_ic`, `sosfilter_ic_contig`
-and `vnorm`, the core calculations are implemented as templated C++ functions,
-and code generation tools are used to automatically generate the extension
-module source code based on a configuration file.  More gufuncs will be moved
-to this system eventually.
+In `all_same`, `meanvar`, `sosfilter`, `sosfilter_ic`, `sosfilter_ic_contig`,
+`tri_area` and `vnorm`, the core calculations are implemented as templated C++
+functions, and code generation tools are used to automatically generate the
+extension module source code based on a configuration file.  More gufuncs will
+be moved to this system eventually.
 
 | Function                                      | Description                                           |
 | --------                                      | -----------                                           |
@@ -88,6 +88,7 @@ to this system eventually.
 | [`vnorm`](#vnorm)                             | Vector norm                                           |
 | [`cross2`](#cross2)                           | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                           | 3-d vector cross product                              |
+| [`tri_area`](#tri_area)                       | Area of triangles in n-dimensional space              |
 | [`fillnan1d`](#fillnan1d)                     | Replace `nan` using linear interpolation              |
 | [`backlash`](#backlash)                       | Backlash operator                                     |
 | [`hysteresis_relay`](#hysteresis_relay)       | Relay with hysteresis (Schmitt trigger)               |
@@ -1174,6 +1175,28 @@ array([[[ -1.,   0.,   0.],
         [-17.,  18.,  -3.],
         [-20.,  18.,   0.],
         [-23.,  18.,   3.]]])
+```
+
+### `tri_area`
+
+`tri_area` is a gufunc with signature `(3, n) - > ()`.  It computes the
+area of a triangle defined by three points in n-dimensional space.
+
+```
+>>> import numpy as np
+>>> from ufunclab import tri_area
+
+`p` has shape (2, 3, 4). It contains the vertices
+of two triangles in 4-dimensional space.
+
+>>> p = np.array([[[0.0, 0.0, 0.0, 6.0],
+                   [1.0, 2.0, 3.0, 6.0],
+                   [0.0, 2.0, 2.0, 6.0]],
+                  [[1.5, 1.0, 2.5, 2.0],
+                   [4.0, 1.0, 0.0, 2.5],
+                   [2.0, 1.0, 2.0, 2.5]]])
+>>> tri_area(p)
+array([1.73205081, 0.70710678])
 ```
 
 ### `fillnan1d`

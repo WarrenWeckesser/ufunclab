@@ -163,6 +163,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _vnorm_srcs],
                          **npymath_info)
 
+    _tri_area_srcs = ['tri_area_gufunc.h', '_tri_areamodule.cxx']
+    config.add_extension('ufunclab._tri_area',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'tri_area', name)
+                                  for name in _tri_area_srcs],
+                         **npymath_info)
+
     config.add_extension('ufunclab._backlash',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'backlash',
@@ -236,7 +243,8 @@ if __name__ == "__main__":
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
 
-    generate_cxx_gufunc_extmods(['all_same', 'meanvar', 'sosfilter', 'vnorm'])
+    generate_cxx_gufunc_extmods(['all_same', 'meanvar', 'sosfilter',
+                                 'tri_area', 'vnorm'])
 
     setup(name='ufunclab',
           version=get_version(),
