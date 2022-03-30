@@ -58,11 +58,11 @@ templating system to generate the loops for the different data types.
 
 Most of these gufuncs are implemented as custom extension modules.
 
-In `all_same`, `meanvar`, `sosfilter`, `sosfilter_ic`, `sosfilter_ic_contig`,
-`tri_area` and `vnorm`, the core calculations are implemented as templated C++
-functions, and code generation tools are used to automatically generate the
-extension module source code based on a configuration file.  More gufuncs will
-be moved to this system eventually.
+In `all_same`, `gini`, `mad`, `meanvar`, `rmad`, `sosfilter`, `sosfilter_ic`,
+`sosfilter_ic_contig`, `tri_area` and `vnorm`, the core calculations are
+implemented as templated C++ functions, and code generation tools are used
+to automatically generate the extension module source code based on a
+configuration file.  More gufuncs will be moved to this system eventually.
 
 | Function                                      | Description                                           |
 | --------                                      | -----------                                           |
@@ -82,9 +82,8 @@ be moved to this system eventually.
 | [`hmean`](#hmean)                             | Harmonic mean                                         |
 | [`meanvar`](#meanvar)                         | Mean and variance                                     |
 | [`mad`](#mad)                                 | Mean absolute difference (MAD)                        |
-| [`mad1`](#mad1)                               | Unbiased estimator of the MAD                         |
 | [`rmad`](#rmad)                               | Relative mean absolute difference (RMAD)              |
-| [`rmad1`](#rmad1)                             | RMAD based on unbiased MAD                            |
+| [`gini`](#gini)                               | Gini coefficient                                      |
 | [`vnorm`](#vnorm)                             | Vector norm                                           |
 | [`cross2`](#cross2)                           | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                           | 3-d vector cross product                              |
@@ -915,130 +914,110 @@ Out[7]: array([ 4.5  , 10.125,  3.125,  0.   ])
 
 ### `mad`
 
-`mad` computes the [mean absolute difference](https://en.wikipedia.org/wiki/Mean_absolute_difference)
-of a 1-d array (gufunc signature is `(i)->()`).  `mad` is the standard
-calculation (sum of the absolute differences divided by `n**2`), and `mad1`
-is the unbiased estimator (sum of the absolute differences divided by
-`n*(n-1)`).
+`mad(x, unbiased)` computes the [mean absolute difference](https://en.wikipedia.org/wiki/Mean_absolute_difference)
+of a 1-d array (gufunc signature is `(n)()->()`).  When the second parameter
+is False,  `mad` is the standard calculation (sum of the absolute differences
+divided by `n**2`).  When the second parameter is True, `mad` is the unbiased
+estimator (sum of the absolute differences divided by `n*(n-1)`).
 
 For example,
 ```
-In [15]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import mad
 
-In [16]: from ufunclab import mad
+>>> x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
 
-In [17]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
+>>> mad(x, False)
+2.6666666666666665
 
-In [18]: mad(x)
-Out[18]: 2.6666666666666665
-
-In [19]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
-
-In [20]: y
-Out[20]:
+>>> y = np.linspace(0, 1, 21).reshape(3, 7)**2
+>>> y
 array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
        [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
        [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
 
-In [21]: mad(y, axis=1)
-Out[21]: array([0.03428571, 0.11428571, 0.19428571])
+>>> mad(y, False, axis=1)
+array([0.03428571, 0.11428571, 0.19428571])
 ```
 
-### `mad1`
+When the second parameter is `True`, the calculation is the unbiased
+estimate of the mean absolute difference.
 
-`mad1` computes the [mean absolute difference](https://en.wikipedia.org/wiki/Mean_absolute_difference)
-of a 1-d array (gufunc signature is `(i)->()`).  This version is
-based on the unbiasd estimator of the mean absolute difference.
-`mad` is the standard calculation (sum of the absolute differences
-divided by `n**2`), and `mad1` is the unbiased estimator (sum of the
-absolute differences divided by `n*(n-1)`).
-
-For example,
 ```
-In [1]: import numpy as np
+>>> mad(x, True)
+3.2
 
-In [2]: from ufunclab import mad1
-
-In [3]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
-
-In [4]: mad1(x)
-Out[4]: 3.2
-
-In [5]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
-
-In [6]: y
-Out[6]:
-array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
-       [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
-       [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
-
-In [7]: mad1(y, axis=1)
-Out[7]: array([0.04      , 0.13333333, 0.22666667])
+>>> mad(y, True, axis=1)
+array([0.04      , 0.13333333, 0.22666667])
 ```
 
 ### `rmad`
 
-`rmad` computes the relative mean absolute difference (gufunc
-signature is `(i)->()`).
-
-`rmad` is the standard calculation and `rmad1` uses the unbiased
-estimator of the mean absolute difference to compute the relative
-mean absolute difference.
+`rmad(x, unbiased)` computes the relative mean absolute difference (gufunc
+signature is `(i)()->()`).
 
 `rmad` is twice the [Gini coefficient](https://en.wikipedia.org/wiki/Gini_coefficient).
 
 For example,
+
 ```
-In [1]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import rmad
 
-In [2]: from ufunclab import rmad
+>>> x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
 
-In [3]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
+>>> rmad(x, False)
+0.7999999999999999
 
-In [4]: rmad(x)
-Out[4]: 0.7999999999999999
-
-In [5]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
-
-In [6]: y
-Out[6]:
+>>> y = np.linspace(0, 1, 21).reshape(3, 7)**2
+>>> y
 array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
        [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
        [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
 
-In [7]: rmad(y, axis=1)
-Out[7]: array([1.05494505, 0.43956044, 0.26523647])
+>>> rmad(y, False, axis=1)
+array([1.05494505, 0.43956044, 0.26523647])
 ```
 
-### `rmad1`
+When the second parameter is `True`, the calculation is based on the
+unbiased estimate of the mean absolute difference (MAD).
 
-`rmad1` computes the relative mean absolute difference (gufunc
-signature is `(i)->()`).
-
-`rmad1` uses the unbiased estimator of the mean absolute difference
-to compute the relative mean absolute difference.
-
-For example,
 ```
-In [1]: import numpy as np
+>>> rmad(x, True)
+0.96
 
-In [2]: from ufunclab import rmad1
+>>> rmad(y, True, axis=1)
+array([1.23076923, 0.51282051, 0.30944255])
+```
 
-In [3]: x = np.array([1.0, 1.0, 2.0, 3.0, 5.0, 8.0])
+### `gini`
 
-In [4]: rmad1(x)
-Out[4]: 0.96
+`gini(x, unbiased)` is a gufunc with signature `(n),()->()` that computes the
+Gini coefficient of the data in `x`.
 
-In [5]: y = np.linspace(0, 1, 21).reshape(3, 7)**2
+```
+>>> from ufunclab import gini
 
-In [6]: y
-Out[6]:
-array([[0.    , 0.0025, 0.01  , 0.0225, 0.04  , 0.0625, 0.09  ],
-       [0.1225, 0.16  , 0.2025, 0.25  , 0.3025, 0.36  , 0.4225],
-       [0.49  , 0.5625, 0.64  , 0.7225, 0.81  , 0.9025, 1.    ]])
+>>> gini([1, 2, 3, 4], False)
+0.25
 
-In [7]: rmad1(y, axis=1)
-Out[7]: array([1.23076923, 0.51282051, 0.30944255])
+>>> income = [20, 30, 40, 50, 60, 70, 80, 90, 120, 150]
+>>> gini(income, False)
+0.3028169014084507
+```
+
+When the second parameter is `True`, the calculation is based on the
+unbiased estimate of the mean absolute difference (MAD).
+
+```
+>>> from ufunclab import gini1
+
+>>> gini1([1, 2, 3, 4], True)
+0.33333333333333337
+
+>>> income = [20, 30, 40, 50, 60, 70, 80, 90, 120, 150]
+>>> gini(income, True)
+0.3364632237871674
 ```
 
 ### `vnorm`

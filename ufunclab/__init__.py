@@ -16,7 +16,7 @@ from ._peaktopeak import peaktopeak
 from ._minmax import argmin, argmax, minmax, argminmax, min_argmin, max_argmax
 from ._means import gmean, hmean
 from ._meanvar import meanvar
-from ._mad import mad, mad1, rmad, rmad1
+from ._mad import mad, rmad, gini
 from ._vnorm import vnorm
 from ._tri_area import tri_area
 from ._backlash import backlash
@@ -35,7 +35,7 @@ from ._ufunc_inspector import ufunc_inspector
 import numpy as _np
 
 
-__version__ = "0.0.6.dev2"
+__version__ = "0.0.6.dev3"
 
 
 class op:

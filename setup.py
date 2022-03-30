@@ -152,9 +152,12 @@ def configuration(parent_package='', top_path=None):
                                   for name in _meanvar_srcs],
                          **npymath_info)
 
+    _mad_srcs = ['mad_gufunc.h', '_madmodule.cxx']
     config.add_extension('ufunclab._mad',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'mad', 'mad_gufunc.c.src')])
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'mad', name)
+                                  for name in _mad_srcs],
+                         **npymath_info)
 
     _vnorm_srcs = ['vnorm_gufunc.h', '_vnormmodule.cxx']
     config.add_extension('ufunclab._vnorm',
@@ -243,7 +246,7 @@ if __name__ == "__main__":
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
                           'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
 
-    generate_cxx_gufunc_extmods(['all_same', 'meanvar', 'sosfilter',
+    generate_cxx_gufunc_extmods(['all_same', 'mad', 'meanvar', 'sosfilter',
                                  'tri_area', 'vnorm'])
 
     setup(name='ufunclab',
