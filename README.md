@@ -915,7 +915,7 @@ Out[7]: array([ 4.5  , 10.125,  3.125,  0.   ])
 ### `mad`
 
 `mad(x, unbiased)` computes the [mean absolute difference](https://en.wikipedia.org/wiki/Mean_absolute_difference)
-of a 1-d array (gufunc signature is `(n)()->()`).  When the second parameter
+of a 1-d array (gufunc signature is `(n),()->()`).  When the second parameter
 is False,  `mad` is the standard calculation (sum of the absolute differences
 divided by `n**2`).  When the second parameter is True, `mad` is the unbiased
 estimator (sum of the absolute differences divided by `n*(n-1)`).
@@ -954,7 +954,7 @@ array([0.04      , 0.13333333, 0.22666667])
 ### `rmad`
 
 `rmad(x, unbiased)` computes the relative mean absolute difference (gufunc
-signature is `(i)()->()`).
+signature is `(i),()->()`).
 
 `rmad` is twice the [Gini coefficient](https://en.wikipedia.org/wiki/Gini_coefficient).
 
@@ -1012,7 +1012,7 @@ unbiased estimate of the mean absolute difference (MAD).
 ```
 >>> from ufunclab import gini1
 
->>> gini1([1, 2, 3, 4], True)
+>>> gini([1, 2, 3, 4], True)
 0.33333333333333337
 
 >>> income = [20, 30, 40, 50, 60, 70, 80, 90, 120, 150]
