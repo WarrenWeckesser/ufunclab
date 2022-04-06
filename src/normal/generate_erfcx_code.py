@@ -17,6 +17,11 @@ def erfcx_mp(x):
 
 
 def find_lower_bound(dtype):
+    """
+    For the given dtype, find the lowest value of x for which erfcx(x)
+    can be represented as a finite number with dtype.  In the generated
+    code, erfcx(x) will return inf for any input below this lower bound.
+    """
     x0 = dtype(-1.0)
     x1 = dtype(-150.0)
     while True:
