@@ -1010,8 +1010,6 @@ When the second parameter is `True`, the calculation is based on the
 unbiased estimate of the mean absolute difference (MAD).
 
 ```
->>> from ufunclab import gini1
-
 >>> gini([1, 2, 3, 4], True)
 0.33333333333333337
 
