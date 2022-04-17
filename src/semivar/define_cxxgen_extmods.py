@@ -5,7 +5,7 @@ from ufunc_config_types import ExtMod, Func
 semivar_exponential_docstring = """\
 semivar_exponential(h, nugget, sill, rng, /, ...)
 
-Exonential semivariogram.
+Exponential semivariogram:
 
     γ(h) = N + (S - N)*exp(1 - 3*h/R)
 
@@ -35,7 +35,7 @@ v : ndarray or scalar
 semivar_linear_docstring = """\
 semivar_linear(h, nugget, sill, rng, /, ...)
 
-Linear semivariogram.
+Linear semivariogram:
 
     γ(h) = N + ((S - N)/R)*h   for h < R
     γ(h) = S                   for h >= R
@@ -65,7 +65,7 @@ v : ndarray or scalar
 semivar_spherical_docstring = """\
 semivar_spherical(h, nugget, sill, rng, /, ...)
 
-Spherical semivariogram.
+Spherical semivariogram:
 
     γ(h) = N + (S - N)*(ρ/2)*(3 - ρ**2)  for h < R
     γ(h) = S                             for h >= R
