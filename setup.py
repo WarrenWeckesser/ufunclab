@@ -192,6 +192,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _dz_srcs],
                          **npymath_info)
 
+    _semivar_srcs = ['semivar_concrete.cxx', '_semivarmodule.cxx']
+    config.add_extension('ufunclab._semivar',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'semivar', 'generated', name)
+                                  for name in _semivar_srcs],
+                         **npymath_info)
+
     _tp_srcs = ['trapezoid_pulse_concrete.cxx', '_trapezoid_pulsemodule.cxx']
     config.add_extension('ufunclab._trapezoid_pulse',
                          extra_compile_args=['-std=c++11', '-Werror'],
@@ -244,7 +251,8 @@ if __name__ == "__main__":
     from numpy.distutils.core import setup
 
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
-                          'normal', 'step', 'trapezoid_pulse', 'yeo_johnson'])
+                          'normal', 'semivar', 'step', 'trapezoid_pulse',
+                          'yeo_johnson'])
 
     generate_cxx_gufunc_extmods(['all_same', 'mad', 'meanvar', 'sosfilter',
                                  'tri_area', 'vnorm'])

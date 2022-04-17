@@ -29,30 +29,33 @@ are `logfactorial` and `issnan`, which are implemented in C, with all
 boilerplate code written "by hand" in the C file, and using NumPy's
 templating system to generate the loops for the different data types.
 
-| Function                                | Description                                                         |
-| --------                                | -----------                                                         |
-| [`logfactorial`](#logfactorial)         | Log of the factorial of integers                                    |
-| [`issnan`](#issnan)                     | Like `isnan`, but for signaling nans only.                          |
-| [`abs_squared`](#abs_squared)           | Squared absolute value                                              |
-| [`deadzone`](#deadzone)                 | Deadzone function                                                   |
-| [`step`](#step)                         | Step function                                                       |
-| [`linearstep`](#linearstep)             | Piecewise linear step function                                      |
-| [`smoothstep3`](#smoothstep3)           | Smooth step using a cubic polynomial                                |
-| [`smoothstep5`](#smoothstep5)           | Smooth step using a degree 5 polynomial                             |
-| [`trapezoid_pulse`](#trapezoid_pulse)   | Trapezoid pulse function                                            |
-| [`expint1`](#expint1)                   | Exponential integral E₁ for real inputs                             |
-| [`logexpint1`](#logexpint1)             | Logarithm of the exponential integral E₁                            |
-| [`logistic`](#logistic)                 | The standard logistic sigmoid function                              |
-| [`logistic_deriv`](#logistic_deriv)     | Derivative of the standard logistic sigmoid function                |
-| [`log_logistic`](#log_logistic)         | Logarithm of the standard logistic sigmoid function                 |
-| [`swish`](#swish)                       | The 'swish' function--a smoothed ramp                               |
-| [`yeo_johnson`](#yeo_johnson)           | Yeo-Johnson transformation                                          |
-| [`inv_yeo_johnson`](#inv_yeo_johnson)   | Inverse of the Yeo-Johnson transformation                           |
-| [`erfcx`](#erfcx)                       | Scaled complementary error function                                 |
-| [`normal_cdf`](#normal_cdf)             | CDF of the standard normal distribution                             |
-| [`normal_logcdf`](#normal_logcdf)       | Logarithm of the CDF of the standard normal distribution            |
-| [`normal_sf`](#normal_sf)               | Survival function of the standard normal distribution               |
-| [`normal_logsf`](#normal_logsf)         | Log of the survival function of the standard normal distribution    |
+| Function                                      | Description                                                   |
+| --------                                      | -----------                                                   |
+| [`logfactorial`](#logfactorial)               | Log of the factorial of integers                              |
+| [`issnan`](#issnan)                           | Like `isnan`, but for signaling nans only.                    |
+| [`abs_squared`](#abs_squared)                 | Squared absolute value                                        |
+| [`deadzone`](#deadzone)                       | Deadzone function                                             |
+| [`step`](#step)                               | Step function                                                 |
+| [`linearstep`](#linearstep)                   | Piecewise linear step function                                |
+| [`smoothstep3`](#smoothstep3)                 | Smooth step using a cubic polynomial                          |
+| [`smoothstep5`](#smoothstep5)                 | Smooth step using a degree 5 polynomial                       |
+| [`trapezoid_pulse`](#trapezoid_pulse)         | Trapezoid pulse function                                      |
+| [`expint1`](#expint1)                         | Exponential integral E₁ for real inputs                       |
+| [`logexpint1`](#logexpint1)                   | Logarithm of the exponential integral E₁                      |
+| [`logistic`](#logistic)                       | The standard logistic sigmoid function                        |
+| [`logistic_deriv`](#logistic_deriv)           | Derivative of the standard logistic sigmoid function          |
+| [`log_logistic`](#log_logistic)               | Logarithm of the standard logistic sigmoid function           |
+| [`swish`](#swish)                             | The 'swish' function--a smoothed ramp                         |
+| [`yeo_johnson`](#yeo_johnson)                 | Yeo-Johnson transformation                                    |
+| [`inv_yeo_johnson`](#inv_yeo_johnson)         | Inverse of the Yeo-Johnson transformation                     |
+| [`erfcx`](#erfcx)                             | Scaled complementary error function                           |
+| [`normal_cdf`](#normal_cdf)                   | CDF of the standard normal distribution                       |
+| [`normal_logcdf`](#normal_logcdf)             | Logarithm of the CDF of the std. normal distribution          |
+| [`normal_sf`](#normal_sf)                     | Survival function of the std. normal distribution             |
+| [`normal_logsf`](#normal_logsf)               | Log of the survival function of the std. normal distribution  |
+| [`semivar_exponential`](#semivar_exponential) | Exponential semivariogram (from kriging interpolation)        |
+| [`semivar_linear`](#semivar_linear)           | Linear variogram (from kriging interpolation)                 |
+| [`semivar_spherical`](#semivar_spherical)     | Spherical variogram (from kriging interpolation)              |
 
 *Generalized ufuncs*
 
@@ -425,6 +428,21 @@ as `ccdf`.
 
 `normal_logsf(x)` computes the natural logarithm of the survival function of the
 standard normal distribution.
+
+
+### `semivar_exponential`
+
+`semivar_exponential(h, nugget, sill, rng)` computes the exponential semivariogram.
+
+
+### `semivar_linear`
+
+`semivar_linear(h, nugget, sill, rng)` computes the linear semivariogram.
+
+
+### `semivar_spherical`
+
+`semivar_spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
 
 
 ### `first`
