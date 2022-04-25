@@ -87,6 +87,7 @@ configuration file.  More gufuncs will be moved to this system eventually.
 | [`mad`](#mad)                                 | Mean absolute difference (MAD)                        |
 | [`rmad`](#rmad)                               | Relative mean absolute difference (RMAD)              |
 | [`gini`](#gini)                               | Gini coefficient                                      |
+| [`pearson_corr`](#pearson_corr)               | Pearson's product-moment correlation coefficient      |
 | [`vnorm`](#vnorm)                             | Vector norm                                           |
 | [`cross2`](#cross2)                           | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                           | 3-d vector cross product                              |
