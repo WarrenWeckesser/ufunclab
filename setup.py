@@ -152,6 +152,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _meanvar_srcs],
                          **npymath_info)
 
+    _corr_srcs = ['corr_gufunc.h', '_corrmodule.cxx']
+    config.add_extension('ufunclab._corr',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'corr', name)
+                                  for name in _corr_srcs],
+                         **npymath_info)
+
     _mad_srcs = ['mad_gufunc.h', '_madmodule.cxx']
     config.add_extension('ufunclab._mad',
                          extra_compile_args=['-std=c++11', '-Werror'],
@@ -254,8 +261,8 @@ if __name__ == "__main__":
                           'normal', 'semivar', 'step', 'trapezoid_pulse',
                           'yeo_johnson'])
 
-    generate_cxx_gufunc_extmods(['all_same', 'mad', 'meanvar', 'sosfilter',
-                                 'tri_area', 'vnorm'])
+    generate_cxx_gufunc_extmods(['all_same', 'corr', 'mad', 'meanvar',
+                                 'sosfilter', 'tri_area', 'vnorm'])
 
     setup(name='ufunclab',
           version=get_version(),

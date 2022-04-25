@@ -1036,6 +1036,38 @@ unbiased estimate of the mean absolute difference (MAD).
 0.3364632237871674
 ```
 
+### `pearson_corr`
+
+`pearson_corr(x, y)` computes Pearson's product-moment correlation coefficient.
+It is a gufunc with shape signature `(n),(n)->()`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import pearson_corr
+
+>>> x = np.array([1.0, 2.0, 3.5, 7.0, 8.5, 10.0, 11.0])
+>>> y = np.array([10, 11.5, 11.4, 13.6, 15.1, 16.7, 15.0])
+>>> pearson_corr(x, y)
+0.9506381287828245
+```
+
+In the following example, a trivial dimension is added to the array `a` before
+passing it to `pearson_corr`, so the inputs are compatible for broadcasting.
+The correlation coefficient of each row of `a` with each row of `b` is computed,
+giving a result with shape (3, 2).
+
+```
+>>> a = np.array([[2, 3, 1, 3, 5, 8, 8, 9],
+...               [3, 3, 1, 2, 2, 4, 4, 5],
+...               [2, 5, 1, 2, 2, 3, 3, 8]])
+>>> b = np.array([[9, 8, 8, 7, 4, 4, 1, 2],
+...               [8, 9, 9, 6, 5, 7, 3, 4]])
+>>> pearson_corr(np.expand_dims(a, 1), b)
+array([[-0.92758645, -0.76815464],
+       [-0.65015428, -0.53015896],
+       [-0.43575108, -0.32925148]])
+```
+
 ### `vnorm`
 
 `vnorm` computes the vector norm of 1D arrays.  It is a gufunc with
