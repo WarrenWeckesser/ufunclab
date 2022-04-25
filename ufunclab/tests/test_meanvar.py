@@ -37,13 +37,13 @@ def test_out_with_strides():
 def test_length_zero_1d():
     x = np.array([])
     with pytest.raises(ValueError, match="n must be at least 1"):
-        mv = meanvar(x, 1)
+        meanvar(x, 1)
 
 
 def test_length_zero_2d():
     x = np.array([[], []])
     with pytest.raises(ValueError, match="n must be at least 1"):
-        mv = meanvar(x, 1, axes=[(1,), (), (1,)])
+        meanvar(x, 1, axes=[(1,), (), (1,)])
 
 
 def test_size_zero():
