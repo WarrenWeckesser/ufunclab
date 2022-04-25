@@ -71,19 +71,19 @@ out : ndarray
 Examples
 --------
 >>> import numpy as np
->>> from ufunclab import log_expit
+>>> from ufunclab import log_logistic
 
->>> log_expit([-3.0, 0.25, 2.5, 5.0])
+>>> log_logistic([-3.0, 0.25, 2.5, 5.0])
 array([-3.04858735, -0.57593942, -0.07888973, -0.00671535])
 
 Large negative values:
 
->>> log_expit([-100, -500, -1000])
+>>> log_logistic([-100, -500, -1000])
 array([ -100.,  -500., -1000.])
 
 Large positive values:
 
->>> log_expit([25, 100, 400])
+>>> log_logistic([25, 100, 400])
 array([-1.38879439e-011, -3.72007598e-044, -1.91516960e-174])
 """
 

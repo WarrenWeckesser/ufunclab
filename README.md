@@ -319,7 +319,7 @@ function.
 >>> from ufunclab import log_logistic
 
 >>> x = np.array([-800, -500, -0.5, 10, 250, 500])
->>> log_expit(x)
+>>> log_logistic(x)
 array([-8.00000000e+002, -5.00000000e+002, -9.74076984e-001,
        -4.53988992e-005, -2.66919022e-109, -7.12457641e-218])
 ```

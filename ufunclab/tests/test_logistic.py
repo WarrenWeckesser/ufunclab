@@ -37,7 +37,7 @@ def test_log_logistic_large_positive():
     # y will contain -0.0, and -0.0 is used in the expected value,
     # but assert_equal does not check the sign of zeros, and I don't
     # think the sign is an essential part of the test (i.e. it would
-    # probably be OK if log_expit(1000) returned 0.0 instead of -0.0).
+    # probably be OK if log_logistic(1000) returned 0.0 instead of -0.0).
     assert_equal(y, np.array([-0.0, -0.0, -0.0]))
 
 
@@ -52,10 +52,10 @@ def test_log_logistic_basic():
     #
     #   mpmath.mp.dps = 100
     #
-    #   def mp_log_expit(x):
+    #   def mp_log_logistic(x):
     #       return -mpmath.log1p(mpmath.exp(-x))
     #
-    #   expected = [float(mp_log_expit(t)) for t in x]
+    #   expected = [float(mp_log_logistic(t)) for t in x]
     #
     expected = [-32.000000000000014, -20.000000002061153,
                 -10.000045398899218, -3.048587351573742,
