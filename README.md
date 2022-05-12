@@ -38,6 +38,7 @@ templating system to generate the loops for the different data types.
 | [`step`](#step)                               | Step function                                                 |
 | [`linearstep`](#linearstep)                   | Piecewise linear step function                                |
 | [`smoothstep3`](#smoothstep3)                 | Smooth step using a cubic polynomial                          |
+| [`invsmoothstep3`](#invsmoothstep3)           | Inverse of `smoothstep3`                                      |
 | [`smoothstep5`](#smoothstep5)                 | Smooth step using a degree 5 polynomial                       |
 | [`trapezoid_pulse`](#trapezoid_pulse)         | Trapezoid pulse function                                      |
 | [`expint1`](#expint1)                         | Exponential integral E₁ for real inputs                       |
@@ -237,6 +238,11 @@ The script `smoothstep3_demo.py` in the `examples` directory generates
 the plot
 
 ![smoothstep3 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/smoothstep3_demo.png)
+
+### `invsmoothstep3`
+
+The ufunc `invsmoothstep3(y, a, b, fa, fb)` is the inverse of
+`smoothstep3(x, a, b, fa, fb)`.
 
 ### `smoothstep5`
 

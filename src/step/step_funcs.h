@@ -1,5 +1,6 @@
 #include <cmath>
 
+
 namespace StepFunctions {
 
 template<typename T>
@@ -60,6 +61,38 @@ T smoothstep3(T x, T a, T b, T fa, T fb)
     }
     T u = (x - a)/(b - a);
     return fa + (fb - fa)*u*u*(3 - 2*u);
+}
+
+template<typename T>
+T invsmoothstep3(T y, T a, T b, T fa, T fb)
+{
+    T upper, lower;
+
+    if (fa == fb) {
+        return NAN;
+    }
+    if (y == fa) {
+        return a;
+    }
+    if (y == fb) {
+        return b;
+    }
+    if (fa < fb) {
+        upper = fb;
+        lower = fa;
+    }
+    else {
+        upper = fa;
+        lower = fb;
+    }
+    if ((y > upper) || (y < lower)) {
+        return NAN;
+    }
+    // See, for example,
+    //     https://en.wikipedia.org/wiki/Smoothstep#Inverse_Smoothstep
+    T t = (y - fa) / (fb - fa);
+    T s = 0.5 - sin(asin(1 - 2 * t) / 3);
+    return a + (b - a)*s;
 }
 
 

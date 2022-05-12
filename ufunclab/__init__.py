@@ -29,7 +29,7 @@ from ._hysteresis_relay import hysteresis_relay
 from ._all_same import all_same
 from ._sosfilter import sosfilter, sosfilter_ic, sosfilter_ic_contig
 
-from ._step import step, linearstep, smoothstep3, smoothstep5
+from ._step import step, linearstep, smoothstep3, invsmoothstep3, smoothstep5
 
 from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector

@@ -25,6 +25,19 @@ The function `smoothstep3(x, a, b, fa, fb)` returns `fa` for
 the interval `a < x < b` to smoothly transition from `fa` to `fb`.
 """
 
+invsmoothstep3_docstring = """\
+invsmoothstep3(y, a, b, fa, fb, /, ...)
+
+Inverse of `smoothstep3(x, a, b, fa, fb)`.
+
+The function `invsmoothstep3(y, a, b, fa, fb)` returns `nan` for
+values outside the range of `smoothstep3`.
+
+The inverse is multivalued at `y == fa` and `y == fb`, so it would not be
+inappropriate for the function to return `nan` at these points.  Instead,
+the function returns `a` and `b`, respectively.
+"""
+
 smoothstep5_docstring = """\
 smoothstep5(x, a, b, fa, fb, /, ...)
 
@@ -46,6 +59,10 @@ step_funcs = [
          ufuncname='smoothstep3',
          types=['fffff->f', 'ddddd->d', 'ggggg->g'],
          docstring=smoothstep3_docstring),
+    Func(cxxname='StepFunctions::invsmoothstep3',
+         ufuncname='invsmoothstep3',
+         types=['fffff->f', 'ddddd->d', 'ggggg->g'],
+         docstring=invsmoothstep3_docstring),
     Func(cxxname='StepFunctions::smoothstep5',
          ufuncname='smoothstep5',
          types=['fffff->f', 'ddddd->d', 'ggggg->g'],
