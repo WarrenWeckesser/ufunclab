@@ -1,5 +1,5 @@
 
-from typing import List, Dict
+from typing import List
 from dataclasses import dataclass
 
 
