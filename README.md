@@ -244,6 +244,12 @@ the plot
 The ufunc `invsmoothstep3(y, a, b, fa, fb)` is the inverse of
 `smoothstep3(x, a, b, fa, fb)`.
 
+The script `invsmoothstep3_demo.py` in the `examples` directory generates
+the plot
+
+![invsmoothstep3 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/invsmoothstep3_demo.png)
+
+
 ### `smoothstep5`
 
 The function `smoothstep5(x, a, b, fa, fb)` returns `fa` for
