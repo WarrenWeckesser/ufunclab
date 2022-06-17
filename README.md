@@ -47,6 +47,7 @@ templating system to generate the loops for the different data types.
 | [`logistic_deriv`](#logistic_deriv)           | Derivative of the standard logistic sigmoid function          |
 | [`log_logistic`](#log_logistic)               | Logarithm of the standard logistic sigmoid function           |
 | [`swish`](#swish)                             | The 'swish' function--a smoothed ramp                         |
+| [`hyperbolic_ramp`](#hyperbolic_ramp)         | A smoothed ramp function                                      |
 | [`yeo_johnson`](#yeo_johnson)                 | Yeo-Johnson transformation                                    |
 | [`inv_yeo_johnson`](#inv_yeo_johnson)         | Inverse of the Yeo-Johnson transformation                     |
 | [`erfcx`](#erfcx)                             | Scaled complementary error function                           |
@@ -355,6 +356,17 @@ is the standard logistic sigmoid function.  The function is a type
 of smoothed ramp.
 
 ![swish plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/swish_demo.png)
+
+### `hyperbolic_ramp`
+
+`hyperbolic_ramp(x, a)` computes the function
+
+    hyperbolic_ramp(x, a) = (x + sqrt(x*x + 4*a*a))/2
+
+It is a smoothed ramp function.
+
+![hyperbolic_ramp plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hyperbolic_ramp_demo.png)
+
 
 ### `yeo_johnson`
 

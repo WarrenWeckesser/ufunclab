@@ -94,6 +94,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _le_srcs],
                          **npymath_info)
 
+    _hr_srcs = ['hyperbolic_ramp_concrete.cxx', '_hyperbolic_rampmodule.cxx']
+    config.add_extension('ufunclab._hyperbolic_ramp',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'hyperbolic_ramp', 'generated', name)
+                                  for name in _hr_srcs],
+                         **npymath_info)
+
     _yj_srcs = ['yeo_johnson_concrete.cxx', '_yeo_johnsonmodule.cxx']
     config.add_extension('ufunclab._yeo_johnson',
                          extra_compile_args=['-std=c++11', '-Werror'],
@@ -257,7 +264,8 @@ def configuration(parent_package='', top_path=None):
 if __name__ == "__main__":
     from numpy.distutils.core import setup
 
-    generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1', 'logistic',
+    generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1',
+                          'hyperbolic_ramp', 'logistic',
                           'normal', 'semivar', 'step', 'trapezoid_pulse',
                           'yeo_johnson'])
 
