@@ -729,7 +729,7 @@ does not provide the `sorter` parameter.)
 
 ```
 >>> import numpy as np
->>> from ufunclab import searchsortedl
+>>> from ufunclab import searchsortedr
 >>> searchsortedr([1, 1, 2, 3, 5, 8, 13, 21], [1, 4, 15, 99])
 array([2, 4, 7, 8])
 >>> arr = np.array([[1, 1, 2, 3, 5, 8, 13, 21],
