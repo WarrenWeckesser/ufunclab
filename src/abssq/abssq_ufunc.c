@@ -14,6 +14,9 @@
 // The ufunc "inner loops". The type signatures of the abssq ufunc are
 //     >>> abssq.types
 //     ['f->f', 'd->d', 'g->g', 'F->f', 'D->d', 'G->g']
+// There is obviously a lot of repeated code here, with only the types
+// changed.  Eventually this can be clean up with the use of an
+// approprate templating tool or code generation.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 static void abssq_f_f_loop(char **args, const npy_intp *dimensions,
@@ -58,6 +61,13 @@ static void abssq_g_g_loop(char **args, const npy_intp *dimensions,
     }
 }
 
+static void abssq_F_f_contig(npy_intp n, float *in, float *out)
+{
+    for (npy_intp i = 0; i < n; ++i) {
+        out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
+    }
+}
+
 static void abssq_F_f_loop(char **args, const npy_intp *dimensions,
                            const npy_intp* steps, void* data)
 {
@@ -66,10 +76,21 @@ static void abssq_F_f_loop(char **args, const npy_intp *dimensions,
     npy_intp in_step = steps[0];
     npy_intp out_step = steps[1];
 
+    if (in_step == 2*sizeof(float) && out_step == sizeof(float)) {
+        abssq_F_f_contig(dimensions[0], (float *)in, (float *)out);
+        return;
+    }
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
         float x = (float) *(float *)in;
         float y = (float) *(float *)(in + sizeof(float));
         *((float *) out) = x*x + y*y;
+    }
+}
+
+static void abssq_D_d_contig(npy_intp n, double *in, double *out)
+{
+    for (npy_intp i = 0; i < n; ++i) {
+        out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
     }
 }
 
@@ -81,10 +102,21 @@ static void abssq_D_d_loop(char **args, const npy_intp *dimensions,
     npy_intp in_step = steps[0];
     npy_intp out_step = steps[1];
 
+    if (in_step == 2*sizeof(double) && out_step == sizeof(double)) {
+        abssq_D_d_contig(dimensions[0], (double *)in, (double *)out);
+        return;
+    }
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
         double x = (double) *(double *)in;
         double y = (double) *(double *)(in + sizeof(double));
         *((double *) out) = x*x + y*y;
+    }
+}
+
+static void abssq_G_g_contig(npy_intp n, long double *in, long double *out)
+{
+    for (npy_intp i = 0; i < n; ++i) {
+        out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
     }
 }
 
@@ -96,6 +128,10 @@ static void abssq_G_g_loop(char **args, const npy_intp *dimensions,
     npy_intp in_step = steps[0];
     npy_intp out_step = steps[1];
 
+    if (in_step == 2*sizeof(long double) && out_step == sizeof(long double)) {
+        abssq_G_g_contig(dimensions[0], (long double *)in, (long double *)out);
+        return;
+    }
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
         long double x = (long double) *(long double *)in;
         long double y = (long double) *(long double *)(in + sizeof(long double));
