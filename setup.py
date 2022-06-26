@@ -80,6 +80,11 @@ def configuration(parent_package='', top_path=None):
                                   for name in _as_srcs],
                          **npymath_info)
 
+    config.add_extension('ufunclab._abssq',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'abssq',
+                                       'abssq_ufunc.c')])
+
     _ei_srcs = ['expint1_concrete.cxx', '_expint1module.cxx']
     config.add_extension('ufunclab._expint1',
                          extra_compile_args=['-std=c++11', '-Werror'],

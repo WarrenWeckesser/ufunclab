@@ -5,6 +5,7 @@ NumPy ufuncs and utilities.
 from ._logfact import logfactorial
 from ._issnan import issnan
 from ._abs_squared import abs_squared
+from ._abssq import abssq
 from ._expint1 import expint1, logexpint1
 from ._logistic import logistic, logistic_deriv, log_logistic, swish
 from ._hyperbolic_ramp import hyperbolic_ramp
@@ -38,7 +39,7 @@ from ._ufunc_inspector import ufunc_inspector
 import numpy as _np
 
 
-__version__ = "0.0.6.dev4"
+__version__ = "0.0.7.dev0"
 
 
 class op:
