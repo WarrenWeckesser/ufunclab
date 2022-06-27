@@ -15,8 +15,8 @@
 //     >>> abssq.types
 //     ['f->f', 'd->d', 'g->g', 'F->f', 'D->d', 'G->g']
 // There is obviously a lot of repeated code here, with only the types
-// changed.  Eventually this can be clean up with the use of an
-// approprate templating tool or code generation.
+// changed.  Eventually this can be cleaned up with the use of an
+// appropriate templating tool or code generation.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 static void abssq_f_f_loop(char **args, const npy_intp *dimensions,
