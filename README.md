@@ -25,7 +25,7 @@ Most of the element-wise ufuncs are implemented by writing the core
 calculation as a templated C++ function, and using some Python code to
 automate the generation of all the necessary boilerplate and wrappers
 that implement a ufunc around the core calculation.  The exceptions
-are `logfactorial`, `issnan`, and `abssq`, which are implemented in C,
+are `logfactorial`, `issnan`, and `cabssq`, which are implemented in C,
 with all boilerplate code written "by hand" in the C file.
 
 | Function                                      | Description                                                   |
@@ -33,7 +33,7 @@ with all boilerplate code written "by hand" in the C file.
 | [`logfactorial`](#logfactorial)               | Log of the factorial of integers                              |
 | [`issnan`](#issnan)                           | Like `isnan`, but for signaling nans only.                    |
 | [`abs_squared`](#abs_squared)                 | Squared absolute value                                        |
-| [`abssq`](#abssq)                             | Squared absolute value (faster implementation)                |
+| [`cabssq`](#cabssq)                           | Squared absolute value for complex input only                 |
 | [`deadzone`](#deadzone)                       | Deadzone function                                             |
 | [`step`](#step)                               | Step function                                                 |
 | [`linearstep`](#linearstep)                   | Piecewise linear step function                                |
@@ -182,17 +182,15 @@ array([  2.25,   9.  ,  81.  , 100.  ], dtype=float32)
 array([ 25. ,   1. ,   1. , 169. ,   2.5])
 ```
 
-### `abssq`
+### `cabssq`
 
-`abssq(z)` computes the squared absolute value of `z`.
-This is the same calculation as `abs_squared`, but the
-implementation is different.  `abssq` is implemented in C
-with the inner loop functions implemented "by hand", with no
-C++ or NumPy templating.  `abssq` is generally faster than
-`abs_squared`, because it avoids some of the overhead that
-occurs in the code generated in the implementation of
-`abs_squared`.
-
+`cabssq(z)` computes the squared absolute value of `z` for complex input only.
+This is the same calculation as `abs_squared`, but the implementation is
+different.  `cabssq` is implemented in C with the inner loop functions
+implemented "by hand", with no C++ or NumPy templating.  `cabssq` is generally
+faster than `abs_squared`, because it avoids some of the overhead that occurs
+in the code generated in the implementation of `abs_squared`, and it allows
+the compiler to optimize the code more effectively.
 
 ### `deadzone`
 

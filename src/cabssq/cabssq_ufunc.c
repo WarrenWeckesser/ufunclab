@@ -1,5 +1,5 @@
 //
-// abssq_ufunc.c
+// cabssq_ufunc.c
 //
 
 #define PY_SSIZE_T_CLEAN
@@ -11,65 +11,23 @@
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// The ufunc "inner loops". The type signatures of the abssq ufunc are
-//     >>> abssq.types
-//     ['f->f', 'd->d', 'g->g', 'F->f', 'D->d', 'G->g']
+// The ufunc "inner loops". The type signatures of the cabssq ufunc are
+//     >>> cabssq.types
+//     ['F->f', 'D->d', 'G->g']
 // There is obviously a lot of repeated code here, with only the types
 // changed.  Eventually this can be cleaned up with the use of an
 // appropriate templating tool or code generation.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static void abssq_f_f_loop(char **args, const npy_intp *dimensions,
-                           const npy_intp* steps, void* data)
-{
-    char *in = args[0];
-    char *out = args[1];
-    npy_intp in_step = steps[0];
-    npy_intp out_step = steps[1];
-
-    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        float x = (float) *(float *)in;
-        *((float *) out) = x*x;
-    }
-}
-
-static void abssq_d_d_loop(char **args, const npy_intp *dimensions,
-                           const npy_intp* steps, void* data)
-{
-    char *in = args[0];
-    char *out = args[1];
-    npy_intp in_step = steps[0];
-    npy_intp out_step = steps[1];
-
-    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        double x = (double) *(double *)in;
-        *((double *) out) = x*x;
-    }
-}
-
-static void abssq_g_g_loop(char **args, const npy_intp *dimensions,
-                           const npy_intp* steps, void* data)
-{
-    char *in = args[0];
-    char *out = args[1];
-    npy_intp in_step = steps[0];
-    npy_intp out_step = steps[1];
-
-    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        long double x = (long double) *(long double *)in;
-        *((long double *) out) = x*x;
-    }
-}
-
-static void abssq_F_f_contig(npy_intp n, float *in, float *out)
+static void cabssq_F_f_contig(npy_intp n, float *in, float *out)
 {
     for (npy_intp i = 0; i < n; ++i) {
         out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
     }
 }
 
-static void abssq_F_f_loop(char **args, const npy_intp *dimensions,
-                           const npy_intp* steps, void* data)
+static void cabssq_F_f_loop(char **args, const npy_intp *dimensions,
+                            const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -77,7 +35,7 @@ static void abssq_F_f_loop(char **args, const npy_intp *dimensions,
     npy_intp out_step = steps[1];
 
     if (in_step == 2*sizeof(float) && out_step == sizeof(float)) {
-        abssq_F_f_contig(dimensions[0], (float *)in, (float *)out);
+        cabssq_F_f_contig(dimensions[0], (float *)in, (float *)out);
         return;
     }
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
@@ -87,15 +45,15 @@ static void abssq_F_f_loop(char **args, const npy_intp *dimensions,
     }
 }
 
-static void abssq_D_d_contig(npy_intp n, double *in, double *out)
+static void cabssq_D_d_contig(npy_intp n, double *in, double *out)
 {
     for (npy_intp i = 0; i < n; ++i) {
         out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
     }
 }
 
-static void abssq_D_d_loop(char **args, const npy_intp *dimensions,
-                           const npy_intp* steps, void* data)
+static void cabssq_D_d_loop(char **args, const npy_intp *dimensions,
+                            const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -103,7 +61,7 @@ static void abssq_D_d_loop(char **args, const npy_intp *dimensions,
     npy_intp out_step = steps[1];
 
     if (in_step == 2*sizeof(double) && out_step == sizeof(double)) {
-        abssq_D_d_contig(dimensions[0], (double *)in, (double *)out);
+        cabssq_D_d_contig(dimensions[0], (double *)in, (double *)out);
         return;
     }
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
@@ -113,15 +71,15 @@ static void abssq_D_d_loop(char **args, const npy_intp *dimensions,
     }
 }
 
-static void abssq_G_g_contig(npy_intp n, long double *in, long double *out)
+static void cabssq_G_g_contig(npy_intp n, long double *in, long double *out)
 {
     for (npy_intp i = 0; i < n; ++i) {
         out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
     }
 }
 
-static void abssq_G_g_loop(char **args, const npy_intp *dimensions,
-                           const npy_intp* steps, void* data)
+static void cabssq_G_g_loop(char **args, const npy_intp *dimensions,
+                            const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -129,7 +87,7 @@ static void abssq_G_g_loop(char **args, const npy_intp *dimensions,
     npy_intp out_step = steps[1];
 
     if (in_step == 2*sizeof(long double) && out_step == sizeof(long double)) {
-        abssq_G_g_contig(dimensions[0], (long double *)in, (long double *)out);
+        cabssq_G_g_contig(dimensions[0], (long double *)in, (long double *)out);
         return;
     }
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
@@ -144,63 +102,57 @@ static void abssq_G_g_loop(char **args, const npy_intp *dimensions,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // This array of loop function pointers will be passed to PyUFunc_FromFuncAndData,
-// along with the arrays abssq_typecodes and abssq_data.
-PyUFuncGenericFunction abssq_funcs[] = {
-    (PyUFuncGenericFunction) &abssq_f_f_loop,
-    (PyUFuncGenericFunction) &abssq_d_d_loop,
-    (PyUFuncGenericFunction) &abssq_g_g_loop,
-    (PyUFuncGenericFunction) &abssq_F_f_loop,
-    (PyUFuncGenericFunction) &abssq_D_d_loop,
-    (PyUFuncGenericFunction) &abssq_G_g_loop
+// along with the arrays cabssq_typecodes and cabssq_data.
+PyUFuncGenericFunction cabssq_funcs[] = {
+    (PyUFuncGenericFunction) &cabssq_F_f_loop,
+    (PyUFuncGenericFunction) &cabssq_D_d_loop,
+    (PyUFuncGenericFunction) &cabssq_G_g_loop
 };
 
-#define ABSSQ_NLOOPS \
-    (sizeof(abssq_funcs) / sizeof(abssq_funcs[0]))
+#define CABSSQ_NLOOPS \
+    (sizeof(cabssq_funcs) / sizeof(cabssq_funcs[0]))
 
 // These are the input and return type codes for the inner loops.  It is
 // created as a 1-d C array, but it can be interpreted as a 2-d array with
 // shape (num_loops, num_args).  num_args is the sum of the number of
 // input args and output args.  In this case num_args is 2.
-static char abssq_typecodes[] = {
-    NPY_FLOAT, NPY_FLOAT,
-    NPY_DOUBLE, NPY_DOUBLE,
-    NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+static char cabssq_typecodes[] = {
     NPY_CFLOAT, NPY_FLOAT,
     NPY_CDOUBLE, NPY_DOUBLE,
     NPY_CLONGDOUBLE, NPY_LONGDOUBLE
 };
 
 // The ufunc will not use the 'data' array.
-static void *abssq_data[] = {NULL, NULL, NULL, NULL, NULL, NULL};
+static void *cabssq_data[] = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Python extension module definitions.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static PyMethodDef AbsSqMethods[] = {
+static PyMethodDef CAbsSqMethods[] = {
         {NULL, NULL, 0, NULL}
 };
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "_abssq",
-    .m_doc = "Module that defines the abssq function.",
+    .m_name = "_cabssq",
+    .m_doc = "Module that defines the cabssq function.",
     .m_size = -1,
-    .m_methods = AbsSqMethods
+    .m_methods = CAbsSqMethods
 };
 
 
-#define ABSSQ_DOCSTRING     \
-"abssq(z, /, ...)\n"        \
-"\n"                        \
-"Squared absolute value."
+#define CABSSQ_DOCSTRING                    \
+"cabssq(z, /, ...)\n"                       \
+"\n"                                        \
+"Squared absolute value for complex input."
 
 
-PyMODINIT_FUNC PyInit__abssq(void)
+PyMODINIT_FUNC PyInit__cabssq(void)
 {
     PyObject *module;
-    PyObject *abssq_ufunc;
+    PyObject *cabssq_ufunc;
     int nin, nout;
     int status;
 
@@ -212,24 +164,24 @@ PyMODINIT_FUNC PyInit__abssq(void)
     import_array();
     import_umath();
 
-    // Create the abssq ufunc object.
+    // Create the cabssq ufunc object.
     nin = 1;
     nout = 1;
-    abssq_ufunc = PyUFunc_FromFuncAndData(abssq_funcs, abssq_data,
-                                          abssq_typecodes,
-                                          ABSSQ_NLOOPS, nin, nout,
-                                          PyUFunc_None,
-                                          "abssq", ABSSQ_DOCSTRING, 0);
-    if (abssq_ufunc == NULL) {
+    cabssq_ufunc = PyUFunc_FromFuncAndData(cabssq_funcs, cabssq_data,
+                                           cabssq_typecodes,
+                                           CABSSQ_NLOOPS, nin, nout,
+                                           PyUFunc_None,
+                                           "cabssq", CABSSQ_DOCSTRING, 0);
+    if (cabssq_ufunc == NULL) {
         Py_DECREF(module);
         return NULL;
     }
 
     // Add the ufunc to the module.
-    status = PyModule_AddObject(module, "abssq",
-                                (PyObject *) abssq_ufunc);
+    status = PyModule_AddObject(module, "cabssq",
+                                (PyObject *) cabssq_ufunc);
     if (status == -1) {
-        Py_DECREF(abssq_ufunc);
+        Py_DECREF(cabssq_ufunc);
         Py_DECREF(module);
         return NULL;
     }
