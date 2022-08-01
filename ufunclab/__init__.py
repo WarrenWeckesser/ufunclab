@@ -20,7 +20,7 @@ from ._means import gmean, hmean
 from ._meanvar import meanvar
 from ._corr import pearson_corr
 from ._mad import mad, rmad, gini
-from ._vnorm import vnorm
+from ._vnorm import vnorm, vdot
 from ._tri_area import tri_area
 from ._backlash import backlash
 from ._fillnan1d import fillnan1d
@@ -39,7 +39,7 @@ from ._ufunc_inspector import ufunc_inspector
 import numpy as _np
 
 
-__version__ = "0.0.7.dev2"
+__version__ = "0.0.7.dev3"
 
 
 class op:

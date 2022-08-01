@@ -141,4 +141,37 @@ static void cvnorm_core_calc(
     }
 }
 
+
+//
+// `vdot_core_calc`, the C++ core function
+// for the gufunc `vdot` with signature '(n),(n)->()'
+// for types ['ff->f', 'dd->d', 'gg->g'].
+//
+template<typename T>
+static void vdot_core_calc(
+        npy_intp n,         // core dimension n
+        T *p_x,             // pointer to first element of x, a strided 1-d array with n elements
+        npy_intp x_stride,  // stride (in bytes) for elements of x
+        T *p_y,             // pointer to first element of y, a strided 1-d array with n elements
+        npy_intp y_stride,  // stride (in bytes) for elements of y
+        T *p_out            // pointer to out
+)
+{
+    T sum = 0;
+    if (x_stride == sizeof(T) && y_stride == sizeof(T)) {
+        // Give the compiler a chance to optimize the contiguous case.
+        for (int k = 0; k < n; ++k) {
+            sum += p_x[k] * p_y[k];
+        }
+    }
+    else {
+        for (int k = 0; k < n; ++k) {
+            T xk = GET(T, p_x, x_stride, k);
+            T yk = GET(T, p_y, y_stride, k);
+            sum += xk * yk;
+        }
+    }
+    p_out[0] = sum;
+}
+
 #endif

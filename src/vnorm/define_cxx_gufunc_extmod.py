@@ -32,26 +32,45 @@ array([15.        , 13.03840481])
 array([ 3.60555128, 13.        ,  3.        , 14.28285686])
 """
 
-ufunc_src_real = UFuncSource(
+VDOT_DOCSTRING = """\
+vdot(x, y, /, ...)
+
+Vector dot product of the real floating point arrays x and y.
+"""
+
+vnorm_src_real = UFuncSource(
     funcname='vnorm_core_calc',
     typesignatures=['ff->f', 'dd->d', 'gg->g'],
 )
 
-ufunc_src_cplx = UFuncSource(
+vnorm_src_cplx = UFuncSource(
     funcname='cvnorm_core_calc',
     typesignatures=['Ff->f', 'Dd->d', 'Gg->g'],
 )
 
-ufunc = UFunc(
+vnorm = UFunc(
     name='vnorm',
     header='vnorm_gufunc.h',
     docstring=VNORM_DOCSTRING,
     signature='(n),()->()',
-    sources=[ufunc_src_real, ufunc_src_cplx],
+    sources=[vnorm_src_real, vnorm_src_cplx],
+)
+
+vdot_src_real = UFuncSource(
+    funcname='vdot_core_calc',
+    typesignatures=['ff->f', 'dd->d', 'gg->g'],
+)
+
+vdot = UFunc(
+    name='vdot',
+    header='vnorm_gufunc.h',
+    docstring=VDOT_DOCSTRING,
+    signature='(n),(n)->()',
+    sources=[vdot_src_real],
 )
 
 extmod = UFuncExtMod(
     module='_vnorm',
-    docstring="This extension module defines the gufunc 'vnorm'.",
-    ufuncs=[ufunc],
+    docstring="This extension module defines the gufuncs 'vnorm' and 'vdot'.",
+    ufuncs=[vnorm, vdot],
 )
