@@ -61,13 +61,10 @@ with all boilerplate code written "by hand" in the C file.
 
 *Generalized ufuncs*
 
-Most of these gufuncs are implemented as custom extension modules.
-
-In `all_same`, `gini`, `mad`, `meanvar`, `rmad`, `sosfilter`, `sosfilter_ic`,
-`sosfilter_ic_contig`, `tri_area` and `vnorm`, the core calculations are
-implemented as templated C++ functions, and code generation tools are used
-to automatically generate the extension module source code based on a
-configuration file.  More gufuncs will be moved to this system eventually.
+Note, for anyone looking at the source code: some of these implementations
+are in C and use NumPy templating (look for filenames that end in `.src`);
+others use templated C++ functions combined with code generation tools
+that can be found in `tools/cxxgen`.
 
 | Function                                      | Description                                           |
 | --------                                      | -----------                                           |
