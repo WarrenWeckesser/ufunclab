@@ -10,8 +10,8 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
+#include "../util/strided.hpp"
 
-#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
 
 template<typename T>
 static int cmp(const void *px, const void *py) {
@@ -52,7 +52,7 @@ static int unnormalized_mad(npy_intp n, T *p_x, npy_intp x_stride, T& sum, T& to
     }
     else {
         for (npy_intp k = 0; k < n; ++k) {
-            tmp[k] = GET(T, p_x, x_stride, k);
+            tmp[k] = get(p_x, x_stride, k);
         }
     }
 

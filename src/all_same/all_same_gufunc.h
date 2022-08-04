@@ -9,8 +9,7 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
-
-#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
+#include "../util/strided.hpp"
 
 
 template<typename T>
@@ -24,7 +23,7 @@ static void all_same_core(
     if (n > 1) {
         T first = *p_x;
         for (npy_intp k = 1; k < n; ++k) {
-            T x = GET(T, p_x, x_stride, k);
+            T x = get(p_x, x_stride, k);
             if (x != first) {
                 *p_out = false;
                 break;
@@ -44,7 +43,7 @@ static void all_same_core_object(
     if (n > 1) {
         PyObject *first = *p_x;
         for (npy_intp k = 1; k < n; ++k) {
-            PyObject *x = GET(PyObject*, p_x, x_stride, k);
+            PyObject *x = get(p_x, x_stride, k);
             int ne = PyObject_RichCompareBool(x, first, Py_NE);
             if (ne == -1) {
                 return;

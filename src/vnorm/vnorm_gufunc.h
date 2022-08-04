@@ -11,6 +11,8 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
+#include "../util/strided.hpp"
+
 
 static inline npy_float
 complex_abs(npy_cfloat z) {
@@ -27,7 +29,6 @@ complex_abs(npy_clongdouble z) {
     return npy_cabsl(z);
 }
 
-#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
 
 //
 // `vnorm_core_calc`, the C++ core function
@@ -50,7 +51,7 @@ static void vnorm_core_calc(
     }
 
     for (int k = 0; k < n; ++k) {
-        T current_x = GET(T, p_x, x_stride, k);
+        T current_x = get(p_x, x_stride, k);
         if (current_x < 0) {
             current_x = -current_x;
         }
@@ -64,7 +65,7 @@ static void vnorm_core_calc(
     else {
         T sum = 0;
         for (int k = 0; k < n; ++k) {
-            T current_x = GET(T, p_x, x_stride, k);
+            T current_x = get(p_x, x_stride, k);
             if (current_x < 0) {
                 current_x = -current_x;
             }
@@ -108,7 +109,7 @@ static void cvnorm_core_calc(
     }
 
     for (int k = 0; k < n; ++k) {
-        T current_x = GET(T, p_x, x_stride, k);
+        T current_x = get(p_x, x_stride, k);
         U mag = complex_abs(current_x);
         if (mag > maxmag) {
             maxmag = mag;
@@ -120,7 +121,7 @@ static void cvnorm_core_calc(
     else {
         U sum = 0;
         for (int k = 0; k < n; ++k) {
-            T current_x = GET(T, p_x, x_stride, k);
+            T current_x = get(p_x, x_stride, k);
             U mag = complex_abs(current_x);
             if (npy_isinf(order)) {
                 sum = fmax(sum, mag);
@@ -166,8 +167,8 @@ static void vdot_core_calc(
     }
     else {
         for (int k = 0; k < n; ++k) {
-            T xk = GET(T, p_x, x_stride, k);
-            T yk = GET(T, p_y, y_stride, k);
+            T xk = get(p_x, x_stride, k);
+            T yk = get(p_y, y_stride, k);
             sum += xk * yk;
         }
     }

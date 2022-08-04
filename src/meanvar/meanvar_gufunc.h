@@ -7,9 +7,7 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
-
-#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
-#define SET(T, px, stride, index, value) (*((T *) ((char *) px + index*stride))) = (value)
+#include "../util/strided.hpp"
 
 
 template<typename T, typename U>
@@ -26,7 +24,7 @@ static void meanvar_core(
     U c1 = 0.0, m2 = 0.0, c2 = 0.0;
     for (npy_intp k = 0; k < n; ++k) {
         U y1, t1, y2, t2;
-        T xk = GET(T, p_x, x_stride, k);
+        T xk = get(p_x, x_stride, k);
         U delta = xk - mean;
         y1 = delta/(k + 1) - c1;
         t1 = mean + y1;
@@ -40,7 +38,7 @@ static void meanvar_core(
     }
     var = m2 / (n - *p_ddof);
     *p_out = mean;
-    SET(U, p_out, out_stride, 1, var);
+    set(p_out, out_stride, 1, var);
 }
 
 #endif

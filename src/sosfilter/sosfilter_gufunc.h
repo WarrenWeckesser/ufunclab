@@ -7,12 +7,7 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
-
-#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
-#define SET(T, px, stride, index, value) (*((T *) ((char *) px + index*stride))) = (value)
-
-#define GET2(T, px, strides, i, j) (*((T *) ((char *) px + i*strides[0] + j*strides[1])))
-#define SET2(T, px, strides, i, j, value) (*((T *) ((char *) px + i*strides[0] + j*strides[1]))) = (value)
+#include "../util/strided.hpp"
 
 
 template<typename T>
@@ -34,10 +29,10 @@ static void sosfilter_ic_core(
     // Copy zi to zf
     if (p_zi != p_zf) {
         for (npy_intp k = 0; k < m; ++k) {
-            T value = GET2(T, p_zi, zi_strides, k, 0);
-            SET2(T, p_zf, zf_strides, k, 0, value);
-            value = GET2(T, p_zi, zi_strides, k, 1);
-            SET2(T, p_zf, zf_strides, k, 1, value);
+            T value = get2d(p_zi, zi_strides, k, 0);
+            set2d(p_zf, zf_strides, k, 0, value);
+            value = get2d(p_zi, zi_strides, k, 1);
+            set2d(p_zf, zf_strides, k, 1, value);
         }
     }
 
@@ -48,17 +43,17 @@ static void sosfilter_ic_core(
             for (npy_intp k = 0; k < m; ++k) {
 
                 // y[i] = sos[k, 0]*xi + zf[k, 0];
-                T yi = GET2(T, p_sos, sos_strides, k, 0) * xi + GET2(T, p_zf, zf_strides, k, 0);
+                T yi = get2d(p_sos, sos_strides, k, 0) * xi + get2d(p_zf, zf_strides, k, 0);
                 p_y[i] = yi;
 
                 // zf[k, 0] = zf[k, 1] + sos[k, 1]*xi - sos[k, 4]*y[i];
-                T tmp1 = GET2(T, p_zf, zf_strides, k, 1) + GET2(T, p_sos, sos_strides, k, 1)*xi
-                         - (GET2(T, p_sos, sos_strides, k, 4)*yi);
-                SET2(T, p_zf, zf_strides, k, 0, tmp1);
+                T tmp1 = get2d(p_zf, zf_strides, k, 1) + get2d(p_sos, sos_strides, k, 1)*xi
+                         - (get2d(p_sos, sos_strides, k, 4)*yi);
+                set2d(p_zf, zf_strides, k, 0, tmp1);
 
                 // zf[k, 1] = sos[k, 2]*xi - sos[k, 5]*y[i];
-                T tmp2 = GET2(T, p_sos, sos_strides, k, 2) * xi - (GET2(T, p_sos, sos_strides, k, 5)*yi);
-                SET2(T, p_zf, zf_strides, k, 1, tmp2);
+                T tmp2 = get2d(p_sos, sos_strides, k, 2) * xi - (get2d(p_sos, sos_strides, k, 5)*yi);
+                set2d(p_zf, zf_strides, k, 1, tmp2);
 
                 xi = yi;
             }
@@ -66,21 +61,21 @@ static void sosfilter_ic_core(
     }
     else {
         for (npy_intp i = 0; i < n; ++i) {
-            T xi = GET(T, p_x, x_stride, i);
+            T xi = get(p_x, x_stride, i);
             for (npy_intp k = 0; k < m; ++k) {
 
                 // y[i] = sos[k, 0]*xi + zf[k, 0];
-                T yi = GET2(T, p_sos, sos_strides, k, 0) * xi + GET2(T, p_zf, zf_strides, k, 0);
-                SET(T, p_y, y_stride, i, yi);
+                T yi = get2d(p_sos, sos_strides, k, 0) * xi +get2d(p_zf, zf_strides, k, 0);
+                set(p_y, y_stride, i, yi);
 
                 // zf[k, 0] = zf[k, 1] + sos[k, 1]*xi - sos[k, 4]*y[i];
-                T tmp1 = GET2(T, p_zf, zf_strides, k, 1) + GET2(T, p_sos, sos_strides, k, 1)*xi
-                         - (GET2(T, p_sos, sos_strides, k, 4)*yi);
-                SET2(T, p_zf, zf_strides, k, 0, tmp1);
+                T tmp1 = get2d(p_zf, zf_strides, k, 1) + get2d(p_sos, sos_strides, k, 1)*xi
+                         - (get2d(p_sos, sos_strides, k, 4)*yi);
+                set2d(p_zf, zf_strides, k, 0, tmp1);
 
                 // zf[k, 1] = sos[k, 2]*xi - sos[k, 5]*y[i];
-                T tmp2 = GET2(T, p_sos, sos_strides, k, 2) * xi - (GET2(T, p_sos, sos_strides, k, 5)*yi);
-                SET2(T, p_zf, zf_strides, k, 1, tmp2);
+                T tmp2 = get2d(p_sos, sos_strides, k, 2) * xi - (get2d(p_sos, sos_strides, k, 5)*yi);
+                set2d(p_zf, zf_strides, k, 1, tmp2);
 
                 xi = yi;
             }
@@ -113,7 +108,7 @@ static void sosfilter_ic_contig_core(
     }
 
     for (npy_intp i = 0; i < n; ++i) {
-        // T xi = GET(T, p_x, x_stride, i);
+        // T xi = get(p_x, x_stride, i);
         T xi = p_x[i];
         for (npy_intp k = 0; k < m; ++k) {
 

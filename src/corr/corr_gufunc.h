@@ -9,9 +9,7 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
-
-#define GET(T, px, stride, index) (*((T *) ((char *) px + index*stride)))
-#define SET(T, px, stride, index, value) (*((T *) ((char *) px + index*stride))) = (value)
+#include "../util/strided.hpp"
 
 
 template<typename T, typename U>
@@ -26,7 +24,7 @@ strided_mean(
     U c1 = 0.0;
     for (npy_intp k = 0; k < n; ++k) {
         U y1, t1;
-        T xk = GET(T, p_x, x_stride, k);
+        T xk = get(p_x, x_stride, k);
         U delta = xk - mean;
         y1 = delta/(k + 1) - c1;
         t1 = mean + y1;
@@ -47,7 +45,7 @@ strided_delta_maxabs(npy_intp n, T *p_x, npy_intp x_stride, U xmean)
     // This code assumes n > 0.
     U maxabs = fabs(*p_x - xmean);
     for (npy_intp k = 1; k < n; ++k) {
-        U absxk = fabs(GET(T, p_x, x_stride, k) - xmean);
+        U absxk = fabs(get(p_x, x_stride, k) - xmean);
         if (absxk > maxabs) {
             maxabs = absxk;
         }
@@ -69,7 +67,7 @@ strided_delta_norm(npy_intp n, T *p_x, npy_intp x_stride, U xmean, U deltax_max)
     U sumsq = 0;
     U c = 0;
     for (npy_intp k = 0; k < n; ++k) {
-        U z2 = std::pow((GET(T, p_x, x_stride, k) - xmean) / deltax_max, 2.0);
+        U z2 = std::pow((get(p_x, x_stride, k) - xmean) / deltax_max, 2.0);
         U y = z2 - c;
         U t = sumsq + y;
         c = (t - sumsq) - y;
@@ -95,13 +93,13 @@ static void pearson_corr_core(
     }
     if (n == 2) {
         T x0 = *p_x;
-        T x1 = GET(T, p_x, x_stride, 1);
+        T x1 = get(p_x, x_stride, 1);
         if (!isfinite(x0) || !isfinite(x1) || (x0 == x1)) {
             *p_out = NAN;
             return;
         } 
         T y0 = *p_y;
-        T y1 = GET(T, p_y, y_stride, 1);
+        T y1 = get(p_y, y_stride, 1);
         if (!isfinite(y0) || !isfinite(y1) || (y0 == y1)) {
             *p_out = NAN;
             return;
@@ -133,8 +131,8 @@ static void pearson_corr_core(
 
     U r = 0.0;
     for (npy_intp k = 0; k < n; ++k) {
-        U xk = (GET(T, p_x, x_stride, k) - xmean) / xnorm;
-        U yk = (GET(T, p_y, y_stride, k) - ymean) / ynorm;
+        U xk = (get(p_x, x_stride, k) - xmean) / xnorm;
+        U yk = (get(p_y, y_stride, k) - ymean) / ynorm;
         r += xk*yk;
     }
     *p_out = r;

@@ -10,8 +10,7 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
-
-#define GET2(T, px, strides, i, j) (*((T *) ((char *) px + i*strides[0] + j*strides[1])))
+#include "../util/strided.hpp"
 
 
 template<typename T>
@@ -19,8 +18,8 @@ static T norm_diff(npy_intp n, T *p_p, const npy_intp p_strides[2], npy_intp i1,
 {
     T sumsq = 0.0;
     for (int k = 0; k < n; ++k) {
-        T x1 = GET2(T, p_p, p_strides, i1, k);
-        T x2 = GET2(T, p_p, p_strides, i2, k);
+        T x1 = get2d(p_p, p_strides, i1, k);
+        T x2 = get2d(p_p, p_strides, i2, k);
         T dx = x2 - x1;
         sumsq += dx*dx;
     }
