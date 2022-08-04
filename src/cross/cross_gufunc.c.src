@@ -306,6 +306,11 @@ static struct PyModuleDef moduledef = {
 "out : ndarray, shape (..., 3)\n"                              \
 "    Cross product of u and v.\n"                              \
 "\n"                                                           \
+"See Also\n"                                                   \
+"--------\n"                                                   \
+"ufunclab.cross2\n"                                            \
+"numpy.cross\n"                                                \
+"\n"                                                           \
 "Examples\n"                                                   \
 "--------\n"                                                   \
 ">>> from ufunclab import cross3\n"                            \
@@ -328,6 +333,11 @@ static struct PyModuleDef moduledef = {
 "    Input array\n"                                            \
 "v : array_like, shape (..., 2)\n"                             \
 "    Input array\n"                                            \
+"\n"                                                           \
+"See Also\n"                                                   \
+"--------\n"                                                   \
+"ufunclab.cross3\n"                                            \
+"numpy.cross\n"                                                \
 "\n"                                                           \
 "Returns\n"                                                    \
 "-------\n"                                                    \
