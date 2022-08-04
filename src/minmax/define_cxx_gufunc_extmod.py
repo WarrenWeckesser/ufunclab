@@ -128,6 +128,7 @@ argmin_ufunc = UFunc(
     docstring=ARGMIN_DOCSTRING,
     signature='(n)->()',
     sources=[argmin_core, argmin_object_core],
+    nonzero_coredims=['n'],
 )
 
 argmax_ufunc = UFunc(
@@ -136,6 +137,7 @@ argmax_ufunc = UFunc(
     docstring=ARGMAX_DOCSTRING,
     signature='(n)->()',
     sources=[argmax_core, argmax_object_core],
+    nonzero_coredims=['n'],
 )
 
 
@@ -145,6 +147,7 @@ minmax_ufunc = UFunc(
     docstring=MINMAX_DOCSTRING,
     signature='(n)->(2)',
     sources=[minmax_core, minmax_object_core],
+    nonzero_coredims=['n'],
 )
 
 argminmax_ufunc = UFunc(
@@ -153,6 +156,7 @@ argminmax_ufunc = UFunc(
     docstring=ARGMINMAX_DOCSTRING,
     signature='(n)->(2)',
     sources=[argminmax_core, argminmax_object_core],
+    nonzero_coredims=['n'],
 )
 
 min_argmin_ufunc = UFunc(
@@ -161,6 +165,7 @@ min_argmin_ufunc = UFunc(
     docstring=MIN_ARGMIN_DOCSTRING,
     signature='(n)->(),()',
     sources=[min_argmin_core, min_argmin_object_core],
+    nonzero_coredims=['n'],
 )
 
 max_argmax_ufunc = UFunc(
@@ -169,6 +174,7 @@ max_argmax_ufunc = UFunc(
     docstring=MAX_ARGMAX_DOCSTRING,
     signature='(n)->(),()',
     sources=[max_argmax_core, max_argmax_object_core],
+    nonzero_coredims=['n'],
 )
 
 extmod = UFuncExtMod(
