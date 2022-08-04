@@ -39,7 +39,7 @@ from ._ufunc_inspector import ufunc_inspector
 import numpy as _np
 
 
-__version__ = "0.0.7.dev3"
+__version__ = "0.0.7.dev4"
 
 
 class op:

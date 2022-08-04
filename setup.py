@@ -146,12 +146,6 @@ def configuration(parent_package='', top_path=None):
                                        'searchsorted_gufunc.c.src')],
                          **npymath_info)
 
-    config.add_extension('ufunclab._minmax',
-                         extra_compile_args=compile_args,
-                         sources=[join('src', 'minmax',
-                                       'minmax_gufunc.c.src')],
-                         include_dirs=[util_include_dir])
-
     config.add_extension('ufunclab._means',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'means', 'means_gufunc.c.src')],
@@ -239,6 +233,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _all_same_srcs],
                          **npymath_info)
 
+    _minmax_srcs = ['minmax_gufunc.h', '_minmaxmodule.cxx']
+    config.add_extension('ufunclab._minmax',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'minmax', name)
+                                  for name in _minmax_srcs],
+                         **npymath_info)
+
     _step_srcs = ['step_funcs_concrete.cxx', '_stepmodule.cxx']
     config.add_extension('ufunclab._step',
                          extra_compile_args=['-std=c++11', '-Werror'],
@@ -275,6 +276,7 @@ if __name__ == "__main__":
                           'yeo_johnson'])
 
     generate_cxx_gufunc_extmods(['all_same', 'corr', 'mad', 'meanvar',
+                                 'minmax',
                                  'sosfilter', 'tri_area', 'vnorm'])
 
     setup(name='ufunclab',
