@@ -29,6 +29,8 @@ typechar_to_npy_type = {
     'F': 'NPY_CFLOAT',
     'D': 'NPY_CDOUBLE',
     'G': 'NPY_CLONGDOUBLE',
+    'M': 'NPY_DATETIME',
+    'm': 'NPY_TIMEDELTA',
     'O': 'NPY_OBJECT',
 }
 
