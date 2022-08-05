@@ -243,7 +243,7 @@ PyMODINIT_FUNC PyInit__means(void)
     // Create the gmean ufunc.
     if (ul_define_gufunc(module, "gmean", GMEAN_DOCSTRING, "(i)->()",
                          GMEAN_NTYPES,
-                         gmean_funcs, gmean_data, typecodes) < 0) {
+                         gmean_funcs, gmean_data, typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }
@@ -251,7 +251,7 @@ PyMODINIT_FUNC PyInit__means(void)
     // Create the hmean ufunc.
     if (ul_define_gufunc(module, "hmean", HMEAN_DOCSTRING, "(i)->()",
                          HMEAN_NTYPES,
-                         hmean_funcs, hmean_data, typecodes) < 0) {
+                         hmean_funcs, hmean_data, typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }

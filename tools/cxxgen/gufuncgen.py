@@ -484,6 +484,7 @@ static struct PyModuleDef moduledef = {{
 PyMODINIT_FUNC PyInit_{extmod.module}(void)
 {{
     PyObject *module;
+    PyUFuncObject *gufunc;
 
     module = PyModule_Create(&moduledef);
     if (!module) {{
@@ -496,19 +497,21 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
 
     for nloops, ufunc in zip(ufunc_nloops, extmod.ufuncs):
         text.append(f"""
-    // Create the {ufunc.name} ufunc.
-    if (ul_define_gufunc(module, "{ufunc.name}",
+    // Create the {ufunc.name} ufunc.  The gufunc object is returned on
+    // success, but it is borrowed reference. The object is owned by the
+    // module.
+    gufunc = ul_define_gufunc(module, "{ufunc.name}",
                          {ufunc.name.upper()}_DOCSTRING,
                          "{ufunc.signature}",
                          {nloops},
                          {ufunc.name}_funcs,
                          {ufunc.name}_data,
-                         {ufunc.name}_typecodes) < 0) {{
+                         {ufunc.name}_typecodes);
+    if (gufunc == NULL) {{
         Py_DECREF(module);
         return NULL;
     }}
 """)
-
     text.append('    return module;')
     text.append('}')
 

@@ -43,10 +43,10 @@ get_nin_nout(const char *signature, int *nin, int *nout)
 
 //
 // Create the gufunc from the given arguments and add it to the module.
-// Return 0 on success, -1 on error.
+// Return gufunc on success, NULL on error.
 //
 
-static int
+static PyUFuncObject *
 ul_define_gufunc(PyObject *module, const char *name, const char *doc,
                  const char *signature, int ntypes,
                  PyUFuncGenericFunction funcs[], void *data[], char *types)
@@ -62,14 +62,14 @@ ul_define_gufunc(PyObject *module, const char *name, const char *doc,
                         funcs, data, types, ntypes, nin, nout,
                         PyUFunc_None, name, doc, 0, signature);
     if (gufunc == NULL) {
-        return -1;
+        return NULL;
     }
     status = PyModule_AddObject(module, name, (PyObject *) gufunc);
     if (status == -1) {
         Py_DECREF(gufunc);
-        return -1;
+        return NULL;
     }
-    return 0;
+    return gufunc;
 }
 
 #ifdef __cplusplus

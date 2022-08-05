@@ -147,7 +147,7 @@ PyMODINIT_FUNC PyInit__backlash(void)
     // Create the backlash ufunc.
     if (ul_define_gufunc(module, "backlash", BACKLASH_DOCSTRING, "(i),(),()->(i)",
                          BACKLASH_NTYPES,
-                         backlash_funcs, backlash_data, backlash_typecodes) < 0) {
+                         backlash_funcs, backlash_data, backlash_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }

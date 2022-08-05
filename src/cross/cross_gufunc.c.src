@@ -368,7 +368,7 @@ PyMODINIT_FUNC PyInit__cross(void)
     // Create the cross3 ufunc.
     if (ul_define_gufunc(module, "cross3", CROSS3_DOCSTRING, "(3),(3)->(3)",
                          CROSS3_NTYPES,
-                         cross3_funcs, cross3_data, cross3_typecodes) < 0) {
+                         cross3_funcs, cross3_data, cross3_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }
@@ -376,7 +376,7 @@ PyMODINIT_FUNC PyInit__cross(void)
     // Create the cross2 ufunc.
     if (ul_define_gufunc(module, "cross2", CROSS2_DOCSTRING, "(2),(2)->()",
                          CROSS2_NTYPES,
-                         cross2_funcs, cross2_data, cross2_typecodes) < 0) {
+                         cross2_funcs, cross2_data, cross2_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }

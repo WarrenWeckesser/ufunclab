@@ -485,7 +485,7 @@ PyMODINIT_FUNC PyInit__first(void)
     // Create the first ufunc.
     if (ul_define_gufunc(module, "first", FIRST_DOCSTRING, "(i),(),(),()->()",
                          FIRST_NTYPES,
-                         first_funcs, first_data, first_typecodes) < 0) {
+                         first_funcs, first_data, first_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }
@@ -493,7 +493,7 @@ PyMODINIT_FUNC PyInit__first(void)
     // Create the argfirst ufunc.
     if (ul_define_gufunc(module, "argfirst", ARGFIRST_DOCSTRING, "(i),(),()->()",
                          ARGFIRST_NTYPES,
-                         argfirst_funcs, argfirst_data, argfirst_typecodes) < 0) {
+                         argfirst_funcs, argfirst_data, argfirst_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }

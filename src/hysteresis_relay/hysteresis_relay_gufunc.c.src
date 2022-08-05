@@ -192,7 +192,7 @@ PyMODINIT_FUNC PyInit__hysteresis_relay(void)
                          HYSTERESIS_RELAY_NTYPES,
                          hysteresis_relay_funcs,
                          hysteresis_relay_data,
-                         hysteresis_relay_typecodes) < 0) {
+                         hysteresis_relay_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }
