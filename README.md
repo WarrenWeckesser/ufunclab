@@ -86,6 +86,7 @@ that can be found in `tools/cxxgen`.
 | [`mad`](#mad)                                 | Mean absolute difference (MAD)                        |
 | [`rmad`](#rmad)                               | Relative mean absolute difference (RMAD)              |
 | [`gini`](#gini)                               | Gini coefficient                                      |
+| [`rms`](#rms)                                 | Root-mean-square for real and complex inputs          |
 | [`vnorm`](#vnorm)                             | Vector norm                                           |
 | [`vdot`](#vdot)                               | Vector dot product for real floating point arrays     |
 | [`pearson_corr`](#pearson_corr)               | Pearson's product-moment correlation coefficient      |
@@ -1069,6 +1070,36 @@ unbiased estimate of the mean absolute difference (MAD).
 0.3364632237871674
 ```
 
+### `rms`
+
+`rms(x)` computes the root-mean-square value for a collection of values.
+It is a gufunc with signature `(n)->()`.  The implementation is for
+float and complex types; integer types are cast to float.
+
+```
+>>> import numpy as np
+>>> from ufunclab import rms
+>>> x = np.array([1, 2, -1, 0, 3, 2, -1, 0, 1])
+>>> rms(x)
+1.5275252316519468
+
+Compare to:
+
+>>> np.sqrt(np.mean(x**2))
+1.5275252316519468
+
+A complex example:
+
+>>> z = np.array([1-1j, 2+1.5j, -3-2j, 0.5+1j, 2.5j], dtype=np.complex64)
+>>> rms(z)
+2.3979158
+
+An equivalent NumPy expression:
+
+>>> np.sqrt(np.mean(z.real**2 + z.imag**2))
+2.3979158
+
+```
 
 ### `vnorm`
 
@@ -1077,6 +1108,7 @@ signatue `(i), () -> ()`.
 
 For example, the 2-norm of [3, 4] is
 ```
+In [27]: from ufunclab import vnorm
 In [28]: vnorm([3, 4], 2)
 Out[28]: 5.0
 ```

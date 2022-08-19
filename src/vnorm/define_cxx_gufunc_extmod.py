@@ -32,6 +32,12 @@ array([15.        , 13.03840481])
 array([ 3.60555128, 13.        ,  3.        , 14.28285686])
 """
 
+RMS_DOCSTRING = """\
+rms(z, /, ...)
+
+Root-mean-square value of the 1-d array z.
+"""
+
 VDOT_DOCSTRING = """\
 vdot(x, y, /, ...)
 
@@ -56,6 +62,24 @@ vnorm = UFunc(
     sources=[vnorm_src_real, vnorm_src_cplx],
 )
 
+rms_src_real = UFuncSource(
+    funcname='rms_core_calc',
+    typesignatures=['f->f', 'd->d', 'g->g'],
+)
+
+rms_src_cplx = UFuncSource(
+    funcname='crms_core_calc',
+    typesignatures=['F->f', 'D->d', 'G->g'],
+)
+
+rms = UFunc(
+    name='rms',
+    header='vnorm_gufunc.h',
+    docstring=RMS_DOCSTRING,
+    signature='(n)->()',
+    sources=[rms_src_real, rms_src_cplx],
+)
+
 vdot_src_real = UFuncSource(
     funcname='vdot_core_calc',
     typesignatures=['ff->f', 'dd->d', 'gg->g'],
@@ -72,5 +96,5 @@ vdot = UFunc(
 extmod = UFuncExtMod(
     module='_vnorm',
     docstring="This extension module defines the gufuncs 'vnorm' and 'vdot'.",
-    ufuncs=[vnorm, vdot],
+    ufuncs=[vnorm, rms, vdot],
 )

@@ -20,7 +20,7 @@ from ._means import gmean, hmean
 from ._meanvar import meanvar
 from ._corr import pearson_corr
 from ._mad import mad, rmad, gini
-from ._vnorm import vnorm, vdot
+from ._vnorm import vnorm, rms, vdot
 from ._tri_area import tri_area
 from ._backlash import backlash
 from ._fillnan1d import fillnan1d
