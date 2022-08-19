@@ -78,6 +78,7 @@ rms = UFunc(
     docstring=RMS_DOCSTRING,
     signature='(n)->()',
     sources=[rms_src_real, rms_src_cplx],
+    nonzero_coredims=['n'],
 )
 
 vdot_src_real = UFuncSource(
