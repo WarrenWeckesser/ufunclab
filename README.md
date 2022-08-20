@@ -869,25 +869,21 @@ array([ True, False, False])
 For example,
 
 ```
-In [25]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import gmean
 
-In [26]: from ufunclab import gmean
+>>> x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
+>>> gmean(x)
+2.992555739477689
 
-In [27]: x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
-
-In [28]: gmean(x)
-Out[28]: 2.992555739477689
-
-In [29]: y = np.arange(1, 16).reshape(3, 5)
-
-In [30]: y
-Out[30]:
+>>> y = np.arange(1, 16).reshape(3, 5)
+>>> y
 array([[ 1,  2,  3,  4,  5],
        [ 6,  7,  8,  9, 10],
        [11, 12, 13, 14, 15]])
 
-In [31]: gmean(y, axis=1)
-Out[31]: array([ 2.60517108,  7.87256685, 12.92252305])
+>>> gmean(y, axis=1)
+array([ 2.60517108,  7.87256685, 12.92252305])
 ```
 
 ### `hmean`
@@ -898,25 +894,21 @@ Out[31]: array([ 2.60517108,  7.87256685, 12.92252305])
 For example,
 
 ```
-In [25]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import hmean
 
-In [26]: from ufunclab import hmean
+>>> x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
+>>> hmean(x)
+2.316602316602317
 
-In [27]: x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
-
-In [28]: hmean(x)
-Out[28]: 2.316602316602317
-
-In [29]: y = np.arange(1, 16).reshape(3, 5)
-
-In [30]: y
-Out[30]:
+>>> y = np.arange(1, 16).reshape(3, 5)
+>>> y
 array([[ 1,  2,  3,  4,  5],
        [ 6,  7,  8,  9, 10],
        [11, 12, 13, 14, 15]])
 
-In [31]: hmean(y, axis=1)
-Out[31]: array([ 2.18978102,  7.74431469, 12.84486077])
+>>> hmean(y, axis=1)
+array([ 2.18978102,  7.74431469, 12.84486077])
 ```
 
 ### `meanvar`
@@ -927,12 +919,11 @@ the mean and variance in one function call.
 For example,
 
 ```
-In [1]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import meanvar
 
-In [2]: from ufunclab import meanvar
-
-In [3]: meanvar([1, 2, 4, 5], 0)  # Use ddof=0.
-Out[3]: array([3. , 2.5])
+>>> meanvar([1, 2, 4, 5], 0)  # Use ddof=0.
+array([3. , 2.5])
 ```
 
 Apply `meanvar` with `ddof=1` to the rows of a 2-d array.
@@ -941,13 +932,12 @@ means, and the second column holds the variances.
 
 
 ```
-In [4]: x = np.array([[1, 4, 4, 2, 1, 1, 2, 7],
-   ...:               [0, 0, 9, 4, 1, 0, 0, 1],
-   ...:               [8, 3, 3, 3, 3, 3, 3, 3],
-   ...:               [5, 5, 5, 5, 5, 5, 5, 5]])
+>>> x = np.array([[1, 4, 4, 2, 1, 1, 2, 7],
+...               [0, 0, 9, 4, 1, 0, 0, 1],
+...               [8, 3, 3, 3, 3, 3, 3, 3],
+...               [5, 5, 5, 5, 5, 5, 5, 5]])
 
-In [5]: meanvar(x, 1)  # Use ddof=1.
-Out[5]:
+>>> meanvar(x, 1)  # Use ddof=1.
 array([[ 2.75 ,  4.5  ],
        [ 1.875, 10.125],
        [ 3.625,  3.125],
@@ -957,11 +947,11 @@ array([[ 2.75 ,  4.5  ],
 Compare to the results of `numpy.mean` and `numpy.var`:
 
 ```
-In [6]: np.mean(x, axis=1)
-Out[6]: array([2.75 , 1.875, 3.625, 5.   ])
+>>> np.mean(x, axis=1)
+array([2.75 , 1.875, 3.625, 5.   ])
 
-In [7]: np.var(x, ddof=1, axis=1)
-Out[7]: array([ 4.5  , 10.125,  3.125,  0.   ])
+>>> np.var(x, ddof=1, axis=1)
+array([ 4.5  , 10.125,  3.125,  0.   ])
 ```
 
 ### `mad`
@@ -1106,32 +1096,33 @@ An equivalent NumPy expression:
 `vnorm(x, p)` computes the vector p-norm of 1D arrays.  It is a gufunc with
 signatue `(i), () -> ()`.
 
-For example, the 2-norm of [3, 4] is
+For example, to compute the 2-norm of [3, 4]:
 ```
-In [27]: from ufunclab import vnorm
-In [28]: vnorm([3, 4], 2)
-Out[28]: 5.0
+>>> import numpy as np
+>>> from ufunclab import vnorm
+
+>>> vnorm([3, 4], 2)
+5.0
 ```
 
 Compute the p-norm of [3, 4] for several values of p:
 
 ```
-In [29]: vnorm([3, 4], [1, 2, 3, np.inf])
-Out[29]: array([7.        , 5.        , 4.49794145, 4.        ])
+>>> vnorm([3, 4], [1, 2, 3, np.inf])
+array([7.        , 5.        , 4.49794145, 4.        ])
 ```
 
 Compute the 2-norm of four 2-d vectors:
 
 ```
-In [30]: vnorm([[3, 4], [5, 12], [0, 1], [1, 1]], 2)
-Out[30]: array([ 5.        , 13.        ,  1.        ,  1.41421356])
+>>> vnorm([[3, 4], [5, 12], [0, 1], [1, 1]], 2)
+array([ 5.        , 13.        ,  1.        ,  1.41421356])
 ```
 
 For the same vectors, compute the p-norm for p = [1, 2, inf]:
 
 ```
-In [31]: vnorm([[3, 4], [5, 12], [0, 1], [1, 1]], [[1], [2], [np.inf]])
-Out[31]:
+>>> vnorm([[3, 4], [5, 12], [0, 1], [1, 1]], [[1], [2], [np.inf]])
 array([[ 7.        , 17.        ,  1.        ,  2.        ],
        [ 5.        , 13.        ,  1.        ,  1.41421356],
        [ 4.        , 12.        ,  1.        ,  1.        ]])
@@ -1209,18 +1200,17 @@ but `cross2` is restricted to 2-d inputs.
 
 For example,
 ```
-In [1]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import cross2
 
-In [2]: from ufunclab import cross2
+>>> cross2([1, 2], [5, 3])
+-7
 
-In [3]: cross2([1, 2], [5, 3])
-Out[3]: -7
+>>> cross2([[1, 2], [6, 0]], [[5, 3], [2, 3]])
+array([-7, 18])
 
-In [4]: cross2([[1, 2], [6, 0]], [[5, 3], [2, 3]])
-Out[4]: array([-7, 18])
-
-In [5]: cross2([1j, 3], [-1j, 2+3j])
-Out[5]: (-3+5j)
+>>> cross2([1j, 3], [-1j, 2+3j])
+(-3+5j)
 ```
 
 In the following, `a` and `b` are object arrays; `a` has shape (2,),
@@ -1228,14 +1218,11 @@ and `b` has shape (3, 2).  The result of ``cross2(a, b)`` has shape
 (3,).
 
 ```
-In [6]: from fractions import Fraction as F
+>>> from fractions import Fraction as F
 
-In [7]: a = np.array([F(1, 3), F(2, 7)])
-
-In [8]: b = np.array([[F(7, 4), F(6, 7)], [F(2, 5), F(-3, 7)], [1, F(1, 4)]])
-
-In [9]: cross2(a, b)
-Out[9]:
+>>> a = np.array([F(1, 3), F(2, 7)])
+>>> b = np.array([[F(7, 4), F(6, 7)], [F(2, 5), F(-3, 7)], [1, F(1, 4)]])
+>>> cross2(a, b)
 array([Fraction(-3, 14), Fraction(-9, 35), Fraction(-17, 84)],
       dtype=object)
 ```
@@ -1248,37 +1235,36 @@ case of 3-d vectors only).
 
 For example,
 ```
-In [1]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import cross3
 
-In [2]: from ufunclab import cross3
+>>> u = np.array([1, 2, 3])
+>>> v = np.array([2, 2, -1])
 
-In [3]: u = np.array([1, 2, 3])
+>>> cross3(u, v)
+array([-8,  7, -2])
+```
 
-In [4]: v = np.array([2, 2, -1])
+In the following, `x` has shape (5, 3), and `y` has shape (2, 1, 3).
+The result of `cross3(x, y)` has shape (2, 5, 3).
 
-In [5]: cross3(u, v)
-Out[5]: array([-8,  7, -2])
+```
+>>> x = np.arange(15).reshape(5, 3)
+>>> y = np.round(10*np.sin(np.linspace(0, 2, 6))).reshape(2, 1, 3)
 
-In [6]: x = np.arange(15).reshape(5, 3)
-
-In [7]: y = np.round(10*np.sin(np.linspace(0, 2, 6))).reshape(2, 1, 3)
-
-In [8]: x
-Out[8]:
+>>> x
 array([[ 0,  1,  2],
        [ 3,  4,  5],
        [ 6,  7,  8],
        [ 9, 10, 11],
        [12, 13, 14]])
 
-In [9]: y
-Out[9]:
+>>> y
 array([[[ 0.,  4.,  7.]],
 
        [[ 9., 10.,  9.]]])
 
-In [10]: cross3(x, y)
-Out[10]:
+>>> cross3(x, y)
 array([[[ -1.,   0.,   0.],
         [  8., -21.,  12.],
         [ 17., -42.,  24.],
@@ -1320,20 +1306,21 @@ array([1.73205081, 0.70710678])
 interpolation to replace occurrences of `nan` in `x`.
 
 ```
-In [14]: x = np.array([1.0, 2.0, np.nan, np.nan, 3.5, 5.0, np.nan, 7.5])
+>>> import numpy as np
+>>> from ufunclab import fillnan1d
 
-In [15]: fillnan1d(x)
-Out[15]: array([1.  , 2.  , 2.5 , 3.  , 3.5 , 5.  , 6.25, 7.5 ])
+>>> x = np.array([1.0, 2.0, np.nan, np.nan, 3.5, 5.0, np.nan, 7.5])
+>>> fillnan1d(x)
+array([1.  , 2.  , 2.5 , 3.  , 3.5 , 5.  , 6.25, 7.5 ])
 ```
 
 `nan` values at the ends of `x` are replaced with the nearest non-`nan`
 value:
 
 ```
-In [16]: x = np.array([np.nan, 2.0, np.nan, 5.0, np.nan, np.nan])
-
-In [17]: fillnan1d(x)
-Out[17]: array([2. , 2. , 3.5, 5. , 5. , 5. ])
+>>> x = np.array([np.nan, 2.0, np.nan, 5.0, np.nan, np.nan])
+>>> fillnan1d(x)
+array([2. , 2. , 3.5, 5. , 5. , 5. ])
 ```
 
 This plot of the result of applying `fillnan1d(x)` to a bigger sample is
@@ -1353,14 +1340,15 @@ of Matlab's Simulink library.
 For example,
 
 ```
-In [52]: x = np.array([0, 0.5, 1, 1.1, 1.0, 1.5, 1.4, 1.2, 0.5])
+>>> import numpy as np
+>>> from ufunclab import backlash
 
-In [53]: deadband = 0.4
+>>> x = np.array([0, 0.5, 1, 1.1, 1.0, 1.5, 1.4, 1.2, 0.5])
+>>> deadband = 0.4
+>>> initial = 0
 
-In [54]: initial = 0
-
-In [55]: backlash(x, deadband, initial)
-Out[55]: array([0. , 0.3, 0.8, 0.9, 0.9, 1.3, 1.3, 1.3, 0.7])
+>>> backlash(x, deadband, initial)
+array([0. , 0.3, 0.8, 0.9, 0.9, 1.3, 1.3, 1.3, 0.7])
 ```
 
 The script `backlash_demo.py` in the `examples` directory generates
@@ -1437,18 +1425,15 @@ For example, to take the element-wise minimum of two 1-d arrays,
 and then take the maximum of the result:
 
 ```
-In [1]: import numpy as np
+>>> import numpy as np
+>>> from ufunclab import gendot
 
-In [2]: from ufunclab import gendot
+>>> minmaxdot = gendot(np.minimum, np.maximum)
 
-In [3]: minmaxdot = gendot(np.minimum, np.maximum)
-
-In [4]: a = np.array([1.0, 2.5, 0.3, 1.9, 3.0, 1.8])
-
-In [5]: b = np.array([0.5, 1.1, 0.9, 2.1, 0.3, 3.0])
-
-In [6]: minmaxdot(a, b)
-Out[6]: 1.9
+>>> a = np.array([1.0, 2.5, 0.3, 1.9, 3.0, 1.8])
+>>> b = np.array([0.5, 1.1, 0.9, 2.1, 0.3, 3.0])
+>>> minmaxdot(a, b)
+1.9
 ```
 
 `minmaxdot` is a gufunc with signature `(i),(i)->()`;  the type
@@ -1457,10 +1442,10 @@ the signatures of the ufunc loop functions for `np.minimum` and
 `np.maximum`:
 
 ```
-In [8]: minmaxdot.signature
-Out[8]: '(i),(i)->()'
+>>> minmaxdot.signature
+'(i),(i)->()'
 
-In [9]: print(minmaxdot.types)
+>>> print(minmaxdot.types)
 ['??->?', 'bb->b', 'BB->B', 'hh->h', 'HH->H', 'ii->i', 'II->I', 'll->l',
  'LL->L', 'qq->q', 'QQ->Q', 'ee->e', 'ff->f', 'dd->d', 'gg->g', 'FF->F',
  'DD->D', 'GG->G', 'mm->m', 'MM->M']
@@ -1485,11 +1470,9 @@ with `minmaxdot(x, y)` does not create the temporary intermediate array.
 For example,
 
 ```
-In [10]: import numpy as np
-
-In [11]: from ufunclab import ufunc_inspector
-
-In [12]: ufunc_inspector(np.hypot)
+>>> import numpy as np
+>>> from ufunclab import ufunc_inspector
+>>> ufunc_inspector(np.hypot)
 'hypot' is a ufunc.
 nin = 2, nout = 1, ntypes = 5
 loop types:
@@ -1502,7 +1485,7 @@ loop types:
 (The output will likely change as the code develops.)
 
 ```
-In [16]: ufunc_inspector(np.sqrt)
+>>> ufunc_inspector(np.sqrt)
 'sqrt' is a ufunc.
 nin = 1, nout = 1, ntypes = 10
 loop types:
@@ -1517,7 +1500,7 @@ loop types:
   8:   16 ->  16  (G->G)  PyUFunc_G_G
   9:   17 ->  17  (O->O)  PyUFunc_O_O_method
 
-In [17]: ufunc_inspector(np.add)
+>>> ufunc_inspector(np.add)
 'add' is a ufunc.
 nin = 2, nout = 1, ntypes = 22
 loop types:
