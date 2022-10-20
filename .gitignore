@@ -36,3 +36,7 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# Patterns specific to ufunclab
+src/*/generated/
+src/*/*module.cxx
