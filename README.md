@@ -3,7 +3,7 @@ ufunclab
 
 Some NumPy `ufuncs`, and some related tools.
 
-The test suite is run with Python versions 3.8 to 3.10, with several
+The test suite is run with Python versions 3.8 to 3.11, with several
 recent releases of NumPy, and with the NumPy main development branch.
 `ufunclab` might work with older Python and NumPy versions, but they
 are not regularly tested.
