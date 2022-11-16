@@ -144,7 +144,7 @@ def test_yeo_johnson_longdouble(x, lam, expected, rtol):
 
 @pytest.mark.parametrize('x, lam, expected, rtol', [
     ('3.0', '0.0', '19.0855369231876677409285296545817179', ldeps),
-    ('-1.999999995', '2.25', '-14.999999840000000999999995000000022', 2*ldeps),
+    ('-1.999999995', '2.25', '-14.999999840000000999999995000000022', 4*ldeps),
 ])
 def test_inv_yeo_johnson_longdouble(x, lam, expected, rtol):
     x = np.longdouble(x)
