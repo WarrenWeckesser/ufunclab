@@ -25,10 +25,11 @@ def test_basic_rmad(unbiased, expected):
     assert_allclose(rmad(x, unbiased), expected, rtol=1e-15)
 
 
+@pytest.mark.parametrize('func', [rmad, gini])
 @pytest.mark.parametrize('unbiased', [False, True])
-def test_rmad_all_zeros(unbiased):
+def test_rmad_gini_all_zeros(func, unbiased):
     x = [0, 0, 0, 0]
-    m = rmad(x, unbiased)
+    m = func(x, unbiased)
     assert_equal(m, np.nan)
 
 

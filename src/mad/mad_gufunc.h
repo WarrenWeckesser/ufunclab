@@ -96,33 +96,6 @@ static void mad_core(
 }
 
 //
-// `rmad_core`, the C++ core function
-// for the gufunc `rmad` with signature '(n),()->()'
-// for types ['f?->f', 'd?->d', 'g?->g'].
-//
-template<typename T>
-static void rmad_core(
-        npy_intp n,            // core dimension n
-        T *p_x,                // pointer to first element of x, a strided 1-d array with n elements
-        npy_intp x_stride,     // stride (in bytes) for elements of x
-        npy_bool *p_unbiased,  // pointer to unbiased
-        T *p_out               // pointer to out
-)
-{
-    T sum, total;
-    if (unnormalized_mad(n, p_x, x_stride, sum, total) != 0) {
-        return;
-    }
-
-    if (*p_unbiased) {
-        *p_out = 2*sum/(n-1)/total;
-    }
-    else {
-        *p_out = 2*sum/n/total;
-    }
-}
-
-//
 // `gini_core`, the C++ core function
 // for the gufunc `gini` with signature '(n),()->()'
 // for types ['f?->f', 'd?->d', 'g?->g'].
@@ -136,17 +109,54 @@ static void gini_core(
         T *p_out               // pointer to out
 )
 {
+    if (n == 0) {
+        *p_out = NAN;
+        return;
+    }
+
     T sum, total;
     if (unnormalized_mad(n, p_x, x_stride, sum, total) != 0) {
         return;
     }
 
+    npy_intp m;
+
     if (*p_unbiased) {
-        *p_out = sum/(n-1)/total;
+        m = n - 1;
     }
     else {
-        *p_out = sum/n/total;
+        m = n;
     }
+    if (total == 0 || m == 0) {
+        if (sum != 0) {
+            *p_out = INFINITY;
+        }
+        else {
+            *p_out = NAN;
+        }
+    }
+    else {
+        *p_out = sum / m / total;
+    }
+}
+
+//
+// `rmad_core`, the C++ core function
+// for the gufunc `rmad` with signature '(n),()->()'
+// for types ['f?->f', 'd?->d', 'g?->g'].
+//
+template<typename T>
+static void rmad_core(
+        npy_intp n,            // core dimension n
+        T *p_x,                // pointer to first element of x, a strided 1-d array with n elements
+        npy_intp x_stride,     // stride (in bytes) for elements of x
+        npy_bool *p_unbiased,  // pointer to unbiased
+        T *p_out               // pointer to out
+)
+{
+    // RMAD is twice the Gini index.
+    gini_core(n, p_x, x_stride, p_unbiased, p_out);
+    *p_out *= 2;
 }
 
 #endif
