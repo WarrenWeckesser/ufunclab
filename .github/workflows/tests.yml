@@ -53,8 +53,6 @@ jobs:
           exclude:
           - python-version: '3.11'
             os: ubuntu-20.04
-          - python-version: '3.11'
-            os: ubuntu-20.04
 
     runs-on: ${{ matrix.os }}
 
