@@ -247,6 +247,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _step_srcs],
                          **npymath_info)
 
+    _next_srcs = ['next_funcs_concrete.cxx', '_nextmodule.cxx']
+    config.add_extension('ufunclab._next',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'next', 'generated', name)
+                                  for name in _next_srcs],
+                         **npymath_info)
+
     _sosfilter_srcs = ['sosfilter_gufunc.h', '_sosfiltermodule.cxx']
     config.add_extension('ufunclab._sosfilter',
                          extra_compile_args=['-std=c++11', '-Werror', '-O3'],
@@ -271,7 +278,7 @@ if __name__ == "__main__":
     from numpy.distutils.core import setup
 
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1',
-                          'hyperbolic_ramp', 'logistic',
+                          'hyperbolic_ramp', 'logistic', 'next',
                           'normal', 'semivar', 'step', 'trapezoid_pulse',
                           'yeo_johnson'])
 

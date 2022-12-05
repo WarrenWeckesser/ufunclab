@@ -32,6 +32,7 @@ from ._all_same import all_same
 from ._sosfilter import sosfilter, sosfilter_ic, sosfilter_ic_contig
 
 from ._step import step, linearstep, smoothstep3, invsmoothstep3, smoothstep5
+from ._next import next_greater, next_less
 
 from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector
@@ -39,7 +40,7 @@ from ._ufunc_inspector import ufunc_inspector
 import numpy as _np
 
 
-__version__ = "0.0.7.dev6"
+__version__ = "0.0.7.dev7"
 
 
 class op:
