@@ -164,22 +164,26 @@ array([False,  True, False, False, False])
 `next_less` is an element-wise ufunc with a single input that
 is equivalent to `np.nextafter` with the second argument set to `-inf`.
 
+```
 >>> import numpy as np
 >>> from ufunclab import next_less
 >>> next_less(np.array([-12.5, 0, 1, 1000], dtype=np.float32))
 array([-1.2500001e+01, -1.4012985e-45,  9.9999994e-01,  9.9999994e+02],
       dtype=float32)
+```
 
 ### `next_greater`
 
 `next_greater` is an element-wise ufunc with a single input that
 is equivalent to `np.nextafter` with the second argument set to `inf`.
 
+```
 >>> import numpy as np
 >>> from ufunclab import next_greater
 >>> next_greater(np.array([-12.5, 0, 1, 1000], dtype=np.float32))
 array([-1.24999990e+01,  1.40129846e-45,  1.00000012e+00,  1.00000006e+03],
       dtype=float32)
+```
 
 ### `abs_squared`
 
