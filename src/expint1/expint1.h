@@ -19,18 +19,38 @@ static T expint1_01(T x)
     return e1;
 }
 
+//
 // Compute a factor of the result of the exponential integral E1.
-// This is used in expint1 when x > 1.
-// If t = expint1_t(x), then expint1(x) is exp(-x)*t.
+// This is used in expint1(x) for x > 1 and in logexp1(x) for 1 < x <= 500.
 //
-// Uses the continued fraction expansion.
+// The function uses the continued fraction expansion given in equation 5.1.22
+// of Abramowitz & Stegun, "Handbook of Mathematical Functions".
+// For n=1, this is
+//    E1(x) = exp(-x)*F(x)
+// where F(x) is expressed as a continued fraction:
+//    F(x) =                 1
+//           ---------------------------------------
+//                              1
+//           x + ------------------------------------
+//                                 1
+//               1 + ---------------------------------
+//                                    2
+//                   x + ------------------------------
+//                                       2
+//                       1 + ---------------------------
+//                                          3
+//                           x + ------------------------
+//                                             3
+//                               1 + ---------------------
+//                                                4
+//                                   x + ------------------
+//                                       1 +     [...]
 //
-// This calculation is implemented as a separate function so it
-// can be used in both expint1 and logexpint1.
-
 template<typename T>
 static T expint1_t(T x)
 {
+    // The number of terms to use in the truncated continued fraction
+    // depends on x.  Larger values of x require fewer terms.
     int m = 20 + (int) ((T) 80.0 / x);
     T t0 = 0.0;
     for (int k = m; k > 0; --k) {
@@ -75,12 +95,16 @@ T logexpint1(T x)
         return INFINITY;
     }
     if (x <= 1.0) {
+        // For small x, the naive implementation is sufficiently accurate.
         return std::log(expint1_01(x));
     }
     if (x <= 500) {
+        // For moderate x, use the continued fraction expansion.
         T t = expint1_t(x);
         return -x + std::log(t);
     }
+    // For large x, use the asymptotic expansion.  This is equation 5.1.51
+    // from Abramowitz & Stegun, "Handbook of Mathematical Functions".
     T s = (-1 + (2 + (-6 + (24 - 120/x)/x)/x)/x)/x;
     return -x - std::log(x) + std::log1p(s);
 }
