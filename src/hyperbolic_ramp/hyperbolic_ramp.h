@@ -4,13 +4,15 @@
 //
 // The "standard" hyperbolic ramp:
 //
-//   f(x) = x/2 + sqrt((x/2)**2 + 1)              (1)
-//        = (x/2)*(1 + sqrt(1 + (2/x)**2))        (2)
-//        = 1 / (sqrt((x/2)**2 + 1) - z)          (3)
-//        = -1 / ((x/2)*(sqrt(1 + (2/x)**2) + 1)  (4)
+//   f(x) = (x/2)*(1 + sqrt(1 + (2/x)**2))          (for x >= 2)
+//        = x/2 + sqrt((x/2)**2 + 1)                (for 0 < x < 2)
+//        = 1 / (sqrt((x/2)**2 + 1) - x/2)          (for -2 < x < 0)
+//        = -1 / ((x/2)*(sqrt(1 + (2/x)**2) + 1)    (for x <= -2)
 //
-// The formula depends on x, so that occurrences of
-// overflow and subtractive cancellation are avoided.
+// Those formulas are all mathematically equivalent. The formula
+// that is used in the code depends on the sign and magnitude of
+// x, so that occurrences of overflow and subtractive cancellation
+// are avoided.
 //
 template<typename T>
 T std_hyperbolic_ramp(T x)
