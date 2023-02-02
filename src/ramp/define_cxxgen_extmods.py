@@ -55,5 +55,5 @@ funcs = [
          docstring=hyperbolic_ramp_docstring),
 ]
 
-extmods = [ExtMod(modulename='_hyperbolic_ramp',
-                  funcs={'hyperbolic_ramp.h': funcs})]
+extmods = [ExtMod(modulename='_ramp',
+                  funcs={'ramp.h': funcs})]

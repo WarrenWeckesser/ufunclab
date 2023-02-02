@@ -8,7 +8,7 @@ from ._abs_squared import abs_squared
 from ._cabssq import cabssq
 from ._expint1 import expint1, logexpint1
 from ._logistic import logistic, logistic_deriv, log_logistic, swish
-from ._hyperbolic_ramp import hyperbolic_ramp
+from ._ramp import hyperbolic_ramp
 from ._normal import normal_cdf, normal_logcdf, normal_sf, normal_logsf, erfcx
 from ._yeo_johnson import yeo_johnson, inv_yeo_johnson
 from ._cross import cross3, cross2
