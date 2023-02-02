@@ -49,7 +49,8 @@ with all boilerplate code written "by hand" in the C file.
 | [`logistic_deriv`](#logistic_deriv)           | Derivative of the standard logistic sigmoid function          |
 | [`log_logistic`](#log_logistic)               | Logarithm of the standard logistic sigmoid function           |
 | [`swish`](#swish)                             | The 'swish' function--a smoothed ramp                         |
-| [`hyperbolic_ramp`](#hyperbolic_ramp)         | A smoothed ramp function                                      |
+| [`hyperbolic_ramp`](#hyperbolic_ramp)         | A smoothed ramp whose graph is a hyperbola                    |
+| [`exponential_ramp`](#exponential_ramp)       | A smoothed ramp with exponential convergence to asymptotes    |
 | [`yeo_johnson`](#yeo_johnson)                 | Yeo-Johnson transformation                                    |
 | [`inv_yeo_johnson`](#inv_yeo_johnson)         | Inverse of the Yeo-Johnson transformation                     |
 | [`erfcx`](#erfcx)                             | Scaled complementary error function                           |
@@ -386,6 +387,7 @@ array([           -inf, -5.00000000e+02, -9.74076984e-01,
        -4.53988992e-05,  0.00000000e+00,  0.00000000e+00])
 ```
 
+
 ### `swish`
 
 `swish(x, beta)` computes `x * logistic(beta*x)`, where `logistic(x)`
@@ -394,15 +396,30 @@ of smoothed ramp.
 
 ![swish plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/swish_demo.png)
 
+
 ### `hyperbolic_ramp`
 
 `hyperbolic_ramp(x, a)` computes the function
 
     hyperbolic_ramp(x, a) = (x + sqrt(x*x + 4*a*a))/2
 
-It is a smoothed ramp function.
+It is a smoothed ramp function.  The scaling of the parameters is chosen
+so that `hyperbolic_ramp(0, a)` is `a`.
 
 ![hyperbolic_ramp plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hyperbolic_ramp_demo.png)
+
+
+### `exponential_ramp`
+
+`exponential_ramp(x, a)` computes the function
+
+    exponential_ramp(x, a) = a*log_2(1 + 2**(x/a))
+
+It is a smoothed ramp function that converges exponentially fast to
+the asymptotes.  The scaling of the parameters is chosen so that
+`exponential_ramp(0, a)` is `a`.
+
+The function is also known as the "softplus" function.
 
 
 ### `yeo_johnson`

@@ -1,7 +1,7 @@
 
 import pytest
 from numpy.testing import assert_allclose
-from ufunclab import hyperbolic_ramp
+from ufunclab import hyperbolic_ramp, exponential_ramp
 
 
 @pytest.mark.parametrize('x, a, expected',
@@ -32,4 +32,20 @@ from ufunclab import hyperbolic_ramp
                           (1e203, 1e200, 1.000000999999e+203)])
 def test_hyperbolic_ramp(x, a, expected):
     y = hyperbolic_ramp(x, a)
+    assert_allclose(y, expected, rtol=5e-15)
+
+
+@pytest.mark.parametrize('x, a, expected',
+                         [(0, 1, 1),
+                          (0, 0.5, 0.5),
+                          (1, 1, 1.584962500721156),
+                          (-1, 1, 0.5849625007211562),
+                          (31, 1, 31.000000000671807),
+                          (-31, 1, 6.718072297764289e-10),
+                          (-31, 1000, 984.5832627032638),
+                          (1e-3, 1e-4, 0.0010001408194392808),
+                          (1000, 0.5, 1000),
+                          (-1000, 1.75, 2.4270135903567186e-172)])
+def test_exponential_ramp(x, a, expected):
+    y = exponential_ramp(x, a)
     assert_allclose(y, expected, rtol=5e-15)

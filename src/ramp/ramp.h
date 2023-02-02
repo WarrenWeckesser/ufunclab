@@ -64,3 +64,38 @@ T hyperbolic_ramp(T x, T a)
         return a*std_hyperbolic_ramp(x/a);
     }
 }
+
+
+#define LN2 0.6931471805599453094172321214581765681L
+
+//
+// The "standard" exponential ramp.
+// The exponential ramp is a smooth ramp that approaches the
+// ramp asymptotes exponentially fast.
+//
+template<typename T>
+T std_exponential_ramp(T x)
+{
+    if (x == 0) {
+        return 1;
+    }
+    if (x > 0) {
+        return x + std::log1p(std::pow(2.0L, -x))/LN2;
+    }
+    else {
+        return std::log1p(std::pow(2.0L, x))/LN2;
+    }
+}
+
+
+template<typename T>
+T exponential_ramp(T x, T a)
+{
+    if (a == 0) {
+        return (x < 0) ? 0.0 : x;
+    } else if (a < 0) {
+        return NAN;
+    } else {
+        return a*std_exponential_ramp(x/a);
+    }
+}
