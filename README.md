@@ -421,6 +421,8 @@ the asymptotes.  The scaling of the parameters is chosen so that
 
 The function is also known as the "softplus" function.
 
+![exponential_ramp plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/exponential_ramp_demo.png)
+
 
 ### `yeo_johnson`
 
