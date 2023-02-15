@@ -69,39 +69,40 @@ are in C and use NumPy templating (look for filenames that end in `.src`);
 others use templated C++ functions combined with code generation tools
 that can be found in `tools/cxxgen`.
 
-| Function                                      | Description                                           |
-| --------                                      | -----------                                           |
-| [`first`](#first)                             | First value that matches a target comparison          |
-| [`argfirst`](#argfirst)                       | Index of the first occurrence of a target comparison  |
-| [`argmin`](#argmin)                           | Like `numpy.argmin`, but a gufunc                     |
-| [`argmax`](#argmax)                           | Like `numpy.argmax`, but a gufunc                     |
-| [`minmax`](#minmax)                           | Minimum and maximum                                   |
-| [`argminmax`](#argminmax)                     | Indices of the min and the max                        |
-| [`min_argmin`](#min_argmin)                   | Minimum value and its index                           |
-| [`max_argmax`](#max_argmax)                   | Maximum value and its index                           |
-| [`searchsortedl`](#searchsortedl)             | Find position for given element in sorted seq.        |
-| [`searchsortedr`](#searchsortedr)             | Find position for given element in sorted seq.        |
-| [`peaktopeak`](#peaktopeak)                   | Alternative to `numpy.ptp`                            |
-| [`all_same`](#all_same)                       | Check all values are the same                         |
-| [`gmean`](#gmean)                             | Geometric mean                                        |
-| [`hmean`](#hmean)                             | Harmonic mean                                         |
-| [`meanvar`](#meanvar)                         | Mean and variance                                     |
-| [`mad`](#mad)                                 | Mean absolute difference (MAD)                        |
-| [`rmad`](#rmad)                               | Relative mean absolute difference (RMAD)              |
-| [`gini`](#gini)                               | Gini coefficient                                      |
-| [`rms`](#rms)                                 | Root-mean-square for real and complex inputs          |
-| [`vnorm`](#vnorm)                             | Vector norm                                           |
-| [`vdot`](#vdot)                               | Vector dot product for real floating point arrays     |
-| [`pearson_corr`](#pearson_corr)               | Pearson's product-moment correlation coefficient      |
-| [`cross2`](#cross2)                           | 2-d vector cross product (returns scalar)             |
-| [`cross3`](#cross3)                           | 3-d vector cross product                              |
-| [`tri_area`](#tri_area)                       | Area of triangles in n-dimensional space              |
-| [`fillnan1d`](#fillnan1d)                     | Replace `nan` using linear interpolation              |
-| [`backlash`](#backlash)                       | Backlash operator                                     |
-| [`hysteresis_relay`](#hysteresis_relay)       | Relay with hysteresis (Schmitt trigger)               |
-| [`sosfilter`](#sosfilter)                     | SOS (second order sections) linear filter             |
-| [`sosfilter_ic`](#sosfilter_ic)               | SOS linear filter with initial condition              |
-| [`sosfilter_ic_contig`](#sosfilter_ic_contig) | SOS linear filter with contiguous array inputs        |
+| Function                                        | Description                                           |
+| --------                                        | -----------                                           |
+| [`first`](#first)                               | First value that matches a target comparison          |
+| [`argfirst`](#argfirst)                         | Index of the first occurrence of a target comparison  |
+| [`argmin`](#argmin)                             | Like `numpy.argmin`, but a gufunc                     |
+| [`argmax`](#argmax)                             | Like `numpy.argmax`, but a gufunc                     |
+| [`minmax`](#minmax)                             | Minimum and maximum                                   |
+| [`argminmax`](#argminmax)                       | Indices of the min and the max                        |
+| [`min_argmin`](#min_argmin)                     | Minimum value and its index                           |
+| [`max_argmax`](#max_argmax)                     | Maximum value and its index                           |
+| [`searchsortedl`](#searchsortedl)               | Find position for given element in sorted seq.        |
+| [`searchsortedr`](#searchsortedr)               | Find position for given element in sorted seq.        |
+| [`peaktopeak`](#peaktopeak)                     | Alternative to `numpy.ptp`                            |
+| [`all_same`](#all_same)                         | Check all values are the same                         |
+| [`gmean`](#gmean)                               | Geometric mean                                        |
+| [`hmean`](#hmean)                               | Harmonic mean                                         |
+| [`meanvar`](#meanvar)                           | Mean and variance                                     |
+| [`mad`](#mad)                                   | Mean absolute difference (MAD)                        |
+| [`rmad`](#rmad)                                 | Relative mean absolute difference (RMAD)              |
+| [`gini`](#gini)                                 | Gini coefficient                                      |
+| [`rms`](#rms)                                   | Root-mean-square for real and complex inputs          |
+| [`vnorm`](#vnorm)                               | Vector norm                                           |
+| [`vdot`](#vdot)                                 | Vector dot product for real floating point arrays     |
+| [`pearson_corr`](#pearson_corr)                 | Pearson's product-moment correlation coefficient      |
+| [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
+| [`cross3`](#cross3)                             | 3-d vector cross product                              |
+| [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
+| [`fillnan1d`](#fillnan1d)                       | Replace `nan` using linear interpolation              |
+| [`backlash`](#backlash)                         | Backlash operator                                     |
+| [`hysteresis_relay`](#hysteresis_relay)         | Relay with hysteresis (Schmitt trigger)               |
+| [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
+| [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
+| [`sosfilter_ic_contig`](#sosfilter_ic_contig)   | SOS linear filter with contiguous array inputs        |
+| [`multivariate_logbeta`](#multivariate_logbeta) | Logarithm of the multivariate beta function           |
 
 *Other tools*
 
@@ -1454,6 +1455,27 @@ performs the same calculation as `sosfilter_ic`, but it assumes that the
 array inputs are all C-contiguous.  It does not verify this; if an array
 input is *not* C-contiguous, the results will be incorrect, and the program
 might crash.
+
+### `multivariate_logbeta`
+
+`multivariate_logbeta(x)` is a gufunc with signature `(n)->()` that computes
+the logarithm of the multivariate beta function.
+
+```
+>>> import numpy as np
+>>> from ufunclab import multivariate_logbeta
+
+>>> x = np.array([1, 2.5, 7.25, 3])
+>>> multivariate_logbeta(x)
+-13.87374699005739
+
+Compare to
+
+>>> from scipy.special import gammaln
+>>> gammaln(x).sum() - gammaln(x.sum())
+-13.87374699005739
+
+```
 
 ### `gendot`
 

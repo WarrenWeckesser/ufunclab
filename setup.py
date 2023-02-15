@@ -240,6 +240,14 @@ def configuration(parent_package='', top_path=None):
                                   for name in _minmax_srcs],
                          **npymath_info)
 
+    _mvlogbeta_srcs = ['multivariate_logbeta_gufunc.h',
+                       '_multivariate_logbetamodule.cxx']
+    config.add_extension('ufunclab._multivariate_logbeta',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'multivariate_logbeta', name)
+                                  for name in _mvlogbeta_srcs],
+                         **npymath_info)
+
     _step_srcs = ['step_funcs_concrete.cxx', '_stepmodule.cxx']
     config.add_extension('ufunclab._step',
                          extra_compile_args=['-std=c++11', '-Werror'],
@@ -283,7 +291,7 @@ if __name__ == "__main__":
                           'yeo_johnson'])
 
     generate_cxx_gufunc_extmods(['all_same', 'corr', 'mad', 'meanvar',
-                                 'minmax',
+                                 'minmax', 'multivariate_logbeta',
                                  'sosfilter', 'tri_area', 'vnorm'])
 
     setup(name='ufunclab',

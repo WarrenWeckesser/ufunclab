@@ -16,6 +16,7 @@ from ._first import first, argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
 from ._searchsorted import searchsortedl, searchsortedr
 from ._peaktopeak import peaktopeak
 from ._minmax import argmin, argmax, minmax, argminmax, min_argmin, max_argmax
+from ._multivariate_logbeta import multivariate_logbeta
 from ._means import gmean, hmean
 from ._meanvar import meanvar
 from ._corr import pearson_corr
