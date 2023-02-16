@@ -39,8 +39,44 @@ static inline @ctype_out@ max_diff_@typename@(@ctype_in@ xmax, @ctype_in@ xmin) 
 }
 #endif
 
-static void peaktopeak_@typename@_loop(char **args, const npy_intp *dimensions,
-                                       const npy_intp* steps, void* data)
+// This function requires n >= 1.
+static @ctype_out@
+peaktopeak_@typename@_contig(npy_intp n, @ctype_in@ *x)
+{
+    @ctype_in@ xmin = x[0];
+    @ctype_in@ xmax = x[0];
+    for (npy_intp i = 1; i < n; ++i) {
+        @ctype_in@ xi = x[i];
+        xmin = (xi < xmin) ? xi : xmin;
+        xmax = (xi > xmax) ? xi : xmax;
+    }
+#if @is_signed_int@
+    return max_diff_@typename@(xmax, xmin);
+#else
+    return xmax - xmin;
+#endif
+}
+
+// This loop requires dimensions[1] >= 1 and a contiguous input array
+// (i.e. steps[2] == sizeof(<the input data type>))
+static void
+peaktopeak_@typename@_contig_loop(char **args, const npy_intp *dimensions,
+                                  const npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+    // npy_intp inner_step = steps[2];
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        *(@ctype_out@ *) out = peaktopeak_@typename@_contig(dimensions[1], (@ctype_in@ *) in);
+    }
+}
+
+static void
+peaktopeak_@typename@_loop(char **args, const npy_intp *dimensions,
+                           const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
@@ -54,6 +90,11 @@ static void peaktopeak_@typename@_loop(char **args, const npy_intp *dimensions,
         PyErr_SetString(PyExc_ValueError,
                         "peaktopeak requires an input with length at least 1.");
         NPY_DISABLE_C_API
+        return;
+    }
+
+    if (inner_step == sizeof(@ctype_in@)) {
+        peaktopeak_@typename@_contig_loop(args, dimensions, steps, data);
         return;
     }
 
@@ -78,6 +119,7 @@ static void peaktopeak_@typename@_loop(char **args, const npy_intp *dimensions,
 #endif
     }
 }
+
 /**end repeat**/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

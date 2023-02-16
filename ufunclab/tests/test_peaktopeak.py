@@ -70,4 +70,5 @@ def test_dates():
                       np.datetime64('2015-11-02T21:20:19'),
                       np.datetime64('2015-11-02T19:25:00')])
     timespan = peaktopeak(dates)
+    assert_equal(timespan.dtype, np.dtype('m8[s]'))
     assert_equal(timespan, np.timedelta64(40819, 's'))
