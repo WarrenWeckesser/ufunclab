@@ -557,6 +557,7 @@ If there is no such value, return 0:
 ...
 >>> first(b, op.LT, 0, 0)
 array([-10,   0,  -7], dtype=int8)
+```
 
 The function stops at the first occurrence, so it will be faster when the
 condition is met at the beginning of the array than when the condition
@@ -565,6 +566,7 @@ doesn't occur until near the end of the array.
 In the following, the condition occurs in the last element of ``x``, and
 the result of the ``timeit`` call is 0.6 seconds.
 
+```
 >>> from timeit import timeit
 >>> x = np.ones(100000)
 >>> x[-] = 0
@@ -572,10 +574,12 @@ the result of the ``timeit`` call is 0.6 seconds.
 0.0
 >>> timeit('first(x, op.LT, 1.0, np.nan)', number=20000, globals=globals())
 0.6052625320153311
+```
 
 The time is reduced to 0.05 seconds when the first occurrence of the
 condition is in the first element of ``x``.
 
+```
 >>> x[0] = -1.0
 >>> first(x, op.LT, 1.0, np.nan)
 -1.0
