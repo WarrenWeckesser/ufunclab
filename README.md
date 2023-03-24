@@ -526,6 +526,7 @@ standard normal distribution.
 
 `semivar_spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
 
+-----
 
 ### `first`
 
