@@ -528,7 +528,7 @@ standard normal distribution.
 
 -----
 
-### `first`
+#### `first`
 
 `first` is a gufunc with signature `(i),(),(),()->()` that returns the first
 value that matches a given comparison.  The function signature is
@@ -588,7 +588,7 @@ condition is in the first element of ``x``.
 0.049594153999350965
 ```
 
-### `argfirst`
+#### `argfirst`
 
 `argfirst` is a gufunc (signature `(i),(),()->()`) that finds the index of
 the first true value of a comparison of an array with a target value.  If no
@@ -641,7 +641,7 @@ columns:
 array([-1,  0,  2,  2])
 ```
 
-### `argmin`
+#### `argmin`
 
 `argmin` is a `gufunc` with signature `(i)->()` that is similar to `numpy.argmin`.
 
@@ -656,7 +656,7 @@ array([1, 0, 3])
 array([0, 0, 0, 2, 2])
 ```
 
-### `argmax`
+#### `argmax`
 
 `argmax` is a `gufunc` with signature `(i)->()` that is similar to `numpy.argmax`.
 
@@ -671,7 +671,7 @@ array([4, 3, 0])
 array([1, 1, 1, 0, 0])
 ```
 
-### `minmax`
+#### `minmax`
 
 `minmax` is a `gufunc` (signature `(i)->(2)`) that simultaneously computes
 the minimum and maximum of a NumPy array.
@@ -735,7 +735,7 @@ array([Fraction(1, 3), Fraction(22, 7)], dtype=object)
 
 ```
 
-### `argminmax`
+#### `argminmax`
 
 `argminmax` is a `gufunc` (signature `(i)->(2)`) that simultaneously
 computes the `argmin` and `argmax` of a NumPy array.
@@ -754,7 +754,7 @@ array([[0, 2, 1, 0, 2, 2, 2, 1],
        [2, 1, 2, 2, 0, 0, 1, 0]])
 ```
 
-### `min_argmin`
+#### `min_argmin`
 
 `min_argmin` is a gufunc (signature `(i)->(),()`) that returns both
 the extreme value and the index of the extreme value.
@@ -767,7 +767,7 @@ the extreme value and the index of the extreme value.
 (array([ 1,  0, 10]), array([0, 2, 0]))
 ```
 
-### `max_argmax`
+#### `max_argmax`
 
 `max_argmax` is a gufunc (signature `(i)->(),()`) that returns both
 the extreme value and the index of the extreme value.
@@ -785,7 +785,7 @@ the extreme value and the index of the extreme value.
 (Fraction(3, 4), 1)
 ```
 
-### `searchsortedl`
+#### `searchsortedl`
 
 `searchsortedl` is a gufunc with signature `(i),()->()`.  The function
 is equivalent to `numpy.searchsorted` with `side='left'`, but as a gufunc,
@@ -806,7 +806,7 @@ array([[2, 4],
        [4, 6]])
 ```
 
-### `searchsortedr`
+#### `searchsortedr`
 
 `searchsortedr` is a gufunc with signature `(i),()->()`.  The function
 is equivalent to `numpy.searchsorted` with `side='right'`, but as a gufunc,
@@ -828,7 +828,7 @@ array([[3, 6],
 ```
 
 
-### `peaktopeak`
+#### `peaktopeak`
 
 `peaktopeak` is a `gufunc` (signature `(i)->()`) that computes the
 peak-to-peak range of a NumPy array.  It is like the `ptp` method
@@ -906,7 +906,7 @@ array(303, dtype='timedelta64[D]')
 ```
 
 
-### `all_same`
+#### `all_same`
 
 `all_same` is a gufunc (signature `(i)->()`) that tests that all the
 values in the array along the given axis are the same.
@@ -938,7 +938,7 @@ array([[None, 'foo', 99],
 array([ True, False, False])
 ```
 
-### `gmean`
+#### `gmean`
 
 `gmean` is a gufunc (signature `(i)->()`) that computes the
 [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean).
@@ -963,7 +963,7 @@ array([[ 1,  2,  3,  4,  5],
 array([ 2.60517108,  7.87256685, 12.92252305])
 ```
 
-### `hmean`
+#### `hmean`
 
 `hmean` is a gufunc (signature `(i)->()`) that computes the
 [harmonic mean](https://en.wikipedia.org/wiki/Harmonic_mean).
@@ -988,7 +988,7 @@ array([[ 1,  2,  3,  4,  5],
 array([ 2.18978102,  7.74431469, 12.84486077])
 ```
 
-### `meanvar`
+#### `meanvar`
 
 `meanvar` is a gufunc (signature `(n),()->(2)`) that computes both
 the mean and variance in one function call.
@@ -1031,7 +1031,7 @@ array([2.75 , 1.875, 3.625, 5.   ])
 array([ 4.5  , 10.125,  3.125,  0.   ])
 ```
 
-### `mad`
+#### `mad`
 
 `mad(x, unbiased)` computes the [mean absolute difference](https://en.wikipedia.org/wiki/Mean_absolute_difference)
 of a 1-d array (gufunc signature is `(n),()->()`).  When the second parameter
@@ -1070,7 +1070,7 @@ estimate of the mean absolute difference.
 array([0.04      , 0.13333333, 0.22666667])
 ```
 
-### `rmad`
+#### `rmad`
 
 `rmad(x, unbiased)` computes the relative mean absolute difference (gufunc
 signature is `(i),()->()`).
@@ -1109,7 +1109,7 @@ unbiased estimate of the mean absolute difference (MAD).
 array([1.23076923, 0.51282051, 0.30944255])
 ```
 
-### `gini`
+#### `gini`
 
 `gini(x, unbiased)` is a gufunc with signature `(n),()->()` that computes the
 Gini coefficient of the data in `x`.
@@ -1137,7 +1137,7 @@ unbiased estimate of the mean absolute difference (MAD).
 0.3364632237871674
 ```
 
-### `rms`
+#### `rms`
 
 `rms(x)` computes the root-mean-square value for a collection of values.
 It is a gufunc with signature `(n)->()`.  The implementation is for
@@ -1168,7 +1168,7 @@ An equivalent NumPy expression:
 
 ```
 
-### `vnorm`
+#### `vnorm`
 
 `vnorm(x, p)` computes the vector p-norm of 1D arrays.  It is a gufunc with
 signatue `(i), () -> ()`.
@@ -1214,7 +1214,7 @@ with orders 1, 2, 3, and inf.  (Note that `abs(z)` is [2, 5, 0, 14].)
 array([21.        , 15.        , 14.22263137, 14.        ])
 ```
 
-### `vdot`
+#### `vdot`
 
 `vdot(x, y)` is the vector dot product of the real floating point vectors
 `x` and `y`.  It is a gufunc with signature `(n),(n)->()`.
@@ -1236,7 +1236,7 @@ array([ 3.,  5., 15.])
 ```
 
 
-### `pearson_corr`
+#### `pearson_corr`
 
 `pearson_corr(x, y)` computes Pearson's product-moment correlation coefficient.
 It is a gufunc with shape signature `(n),(n)->()`.
@@ -1268,7 +1268,7 @@ array([[-0.92758645, -0.76815464],
        [-0.43575108, -0.32925148]])
 ```
 
-### `cross2`
+#### `cross2`
 
 `cross2(u, v)` is a gufunc with signature `(2),(2)->()`.  It computes
 the 2-d cross product that returns a scalar.  That is, `cross2([u0, u1], [v0, v1])`
@@ -1304,7 +1304,7 @@ array([Fraction(-3, 14), Fraction(-9, 35), Fraction(-17, 84)],
       dtype=object)
 ```
 
-### `cross3`
+#### `cross3`
 
 `cross3(u, v)` is a gufunc with signature `(3),(3)->(3)`.  It computes
 the 3-d vector cross product (like `numpy.cross`, but specialized to the
@@ -1355,7 +1355,7 @@ array([[[ -1.,   0.,   0.],
         [-23.,  18.,   3.]]])
 ```
 
-### `tri_area`
+#### `tri_area`
 
 `tri_area(p)` is a gufunc with signature `(3, n) - > ()`.  It computes the
 area of a triangle defined by three points in n-dimensional space.
@@ -1377,7 +1377,7 @@ of two triangles in 4-dimensional space.
 array([1.73205081, 0.70710678])
 ```
 
-### `fillnan1d`
+#### `fillnan1d`
 
 `fillnan1d(x)` is a gufunc with signature `(i)->(i)`.  It uses linear
 interpolation to replace occurrences of `nan` in `x`.
@@ -1405,7 +1405,7 @@ generated by the script `examples/fillnan1d_demo.py`:
 
 ![fillnan1d plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/fillnan1d_demo.png)
 
-### `backlash`
+#### `backlash`
 
 `backlash(x, deadband, initial)`, a gufunc with signature `(i),(),()->(i)`,
 computes the "backlash" response of a signal; see the Wikipedia article
@@ -1434,7 +1434,7 @@ the plot
 ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/backlash_demo.png)
 
 
-### `hysteresis_relay`
+#### `hysteresis_relay`
 
 `hysteresis_relay(x, low_threshold, high_threshold, low_value, high_value, init)`,
 a gufunc with signature `(i),(),(),(),(),()->(i)`, passes `x` through a relay
@@ -1447,7 +1447,7 @@ the plot
 
 ![hysteresis_replay plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hysteresis_relay_demo.png)
 
-### `sosfilter`
+#### `sosfilter`
 
 `sosfilter(sos, x)` is a gufunc with signature `(m,6),(n)->(n)`.
 The function applies a discrete time linear filter to the input
@@ -1463,7 +1463,7 @@ the plot
 
 ![sosfilter plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/sosfilter_demo.png)
 
-### `sosfilter_ic`
+#### `sosfilter_ic`
 
 `sosfilter_ic(sos, x, zi)` is a gufunc with signature
 `(m,6),(n),(m,2)->(n),(m,2)`.  Like `sosfilter`, the function applies
@@ -1476,7 +1476,7 @@ the `zi` parameter is *required*.  Also, because `sosfilter_ic` is a gufunc,
 it uses the gufunc rules for broadcasting.  `scipy.signal.sosfilt` handles
 broadcasting of the `zi` parameter differently.
 
-### `sosfilter_ic_contig`
+#### `sosfilter_ic_contig`
 
 `sosfilter_ic_contig(sos, x, zi)` is a gufunc with signature
 `(m,6),(n),(m,2)->(n),(m,2)`.  This function has the same inputs and
@@ -1485,7 +1485,7 @@ array inputs are all C-contiguous.  It does not verify this; if an array
 input is *not* C-contiguous, the results will be incorrect, and the program
 might crash.
 
-### `multivariate_logbeta`
+#### `multivariate_logbeta`
 
 `multivariate_logbeta(x)` is a gufunc with signature `(n)->()` that computes
 the logarithm of the multivariate beta function.
@@ -1506,7 +1506,7 @@ Compare to
 
 ```
 
-### `gendot`
+#### `gendot`
 
 `gendot` creates a new gufunc (with signature `(i),(i)->()`) that is
 the composition of two ufuncs.  The first ufunc must be an element-wise
@@ -1561,7 +1561,7 @@ with `np.maximum.reduce(np.minimum(x, y), axis=-1)`, but `np.minimum(x, y)`
 creates an array with shape `(10, 20, 10000000)`.  Computing the result
 with `minmaxdot(x, y)` does not create the temporary intermediate array.
 
-### `ufunc_inspector`
+#### `ufunc_inspector`
 
 `ufunc_inspector(func)` prints information about a NumPy ufunc.
 
