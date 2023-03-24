@@ -113,7 +113,7 @@ that can be found in `tools/cxxgen`.
 
 -----
 
-### `logfactorial`
+#### `logfactorial`
 
 `logfactorial` is a ufunc that computes the natural logarithm of the
 factorial of the nonnegative integer x.  (`nan` is returned for negative
@@ -127,7 +127,7 @@ For example,
 array([   0.        ,   15.10441257,  363.73937556, 5912.12817849])
 ```
 
-### `issnan`
+#### `issnan`
 
 `issnan` is an element-wise ufunc with a single input that acts like
 the standard `isnan` function, but it returns True only for
@@ -161,7 +161,7 @@ it should).
 array([False,  True, False, False, False])
 ```
 
-### `next_less`
+#### `next_less`
 
 `next_less` is an element-wise ufunc with a single input that
 is equivalent to `np.nextafter` with the second argument set to `-inf`.
@@ -174,7 +174,7 @@ array([-1.2500001e+01, -1.4012985e-45,  9.9999994e-01,  9.9999994e+02],
       dtype=float32)
 ```
 
-### `next_greater`
+#### `next_greater`
 
 `next_greater` is an element-wise ufunc with a single input that
 is equivalent to `np.nextafter` with the second argument set to `inf`.
@@ -187,7 +187,7 @@ array([-1.24999990e+01,  1.40129846e-45,  1.00000012e+00,  1.00000006e+03],
       dtype=float32)
 ```
 
-### `abs_squared`
+#### `abs_squared`
 
 `abs_squared(z)` computes the squared absolute value of `z`.
 This is an element-wise ufunc with types `'f->f'`, `'d->d'`,
@@ -211,7 +211,7 @@ array([  2.25,   9.  ,  81.  , 100.  ], dtype=float32)
 array([ 25. ,   1. ,   1. , 169. ,   2.5])
 ```
 
-### `cabssq`
+#### `cabssq`
 
 `cabssq(z)` computes the squared absolute value of `z` for complex input only.
 This is the same calculation as `abs_squared`, but the implementation is
@@ -221,7 +221,7 @@ faster than `abs_squared`, because it avoids some of the overhead that occurs
 in the code generated in the implementation of `abs_squared`, and it allows
 the compiler to optimize the code more effectively.
 
-### `deadzone`
+#### `deadzone`
 
 `deadzone(x, low, high)` is a ufunc with three inputs and one output.
 It computes the "deadzone" response of a signal:
@@ -244,7 +244,7 @@ the plot
 
 ![Deadzone plot2](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/deadzone_demo2.png)
 
-### `step`
+#### `step`
 
 The ufunc `step(x, a, flow, fa, fhigh)` returns `flow` for
 `x < a`, `fhigh` for `x > a`, and `fa` for `x = a`.
@@ -257,7 +257,7 @@ the plot
 ![step plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/step_demo.png)
 
 
-### `linearstep`
+#### `linearstep`
 
 The ufunc `linearstep(x, a, b, fa, fb)` returns `fa` for
 `x <= a`, `fb` for `x >= b`, and uses linear interpolation
@@ -268,7 +268,7 @@ the plot
 
 ![linearstep plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/linearstep_demo.png)
 
-### `smoothstep3`
+#### `smoothstep3`
 
 The ufunc `smoothstep3(x, a, b, fa, fb)` returns `fa` for
 `x <= a`, `fb` for `x >= b`, and uses a cubic polynomial in
@@ -279,7 +279,7 @@ the plot
 
 ![smoothstep3 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/smoothstep3_demo.png)
 
-### `invsmoothstep3`
+#### `invsmoothstep3`
 
 The ufunc `invsmoothstep3(y, a, b, fa, fb)` is the inverse of
 `smoothstep3(x, a, b, fa, fb)`.
@@ -290,7 +290,7 @@ the plot
 ![invsmoothstep3 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/invsmoothstep3_demo.png)
 
 
-### `smoothstep5`
+#### `smoothstep5`
 
 The function `smoothstep5(x, a, b, fa, fb)` returns `fa` for
 `x <= a`, `fb` for `x >= b`, and uses a degree 5 polynomial in
@@ -301,7 +301,7 @@ the plot
 
 ![smoothstep5 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/smoothstep5_demo.png)
 
-### `trapezoid_pulse`
+#### `trapezoid_pulse`
 
 `trapezoid_pulse(x, a, b, c, d, amp)` is a ufunc that computes
 a trapezoid pulse.  The function is 0 for `x` <= `a` or `x` >= `d`,
@@ -314,7 +314,7 @@ the script `trapezoid_pulse_demo.py` in the `examples` directory):
 ![trapezoid_pulse plot1](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/trapezoid_pulse_demo.png)
 
 
-### `expint1`
+#### `expint1`
 
 `expint1(x)` computes the exponential integral E₁ for the real input x.
 
@@ -324,7 +324,7 @@ the script `trapezoid_pulse_demo.py` in the `examples` directory):
 array([1.04428263e+00, 2.49149179e-02, 5.34889976e-13])
 ```
 
-### `logexpint1`
+#### `logexpint1`
 
 `logexpint1(x)` computes the logarithm of the exponential integral E₁ for the real input x.
 
@@ -344,7 +344,7 @@ array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
 ```
 
 
-### `logistic`
+#### `logistic`
 
 `logistic(x)` computes the standard logistic sigmoid function.
 
@@ -354,7 +354,7 @@ this plot:
 ![logistic plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/logistic_demo.png)
 
 
-### `logistic_deriv`
+#### `logistic_deriv`
 
 `logistic_deriv(x)` computes the derivative of the standard logistic sigmoid
 function.
@@ -362,7 +362,7 @@ function.
 See `logistic` (above) for a plot.
 
 
-### `log_logistic`
+#### `log_logistic`
 
 `log_logistic(x)` computes the logarithm of the standard logistic sigmoid
 function.
@@ -389,7 +389,7 @@ array([           -inf, -5.00000000e+02, -9.74076984e-01,
 ```
 
 
-### `swish`
+#### `swish`
 
 `swish(x, beta)` computes `x * logistic(beta*x)`, where `logistic(x)`
 is the standard logistic sigmoid function.  The function is a type
@@ -398,7 +398,7 @@ of smoothed ramp.
 ![swish plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/swish_demo.png)
 
 
-### `hyperbolic_ramp`
+#### `hyperbolic_ramp`
 
 `hyperbolic_ramp(x, a)` computes the function
 
@@ -410,7 +410,7 @@ so that `hyperbolic_ramp(0, a)` is `a`.
 ![hyperbolic_ramp plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hyperbolic_ramp_demo.png)
 
 
-### `exponential_ramp`
+#### `exponential_ramp`
 
 `exponential_ramp(x, a)` computes the function
 
@@ -425,7 +425,7 @@ The function is also known as the "softplus" function.
 ![exponential_ramp plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/exponential_ramp_demo.png)
 
 
-### `yeo_johnson`
+#### `yeo_johnson`
 
 `yeo_johnson` computes the Yeo-Johnson transform.
 
@@ -444,7 +444,7 @@ array([[-13.50294123,  -2.47514321,  -0.80114069,  -0.6       ],
        [  0.39785786,   2.32674755,  52.99552905, 176.81366667]])
 ```
 
-### `inv_yeo_johnson`
+#### `inv_yeo_johnson`
 
 `inv_yeo_johnson` computes the inverse of the Yeo-Johnson transform.
 
@@ -460,7 +460,7 @@ array([-15.        ,  -0.77777778,   1.29739671,   2.21268904,
 array([-1.5, -0.5,  2.8,  7. ,  7.1])
 ```
 
-### `erfcx`
+#### `erfcx`
 
 `erfcx(x)` computes the scaled complementary error function,
 `exp(x**2) * erfc(x)`.  The function is implemented for NumPy types
@@ -487,42 +487,42 @@ array([1.48662366e+0695, 5.00898008e+0000, 1.00000000e+0000,
        5.64189301e-0004, 4.51351667e-2001], dtype=float128)
 ```
 
-### `normal_cdf`
+#### `normal_cdf`
 
 `normal_cdf(x)` computes the cumulative distribution function of the standard
 normal distribution.
 
 
-### `normal_logcdf`
+#### `normal_logcdf`
 
 `normal_logcdf(x)` computes the natural logarithm of the CDF of the standard
 normal distribution.
 
 
-### `normal_sf`
+#### `normal_sf`
 
 `normal_sf(x)` computes the survival function of the standard normal distribution.
 This function is also known as the complementary CDF, and is often abbreviated
 as `ccdf`.
 
 
-### `normal_logsf`
+#### `normal_logsf`
 
 `normal_logsf(x)` computes the natural logarithm of the survival function of the
 standard normal distribution.
 
 
-### `semivar_exponential`
+#### `semivar_exponential`
 
 `semivar_exponential(h, nugget, sill, rng)` computes the exponential semivariogram.
 
 
-### `semivar_linear`
+#### `semivar_linear`
 
 `semivar_linear(h, nugget, sill, rng)` computes the linear semivariogram.
 
 
-### `semivar_spherical`
+#### `semivar_spherical`
 
 `semivar_spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
 
