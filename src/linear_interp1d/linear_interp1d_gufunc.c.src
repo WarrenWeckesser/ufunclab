@@ -1,0 +1,250 @@
+//
+// linear_interp1d_gufunc.c.src
+//
+// gufunc implementation of linear_interp1d(x, xp, xp)
+// Shape signature is '(),(n),(n)->()'.
+// The '1d' in the name refers to the inputs `x` and `xp`.
+// `x`, and elements of `xp`, and scalars.
+//
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
+#include <stdio.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+#include "../util/ufunc_tools.h"
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = float, double#
+ * #ctype         = float, double#
+ */
+
+
+//
+// This function assumes `len > 0` and `arr[0] <= key <= arr[len-1]`.
+//
+static npy_intp
+search_@typename@(@ctype@ key, char *arr, npy_intp len, npy_intp stride)
+{
+    if (len == 1) {
+        return 0;
+    }
+    else {
+        npy_intp klow = 0;
+        @ctype@ low = *(@ctype@ *) (arr + klow*stride);
+        if (key == low) {
+            return klow;
+        }
+        npy_intp khigh = len - 1;
+        @ctype@ high = *(@ctype@ *) (arr + khigh*stride);
+        if (key == high) {
+            return khigh;
+        }
+        if (len == 2) {
+            return 0;
+        }
+        while (khigh > klow + 1) {
+            npy_intp k = (klow + khigh) / 2;
+            @ctype@ val = *(@ctype@ *) (arr + k*stride);
+            if (val == key) {
+                return k;
+            }
+            if (val < key) {
+                klow = k;
+            }
+            else {
+                khigh = k;
+            }
+        }
+        return klow;
+    }
+}
+
+static void linear_interp1d_@typename@_loop(char **args, const npy_intp *dimensions,
+                                            const npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array step
+    // steps[1]:  xp array step
+    // steps[2]:  fp array step
+    // steps[3]:  output array step
+    // steps[4]:  inner xp array step
+    // steps[5]:  inner fp array step
+    char *px = args[0];
+    char *pxp = args[1];
+    char *pfp = args[2];
+    char *pout = args[3];
+    npy_intp nloops = dimensions[0];
+    npy_intp n = dimensions[1];
+    npy_intp out_stride = steps[3];
+    npy_intp xp_stride = steps[4];
+    npy_intp fp_stride = steps[5];
+
+    if ((steps[0] == 0) && (steps[1] == 0)) {
+        @ctype@ x = *((@ctype@ *) px);
+
+        @ctype@ left = *((@ctype@ *) pxp);
+        @ctype@ right = *((@ctype@ *) (pxp + (n - 1)*xp_stride));
+        if ((x < left) || (x > right)) {
+            // No extrapolation. Output is NAN if x is outside the values
+            // given in xp.
+            for (int j = 0; j < nloops; ++j, pout += out_stride) {
+                *((@ctype@ *) pout) = NAN;
+            }
+            return;
+        }
+
+        npy_intp k = search_@typename@(x, pxp, n, xp_stride);
+        @ctype@ xpk = *((@ctype@ *) (pxp + k*xp_stride));
+        @ctype@ r = 0.0;
+        if (x != xpk) {
+            @ctype@ xpk_next = *((@ctype@ *) (pxp + (k + 1)*xp_stride));
+            r = (x - xpk) / (xpk_next - xpk);
+        }
+
+        for (int j = 0; j < nloops; ++j, pfp += steps[2], pout += steps[3]) {
+            @ctype@ fpk = *((@ctype@ *) (pfp + k*fp_stride));
+            if (x == xpk) {
+                *((@ctype@ *) pout) = fpk;
+            }
+            else {
+                @ctype@ fpk_next = *((@ctype@ *) (pfp + (k + 1)*fp_stride));
+                *((@ctype@ *) pout) = fpk + r*(fpk_next - fpk);
+            }
+        }
+        return;
+    }
+
+    for (int j = 0; j < nloops; ++j, px += steps[0], pxp += steps[1], pfp += steps[2],
+                                     pout += out_stride) {
+        if (n < 1) {
+            *((@ctype@ *) pout) = NAN;
+            continue;
+        }
+        @ctype@ x = *((@ctype@ *) px);
+        @ctype@ left = *((@ctype@ *) pxp);
+        @ctype@ right = *((@ctype@ *) (pxp + (n - 1)*xp_stride));
+        if ((x < left) || (x > right)) {
+            // No extrapolation. Output is NAN if x is outside the values
+            // given in xp.
+            *((@ctype@ *) pout) = NAN;
+            continue;
+        }
+
+        npy_intp k = search_@typename@(x, pxp, n, xp_stride);
+        @ctype@ xpk = *((@ctype@ *) (pxp + k*xp_stride));
+        @ctype@ fpk = *((@ctype@ *) (pfp + k*fp_stride));
+        if (x == xpk) {
+            *((@ctype@ *) pout) = fpk;
+        }
+        else {
+            @ctype@ xpk_next = *((@ctype@ *) (pxp + (k + 1)*xp_stride));
+            @ctype@ fpk_next = *((@ctype@ *) (pfp + (k + 1)*fp_stride));
+            @ctype@ slope = (fpk_next - fpk)/(xpk_next - xpk);
+            *((@ctype@ *) pout) = fpk + slope * (x - xpk);
+        }
+    }
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of linear_interp1d.
+static char linear_interp1d_typecodes[] = {
+    NPY_FLOAT, NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
+    NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE
+};
+
+static PyUFuncGenericFunction linear_interp1d_funcs[] = {
+    (PyUFuncGenericFunction) &linear_interp1d_float_loop,
+    (PyUFuncGenericFunction) &linear_interp1d_double_loop,
+};
+
+#define LINEAR_INTERP1D_NTYPES (sizeof(linear_interp1d_funcs)/sizeof(linear_interp1d_funcs[0]))
+static void *linear_interp1d_data[LINEAR_INTERP1D_NTYPES];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef LinearInterp1DMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_linear_interp1d",
+    .m_doc = "Module that defines the linear_interp1d function.",
+    .m_size = -1,
+    .m_methods = LinearInterp1DMethods
+};
+
+
+#define LINEAR_INTERP1D_DOCSTRING \
+"linear_interp1d(x, xp, yp, /, ...)\n"                         \
+"\n"                                                           \
+"Linear interpolation of y = f(x) given yp = f(xp).\n"         \
+"\n"                                                           \
+"Parameters\n"                                                 \
+"----------\n"                                                 \
+"x : array_like\n"                                             \
+"    Input signal\n"                                           \
+"xp : array_like\n"                                            \
+"    Known x values.  `xp` *must* be in ascedning order.\n"    \
+"    The behavior for repeated values in `xp` is undefined.\n" \
+"fp : array_like\n"                                            \
+"    Known function values, i.e. fp = f(xp)\n"                 \
+"\n"                                                           \
+"Returns\n"                                                    \
+"-------\n"                                                    \
+"out : ndarray\n"                                              \
+"    The interpolated y value for the given x value.\n"        \
+"\n"                                                           \
+"Examples\n"                                                   \
+"--------\n"                                                   \
+">>> xp = np.array([0.0, 2.0, 3.0, 5.0])\n"                    \
+">>> fp = np.array([1.0, 5.0, 6.0, 2.0])\n"                    \
+">>> x = np.array([1.5, 2.5, 3, 4.5])\n"                       \
+">>> linear_interp1d(x, xp, fp)\n"                             \
+"array([4. , 5.5, 6. , 3. ])\n"                                \
+"\n"
+
+PyMODINIT_FUNC PyInit__linear_interp1d(void)
+{
+    PyObject *module;
+
+    module = PyModule_Create(&moduledef);
+    if (!module) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the linear_interp1d ufunc.
+    if (ul_define_gufunc(module, "linear_interp1d", LINEAR_INTERP1D_DOCSTRING, "(),(n),(n)->()",
+                         LINEAR_INTERP1D_NTYPES,
+                         linear_interp1d_funcs, linear_interp1d_data, linear_interp1d_typecodes) == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    return module;
+}

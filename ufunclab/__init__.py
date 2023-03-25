@@ -25,6 +25,7 @@ from ._vnorm import vnorm, rms, vdot
 from ._tri_area import tri_area
 from ._backlash import backlash
 from ._fillnan1d import fillnan1d
+from ._linear_interp1d import linear_interp1d
 from ._semivar import semivar_exponential, semivar_linear, semivar_spherical
 from ._deadzone import deadzone
 from ._trapezoid_pulse import trapezoid_pulse
@@ -41,7 +42,7 @@ from ._ufunc_inspector import ufunc_inspector
 import numpy as _np
 
 
-__version__ = "0.0.7.dev8"
+__version__ = "0.0.7.dev9"
 
 
 class op:

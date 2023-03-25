@@ -198,6 +198,12 @@ def configuration(parent_package='', top_path=None):
                                        'fillnan1d_gufunc.c.src')],
                          include_dirs=[util_include_dir])
 
+    config.add_extension('ufunclab._linear_interp1d',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'linear_interp1d',
+                                       'linear_interp1d_gufunc.c.src')],
+                         include_dirs=[util_include_dir])
+
     _dz_srcs = ['deadzone_concrete.cxx', '_deadzonemodule.cxx']
     config.add_extension('ufunclab._deadzone',
                          extra_compile_args=['-std=c++11', '-Werror'],
