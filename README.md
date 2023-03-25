@@ -1424,12 +1424,15 @@ gufunc loop, the strides associated with the `x` and `xp` arrays are 0.
 
 Some examples of the use of `linear_interp1d` follow.
 
+```
 >>> import numpy as np
 >>> from ufunclab import linear_interp1d
+```
 
 This example is the same as `numpy.interp`.  `xp` and `fp` are the know values,
 and we want to evaluated the interpolated function at `x = [0, 0.25, 1, 2, 5, 6]`.
 
+```
 >>> xp = np.array([0, 1, 3, 5, 8])
 >>> fp = np.array([10, 15, 15, 20, 80])
 >>> x = np.array([0, 0.25, 1, 2, 5, 6.5])
@@ -1439,6 +1442,7 @@ array([10.  , 11.25, 15.  , 15.  , 20.  , 50.  ])
 
 >>> np.interp(x, xp, fp)
 array([10.  , 11.25, 15.  , 15.  , 20.  , 50.  ])
+```
 
 With broadcasting, we can interpolate multiple functions (i.e. multiple 1-d
 arrays) in one call.
@@ -1447,15 +1451,18 @@ For example, in the array `fp3` below, we want to treat each column as a
 separate function to be interpolated (note that the first column is the
 same as `fp` above):
 
+```
 >>> fp3 = np.array([[10, 15, 10],
 ...                 [15, 14, 20],
 ...                 [15, 13, 40],
 ...                 [20, 12, 10],
 ...                 [80, 11, 0]])
+```
 
 We can do this with `linear_interp1d`, but we have to adjust the shapes
 of the inputs to broadcast correctly:
 
+```
 >>> linear_interp1d(x[:, None], xp, fp3.T)
 array([[10.  , 15.  , 10.  ],
        [11.25, 14.75, 12.5 ],
@@ -1463,6 +1470,7 @@ array([[10.  , 15.  , 10.  ],
        [15.  , 13.5 , 30.  ],
        [20.  , 12.  , 10.  ],
        [50.  , 11.5 ,  5.  ]])
+```
 
 
 #### `backlash`
