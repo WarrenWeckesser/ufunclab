@@ -1429,8 +1429,8 @@ Some examples of the use of `linear_interp1d` follow.
 >>> from ufunclab import linear_interp1d
 ```
 
-This example is the same as `numpy.interp`.  `xp` and `fp` are the know values,
-and we want to evaluated the interpolated function at `x = [0, 0.25, 1, 2, 5, 6]`.
+This example is the same as `numpy.interp`.  `xp` and `fp` are the known values,
+and we want to evaluate the interpolated function at `x = [0, 0.25, 1, 2, 5, 6]`.
 
 ```
 >>> xp = np.array([0, 1, 3, 5, 8])
