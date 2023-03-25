@@ -97,6 +97,7 @@ that can be found in `tools/cxxgen`.
 | [`cross3`](#cross3)                             | 3-d vector cross product                              |
 | [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
 | [`fillnan1d`](#fillnan1d)                       | Replace `nan` using linear interpolation              |
+| [`linear_interp1d](#linear_interp1d)            | Linear interpolation, like `numpy.interp`             |
 | [`backlash`](#backlash)                         | Backlash operator                                     |
 | [`hysteresis_relay`](#hysteresis_relay)         | Relay with hysteresis (Schmitt trigger)               |
 | [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
