@@ -1505,8 +1505,9 @@ the plot
 #### `hysteresis_relay`
 
 `hysteresis_relay(x, low_threshold, high_threshold, low_value, high_value, init)`,
-a gufunc with signature `(i),(),(),(),(),()->(i)`, passes `x` through a relay
-with hysteresis (like a Schmitt trigger). The function is similar to the
+a gufunc with signature `(i),(),(),(),(),()->(i)`, passes `x` through a relay with
+hysteresis (like a [Schmitt trigger](https://en.wikipedia.org/wiki/Schmitt_trigger)).
+The function is similar to the
 [relay block](https://www.mathworks.com/help/simulink/slref/relay.html)
 of Matlab's Simulink library.
 
