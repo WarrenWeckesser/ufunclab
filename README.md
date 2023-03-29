@@ -1711,10 +1711,10 @@ Here's a collection of resources for learning about the C API for ufuncs.
 * [Generalized Universal Function API](https://numpy.org/devdocs/reference/c-api/generalized-ufuncs.html)
 * [NEP 5 — Generalized Universal Functions](https://numpy.org/neps/nep-0005-generalized-ufuncs.html)
 * [NEP 20 — Expansion of Generalized Universal Function Signatures](https://numpy.org/neps/nep-0020-gufunc-signature-enhancement.html)
-* [Universal functions](https://numpy.org/devdocs/reference/internals.code-explanations.html#universal-functions),
-  part of the [NumPy C Code Explanations](https://numpy.org/devdocs/reference/internals.code-explanations.html)
+* [Universal functions](https://numpy.org/devdocs/dev/internals.code-explanations.html#c-code-explanations),
+  part of the [NumPy C Code Explanations](https://numpy.org/devdocs/dev/internals.code-explanations.html#c-code-explanations)
   * In particular, the section
-    ["Function call"](https://numpy.org/devdocs/reference/internals.code-explanations.html#function-call)
+    ["Function call"](https://numpy.org/devdocs/dev/internals.code-explanations.html#function-call)
     explains when the GIL is released.
 * When implementing inner loops for many NumPy dtypes, the
   [NumPy distutils](https://numpy.org/doc/stable/reference/distutils_guide.html)
