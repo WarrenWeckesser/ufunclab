@@ -1472,6 +1472,13 @@ array([[10.  , 15.  , 10.  ],
        [50.  , 11.5 ,  5.  ]])
 ```
 
+The script `linear_interp1d_demo.py` in the `examples` directory
+provides a demonstration of the use of `linear_interp1d` to interpolate
+a parametric curve in two dimensions using arclength as the parameter.
+It generates the following plot:
+
+![linear_interp1d plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/linear_interp1d_demo.png)
+
 
 #### `backlash`
 
