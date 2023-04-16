@@ -3,11 +3,11 @@ from ufunc_config_types import ExtMod, Func
 
 
 semivar_exponential_docstring = """\
-semivar_exponential(h, nugget, sill, rng, /, ...)
+exponential(h, nugget, sill, rng, /, ...)
 
 Exponential semivariogram:
 
-    γ(h) = N + (S - N)*exp(1 - 3*h/R)
+    γ(h) = N + (S - N)*(1 - exp(-3*h/R))
 
 where N is the nugget, S is the sill and R is the range.
 
@@ -33,7 +33,7 @@ v : ndarray or scalar
 """
 
 semivar_linear_docstring = """\
-semivar_linear(h, nugget, sill, rng, /, ...)
+linear(h, nugget, sill, rng, /, ...)
 
 Linear semivariogram:
 
@@ -63,7 +63,7 @@ v : ndarray or scalar
 """
 
 semivar_spherical_docstring = """\
-semivar_spherical(h, nugget, sill, rng, /, ...)
+spherical(h, nugget, sill, rng, /, ...)
 
 Spherical semivariogram:
 
@@ -94,18 +94,18 @@ v : ndarray or scalar
 
 semivar_funcs = [
     Func(cxxname='semivar_exponential',
-         ufuncname='semivar_exponential',
+         ufuncname='exponential',
          types=['ffff->f', 'dddd->d', 'gggg->g'],
          docstring=semivar_exponential_docstring),
     Func(cxxname='semivar_linear',
-         ufuncname='semivar_linear',
+         ufuncname='linear',
          types=['ffff->f', 'dddd->d', 'gggg->g'],
          docstring=semivar_linear_docstring),
     Func(cxxname='semivar_spherical',
-         ufuncname='semivar_spherical',
+         ufuncname='spherical',
          types=['ffff->f', 'dddd->d', 'gggg->g'],
          docstring=semivar_spherical_docstring),
 ]
 
-extmods = [ExtMod(modulename='_semivar',
+extmods = [ExtMod(modulename='semivar',
                   funcs={'semivar.h': semivar_funcs})]

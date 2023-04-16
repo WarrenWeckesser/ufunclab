@@ -26,7 +26,6 @@ from ._tri_area import tri_area
 from ._backlash import backlash
 from ._fillnan1d import fillnan1d
 from ._linear_interp1d import linear_interp1d
-from ._semivar import semivar_exponential, semivar_linear, semivar_spherical
 from ._deadzone import deadzone
 from ._trapezoid_pulse import trapezoid_pulse
 from ._hysteresis_relay import hysteresis_relay
@@ -38,6 +37,7 @@ from ._next import next_greater, next_less
 
 from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector
+from . import semivar
 
 import numpy as _np
 

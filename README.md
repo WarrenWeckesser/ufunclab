@@ -58,9 +58,9 @@ with all boilerplate code written "by hand" in the C file.
 | [`normal_logcdf`](#normal_logcdf)             | Logarithm of the CDF of the std. normal distribution          |
 | [`normal_sf`](#normal_sf)                     | Survival function of the std. normal distribution             |
 | [`normal_logsf`](#normal_logsf)               | Log of the survival function of the std. normal distribution  |
-| [`semivar_exponential`](#semivar_exponential) | Exponential semivariogram (from kriging interpolation)        |
-| [`semivar_linear`](#semivar_linear)           | Linear variogram (from kriging interpolation)                 |
-| [`semivar_spherical`](#semivar_spherical)     | Spherical variogram (from kriging interpolation)              |
+| [`semivar.exponential`](#semivar.exponential) | Exponential semivariogram (from kriging interpolation)        |
+| [`semivar.linear`](#semivar.linear)           | Linear variogram (from kriging interpolation)                 |
+| [`semivar.spherical`](#semivar.spherical)     | Spherical variogram (from kriging interpolation)              |
 
 *Generalized ufuncs*
 
@@ -513,19 +513,19 @@ as `ccdf`.
 standard normal distribution.
 
 
-#### `semivar_exponential`
+#### `semivar.exponential`
 
-`semivar_exponential(h, nugget, sill, rng)` computes the exponential semivariogram.
-
-
-#### `semivar_linear`
-
-`semivar_linear(h, nugget, sill, rng)` computes the linear semivariogram.
+`semivar.exponential(h, nugget, sill, rng)` computes the exponential semivariogram.
 
 
-#### `semivar_spherical`
+#### `semivar.linear`
 
-`semivar_spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
+`semivar.linear(h, nugget, sill, rng)` computes the linear semivariogram.
+
+
+#### `semivar.spherical`
+
+`semivar.spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
 
 -----
 

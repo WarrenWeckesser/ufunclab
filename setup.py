@@ -211,8 +211,8 @@ def configuration(parent_package='', top_path=None):
                                   for name in _dz_srcs],
                          **npymath_info)
 
-    _semivar_srcs = ['semivar_concrete.cxx', '_semivarmodule.cxx']
-    config.add_extension('ufunclab._semivar',
+    _semivar_srcs = ['semivar_concrete.cxx', 'semivarmodule.cxx']
+    config.add_extension('ufunclab.semivar',
                          extra_compile_args=['-std=c++11', '-Werror'],
                          sources=[join('src', 'semivar', 'generated', name)
                                   for name in _semivar_srcs],
