@@ -58,9 +58,7 @@ with all boilerplate code written "by hand" in the C file.
 | [`normal_logcdf`](#normal_logcdf)             | Logarithm of the CDF of the std. normal distribution          |
 | [`normal_sf`](#normal_sf)                     | Survival function of the std. normal distribution             |
 | [`normal_logsf`](#normal_logsf)               | Log of the survival function of the std. normal distribution  |
-| [`semivar.exponential`](#semivar.exponential) | Exponential semivariogram (from kriging interpolation)        |
-| [`semivar.linear`](#semivar.linear)           | Linear variogram (from kriging interpolation)                 |
-| [`semivar.spherical`](#semivar.spherical)     | Spherical variogram (from kriging interpolation)              |
+| [Semivariograms](#Semivariograms)             | Several semivariograms used in kriging interpolation          |
 
 *Generalized ufuncs*
 
@@ -512,18 +510,21 @@ as `ccdf`.
 `normal_logsf(x)` computes the natural logarithm of the survival function of the
 standard normal distribution.
 
+#### Semivariograms
 
-#### `semivar.exponential`
+The submodule `ufunclab.semivar` defines the following functions.
+
+##### `semivar.exponential`
 
 `semivar.exponential(h, nugget, sill, rng)` computes the exponential semivariogram.
 
 
-#### `semivar.linear`
+##### `semivar.linear`
 
 `semivar.linear(h, nugget, sill, rng)` computes the linear semivariogram.
 
 
-#### `semivar.spherical`
+##### `semivar.spherical`
 
 `semivar.spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
 
