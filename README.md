@@ -54,10 +54,7 @@ with all boilerplate code written "by hand" in the C file.
 | [`yeo_johnson`](#yeo_johnson)                 | Yeo-Johnson transformation                                    |
 | [`inv_yeo_johnson`](#inv_yeo_johnson)         | Inverse of the Yeo-Johnson transformation                     |
 | [`erfcx`](#erfcx)                             | Scaled complementary error function                           |
-| [`normal_cdf`](#normal_cdf)                   | CDF of the standard normal distribution                       |
-| [`normal_logcdf`](#normal_logcdf)             | Logarithm of the CDF of the std. normal distribution          |
-| [`normal_sf`](#normal_sf)                     | Survival function of the std. normal distribution             |
-| [`normal_logsf`](#normal_logsf)               | Log of the survival function of the std. normal distribution  |
+| [Normal distribution functions](#Normal)      | Functions for the normal distribution: cdf, sf, logcdf, logsf |
 | [Semivariograms](#Semivariograms)             | Several semivariograms used in kriging interpolation          |
 
 *Generalized ufuncs*
@@ -486,29 +483,36 @@ array([1.48662366e+0695, 5.00898008e+0000, 1.00000000e+0000,
        5.64189301e-0004, 4.51351667e-2001], dtype=float128)
 ```
 
-#### `normal_cdf`
+#### Normal
 
-`normal_cdf(x)` computes the cumulative distribution function of the standard
+The submodule `normal` defines several functions for the standard normal
+probability distrbution.
+
+
+##### `normal.cdf`
+
+`normal.cdf(x)` computes the cumulative distribution function of the standard
 normal distribution.
 
 
-#### `normal_logcdf`
+##### `normal.logcdf`
 
-`normal_logcdf(x)` computes the natural logarithm of the CDF of the standard
+`normal.logcdf(x)` computes the natural logarithm of the CDF of the standard
 normal distribution.
 
 
-#### `normal_sf`
+##### `normal.sf`
 
-`normal_sf(x)` computes the survival function of the standard normal distribution.
+`normal.sf(x)` computes the survival function of the standard normal distribution.
 This function is also known as the complementary CDF, and is often abbreviated
 as `ccdf`.
 
 
-#### `normal_logsf`
+##### `normal.logsf`
 
-`normal_logsf(x)` computes the natural logarithm of the survival function of the
+`normal.logsf(x)` computes the natural logarithm of the survival function of the
 standard normal distribution.
+
 
 #### Semivariograms
 

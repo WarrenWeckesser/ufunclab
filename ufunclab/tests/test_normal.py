@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose
-from ufunclab import normal_cdf, normal_logcdf, erfcx
+from ufunclab import normal, erfcx
 
 
 f64eps = np.finfo(np.float64).eps
@@ -19,7 +19,7 @@ longdouble_eps = np.finfo(np.longdouble).eps
     ( 10.0,  1.0,                   f64eps),
 ])
 def test_normal_cdf_double(x, expected, rtol):
-    y = normal_cdf(x)
+    y = normal.cdf(x)
     assert_allclose(y, expected, rtol=rtol)
 
 
@@ -34,7 +34,7 @@ def test_normal_cdf_double(x, expected, rtol):
 def test_normal_cdf_longdouble(x, expected, rtol):
     x = np.longdouble(x)
     expected = np.longdouble(expected)
-    y = normal_cdf(x)
+    y = normal.cdf(x)
     assert_allclose(y, expected, rtol=rtol)
 
 
@@ -48,7 +48,7 @@ def test_normal_cdf_longdouble(x, expected, rtol):
     ( 10.0,  -7.619853024160525e-24, 32*f64eps),
 ])
 def test_normal_logcdf_double(x, expected, rtol):
-    y = normal_logcdf(x)
+    y = normal.logcdf(x)
     assert_allclose(y, expected, rtol=rtol)
 
 
@@ -64,7 +64,7 @@ def test_normal_logcdf_double(x, expected, rtol):
 def test_normal_logcdf_longdouble(x, expected, rtol):
     x = np.longdouble(x)
     expected = np.longdouble(expected)
-    y = normal_logcdf(x)
+    y = normal.logcdf(x)
     assert_allclose(y, expected, rtol=rtol)
 
 

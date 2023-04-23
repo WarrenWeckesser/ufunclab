@@ -114,8 +114,8 @@ def configuration(parent_package='', top_path=None):
                          **npymath_info)
 
     _nm_srcs = ['normal_concrete.cxx', 'erfcx_funcs_concrete.cxx',
-                '_normalmodule.cxx']
-    config.add_extension('ufunclab._normal',
+                'normalmodule.cxx']
+    config.add_extension('ufunclab.normal',
                          extra_compile_args=['-std=c++11', '-Werror'],
                          sources=[join('src', 'normal', 'generated', name)
                                   for name in _nm_srcs] +

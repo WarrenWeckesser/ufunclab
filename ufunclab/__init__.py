@@ -9,7 +9,6 @@ from ._cabssq import cabssq
 from ._expint1 import expint1, logexpint1
 from ._logistic import logistic, logistic_deriv, log_logistic, swish
 from ._ramp import hyperbolic_ramp, exponential_ramp
-from ._normal import normal_cdf, normal_logcdf, normal_sf, normal_logsf, erfcx
 from ._yeo_johnson import yeo_johnson, inv_yeo_johnson
 from ._cross import cross3, cross2
 from ._first import first, argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
@@ -37,6 +36,8 @@ from ._next import next_greater, next_less
 
 from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector
+from .normal import _erfcx as erfcx
+from . import normal
 from . import semivar
 
 import numpy as _np
