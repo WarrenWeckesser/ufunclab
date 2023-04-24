@@ -516,7 +516,12 @@ standard normal distribution.
 
 #### Semivariograms
 
-The submodule `ufunclab.semivar` defines the following functions.
+The submodule `ufunclab.semivar` defines the ufuncs `exponential`, `linear` and
+`spherical`.  The script `semivar_demo.py` in the `examples` directory generates
+the following plot.
+
+![semivariogram plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/semivar_demo.png)
+
 
 ##### `semivar.exponential`
 
@@ -531,6 +536,7 @@ The submodule `ufunclab.semivar` defines the following functions.
 ##### `semivar.spherical`
 
 `semivar.spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
+
 
 -----
 
