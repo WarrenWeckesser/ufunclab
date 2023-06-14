@@ -93,7 +93,7 @@ def test_axis_z(dtype):
                                    np.complex64, np.complex128])
 def test_nontrivial_strides(dtype):
     a = np.zeros((3, 8), dtype=dtype)
-    a[:,6:] = 10
+    a[:, 6:] = 10
     b = a[::2, ::2]
     n1 = vnorm(b, 2, axis=1)
     assert_array_equal(n1, [10.0, 10.0])
