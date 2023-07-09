@@ -92,6 +92,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _ei_srcs],
                          **npymath_info)
 
+    _p1_srcs = ['pow1pm1_concrete.cxx', '_pow1pm1module.cxx']
+    config.add_extension('ufunclab._pow1pm1',
+                         extra_compile_args=['-std=c++11', '-Werror'],
+                         sources=[join('src', 'pow1pm1', 'generated', name)
+                                  for name in _p1_srcs],
+                         **npymath_info)
+
     _le_srcs = ['logistic_concrete.cxx', '_logisticmodule.cxx']
     config.add_extension('ufunclab._logistic',
                          extra_compile_args=['-std=c++11', '-Werror'],
@@ -292,8 +299,8 @@ if __name__ == "__main__":
     from numpy.distutils.core import setup
 
     generate_cxxgen_code(['abs_squared', 'deadzone', 'expint1',
-                          'ramp', 'logistic', 'next',
-                          'normal', 'semivar', 'step', 'trapezoid_pulse',
+                          'ramp', 'logistic', 'next', 'normal', 'pow1pm1',
+                          'semivar', 'step', 'trapezoid_pulse',
                           'yeo_johnson'])
 
     generate_cxx_gufunc_extmods(['all_same', 'corr', 'mad', 'meanvar',

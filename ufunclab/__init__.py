@@ -7,6 +7,7 @@ from ._issnan import issnan
 from ._abs_squared import abs_squared
 from ._cabssq import cabssq
 from ._expint1 import expint1, logexpint1
+from ._pow1pm1 import pow1pm1
 from ._logistic import logistic, logistic_deriv, log_logistic, swish
 from ._ramp import hyperbolic_ramp, exponential_ramp
 from ._yeo_johnson import yeo_johnson, inv_yeo_johnson
@@ -43,7 +44,7 @@ from . import semivar
 import numpy as _np
 
 
-__version__ = "0.0.7.dev9"
+__version__ = "0.0.7.dev10"
 
 
 class op:

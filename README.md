@@ -43,6 +43,7 @@ with all boilerplate code written "by hand" in the C file.
 | [`invsmoothstep3`](#invsmoothstep3)           | Inverse of `smoothstep3`                                      |
 | [`smoothstep5`](#smoothstep5)                 | Smooth step using a degree 5 polynomial                       |
 | [`trapezoid_pulse`](#trapezoid_pulse)         | Trapezoid pulse function                                      |
+| [`pow1pm1`](#pow1pm1)                         | Compute `(1 + x)**y - 1`                                      |
 | [`expint1`](#expint1)                         | Exponential integral E₁ for real inputs                       |
 | [`logexpint1`](#logexpint1)                   | Logarithm of the exponential integral E₁                      |
 | [`logistic`](#logistic)                       | The standard logistic sigmoid function                        |
@@ -309,6 +310,29 @@ the script `trapezoid_pulse_demo.py` in the `examples` directory):
 
 ![trapezoid_pulse plot1](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/trapezoid_pulse_demo.png)
 
+### `pow1pm1`
+
+`pow1pm1(x, y)` computes `(1 + x)**y - 1` for `x >= -1`.
+
+The calculation is formulated to avoid loss of precision when
+`(1 + x)**y` is close to 1.
+
+```
+>>> from ufunclab import pow1pm1
+
+The following result provides full machine precision:
+
+>>> x = -0.125
+>>> y = 3.25e-12
+>>> pow1pm1(x, y)
+-4.3397702602960437e-13
+
+The naive calculation provides less than six digits of precision:
+
+>>> (1 + x)**y - 1
+-4.339861803259737e-13
+
+```
 
 #### `expint1`
 
