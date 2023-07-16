@@ -372,18 +372,22 @@ array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
 It avoids the loss of precision in the express `1 + x` that occurs
 when `x` is very small.
 
+```
 >>> from ufunclab import loggamma1p
 >>> x = -3e-11
 >>> loggamma1p(x)
 1.7316469947786207e-11
+```
 
 That result is accurate to machine precision.  The naive calculation
 loses precision in the sum `1 + x`; in the following result that uses
 `math.lgamma`, only about five digits are correct:
 
+```
 >>> import math
 >>> math.lgamma(1 + x)
 1.7316037492776104e-11
+```
 
 
 #### `logistic`
