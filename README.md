@@ -191,8 +191,9 @@ array([-1.24999990e+01,  1.40129846e-45,  1.00000012e+00,  1.00000006e+03],
 `abs_squared(z)` computes the squared absolute value of `z`.
 This is an element-wise ufunc with types `'f->f'`, `'d->d'`,
 `'g->g'`, `'F->f'`, `'D->d'`, and `'G->g'`.  For real input,
-the result is just `z**2`.  For complex input, it is
-`z.real**2 + z.imag**2`.
+the result is `z**2`.  For complex input, it is
+`z.real**2 + z.imag**2`, which is equivalent to `z*conj(z)`,
+where `conj(z)` is the complex conjugate of `z`.
 
 ```
 >>> import numpy as np
