@@ -176,7 +176,18 @@ m_lgamma(double x)
 ////////////////////////////////////////////////////////////////////////////
 
 //
-// Coefficients of the (13, 11) Padé approximation to log(gamma(1+x)) at x=0.
+// Coefficients of the (12, 10) Padé approximation to log(gamma(1+x)) at x=0.
+//
+// These coefficients can be derived with mpmath in Python:
+//
+//     from mpmath import mp
+//
+//     def loggamma1p(x):
+//         return mp.log(mp.one + x)
+//
+//     mp.dps = 100
+//     ts = mp.taylor(loggamma1p, 0, 24)
+//     p_coeff, q_coeff = mp.pade(ts, 12, 10)
 //
 #define PADE_NUMER_N 13
 static const double
