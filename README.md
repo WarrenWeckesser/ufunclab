@@ -55,8 +55,8 @@ with all boilerplate code written "by hand" in the C file.
 | [`yeo_johnson`](#yeo_johnson)                 | Yeo-Johnson transformation                                    |
 | [`inv_yeo_johnson`](#inv_yeo_johnson)         | Inverse of the Yeo-Johnson transformation                     |
 | [`erfcx`](#erfcx)                             | Scaled complementary error function                           |
-| [Normal distribution functions](#Normal)      | Functions for the normal distribution: cdf, sf, logcdf, logsf |
-| [Semivariograms](#Semivariograms)             | Several semivariograms used in kriging interpolation          |
+| [Normal distribution functions](#normal)      | Functions for the normal distribution: cdf, sf, logcdf, logsf |
+| [Semivariograms](#semivariograms)             | Several semivariograms used in kriging interpolation          |
 
 *Generalized ufuncs*
 
