@@ -3,6 +3,7 @@ NumPy ufuncs and utilities.
 """
 
 from ._logfact import logfactorial
+from ._loggamma1p import loggamma1p
 from ._issnan import issnan
 from ._abs_squared import abs_squared
 from ._cabssq import cabssq
@@ -44,7 +45,7 @@ from . import semivar
 import numpy as _np
 
 
-__version__ = "0.0.7.dev10"
+__version__ = "0.0.7.dev11"
 
 
 class op:

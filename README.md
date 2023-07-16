@@ -25,8 +25,9 @@ Most of the element-wise ufuncs are implemented by writing the core
 calculation as a templated C++ function, and using some Python code to
 automate the generation of all the necessary boilerplate and wrappers
 that implement a ufunc around the core calculation.  The exceptions
-are `logfactorial`, `issnan`, and `cabssq`, which are implemented in C,
-with all boilerplate code written "by hand" in the C file.
+are `logfactorial`, `loggamma1p`, `issnan`, and `cabssq`, which are
+implemented in C, with all boilerplate code written "by hand" in the
+C file.
 
 | Function                                      | Description                                                   |
 | --------                                      | -----------                                                   |
@@ -46,6 +47,7 @@ with all boilerplate code written "by hand" in the C file.
 | [`pow1pm1`](#pow1pm1)                         | Compute `(1 + x)**y - 1`                                      |
 | [`expint1`](#expint1)                         | Exponential integral E₁ for real inputs                       |
 | [`logexpint1`](#logexpint1)                   | Logarithm of the exponential integral E₁                      |
+| [`loggamma1p`](#loggamma1p)                   | Logarithm of gamma(1 + x) for real x > -1.                    |
 | [`logistic`](#logistic)                       | The standard logistic sigmoid function                        |
 | [`logistic_deriv`](#logistic_deriv)           | Derivative of the standard logistic sigmoid function          |
 | [`log_logistic`](#log_logistic)               | Logarithm of the standard logistic sigmoid function           |
@@ -362,6 +364,26 @@ array([7.85247922e-286, 1.40651877e-307, 0.00000000e+000, 0.00000000e+000])
 >>> logexpint1([650, 700, 750, 800])
 array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
 ```
+
+
+#### `loggamma1p`
+
+`loggamma1p` computes `log(gamma(1 + x))` for real `x` > -1.
+It avoids the loss of precision in the express `1 + x` that occurs
+when `x` is very small.
+
+>>> from ufunclab import loggamma1p
+>>> x = -3e-11
+>>> loggamma1p(x)
+1.7316469947786207e-11
+
+That result is accurate to machine precision.  The naive calculation
+loses precision in the sum `1 + x`; in the following result that uses
+`math.lgamma`, only about five digits are correct:
+
+>>> import math
+>>> math.lgamma(1 + x)
+1.7316037492776104e-11
 
 
 #### `logistic`

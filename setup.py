@@ -68,6 +68,13 @@ def configuration(parent_package='', top_path=None):
                                   join('src', 'logfactorial',
                                        'logfactorial_ufunc.c')])
 
+    config.add_extension('ufunclab._loggamma1p',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'loggamma1p',
+                                       'loggamma1p.c'),
+                                  join('src', 'loggamma1p',
+                                       'loggamma1p_ufunc.c')])
+
     config.add_extension('ufunclab._issnan',
                          extra_compile_args=compile_args,
                          sources=[join('src', 'issnan',
