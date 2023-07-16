@@ -369,7 +369,7 @@ array([-656.47850729, -706.55250586, -756.62140388, -806.68585939])
 #### `loggamma1p`
 
 `loggamma1p` computes `log(gamma(1 + x))` for real `x` > -1.
-It avoids the loss of precision in the express `1 + x` that occurs
+It avoids the loss of precision in the expression `1 + x` that occurs
 when `x` is very small.
 
 ```
