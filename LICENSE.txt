@@ -1,3 +1,11 @@
+This library contains code (in src/loggamma1p/loggamma1p.c) that is derived
+from the math module in Python 3.11.4.  See https://docs.python.org/3/license.html
+for the Python 3.11.4 license information.
+
+Original code in this library is released under the "MIT license" as follows.
+
+-----
+
 Copyright (c) 2023 Warren Weckesser
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,3 +25,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+-----
