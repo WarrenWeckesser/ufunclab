@@ -92,6 +92,11 @@ def configuration(parent_package='', top_path=None):
                          sources=[join('src', 'cabssq',
                                        'cabssq_ufunc.c')])
 
+    config.add_extension('ufunclab._log1p',
+                         extra_compile_args=compile_args,
+                         sources=[join('src', 'log1p',
+                                       'log1p_ufunc.c')])
+
     _ei_srcs = ['expint1_concrete.cxx', '_expint1module.cxx']
     config.add_extension('ufunclab._expint1',
                          extra_compile_args=['-std=c++11', '-Werror'],
