@@ -113,7 +113,7 @@ static void log1p_D_D_loop(char **args, const npy_intp *dimensions,
         }
         else {
             if (x > -2.2 && x < 0.2 && y > -1.2 && y < 1.2
-                    && fabs(x*(2.0 + x) + y*y) < 0.1) {
+                    && fabs(x*(2.0 + x) + y*y) < 0.4) {
                 // The input is close to the unit circle centered at -1+0j.
                 // Use double-double to evaluate the real part of the result.
                 lnr = 0.5*log1p(foo(x, y));
