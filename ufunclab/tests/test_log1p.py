@@ -1,6 +1,6 @@
 import pytest
 from numpy.testing import assert_allclose
-from ufunclab import log1p
+from ufunclab import log1p_doubledouble
 
 
 # Reference values were computed with mpmath.
@@ -19,7 +19,7 @@ from ufunclab import log1p
      (1e200 + 1e200j, 460.8635921890891 + 0.7853981633974483j)],
 )
 def test_basic(z, wref):
-    w = log1p(z)
+    w = log1p_doubledouble(z)
     # Note that we test the relative error of the real and imaginary parts
     # separately.  This is a more stringent test than abs(w - wref)/abs(wref).
     assert_allclose(w.real, wref.real, rtol=1e-15)
@@ -30,7 +30,7 @@ def test_basic(z, wref):
 # should equal the input.
 @pytest.mark.parametrize('z', [3e-180+2e-175j, 1e-50-3e-55])
 def test_tiny(z):
-    w = log1p(z)
+    w = log1p_doubledouble(z)
     assert w == z
 
 
@@ -43,7 +43,7 @@ def test_tiny(z):
      (-0.01524813-0.173952j, -2.228118716056777e-06-0.1748418364650139j)],
 )
 def test_real_part_loosely(z, wref):
-    w = log1p(z)
+    w = log1p_doubledouble(z)
     # The computed value is very close to the reference value...
     assert_allclose(w, wref, rtol=1e-15)
     # ...but the real parts (which are very small) have greater relative
