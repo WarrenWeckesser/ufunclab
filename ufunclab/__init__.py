@@ -7,7 +7,7 @@ from ._loggamma1p import loggamma1p
 from ._issnan import issnan
 from ._abs_squared import abs_squared
 from ._cabssq import cabssq
-from ._log1p import log1p
+from ._log1p import log1p_theorem4, log1p_doubledouble
 from ._expint1 import expint1, logexpint1
 from ._pow1pm1 import pow1pm1
 from ._logistic import logistic, logistic_deriv, log_logistic, swish
@@ -46,7 +46,7 @@ from . import semivar
 import numpy as _np
 
 
-__version__ = "0.0.7.dev12"
+__version__ = "0.0.7.dev13"
 
 
 class op:

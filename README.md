@@ -46,7 +46,8 @@ C file.
 | [`trapezoid_pulse`](#trapezoid_pulse)         | Trapezoid pulse function                                      |
 | [`pow1pm1`](#pow1pm1)                         | Compute `(1 + x)**y - 1`                                      |
 | [`expint1`](#expint1)                         | Exponential integral E₁ for real inputs                       |
-| [`log1p`](#log1p)                             | `log(1 + z)` for complex z.                                   |
+| [`log1p_doubledouble`](#log1p_doubledouble)   | `log(1 + z)` for complex z.                                   |
+| [`log1p_theorem4`](#log1p_theorem4)           | `log(1 + z)` for complex z.                                   |
 | [`logexpint1`](#logexpint1)                   | Logarithm of the exponential integral E₁                      |
 | [`loggamma1p`](#loggamma1p)                   | Logarithm of gamma(1 + x) for real x > -1.                    |
 | [`logistic`](#logistic)                       | The standard logistic sigmoid function                        |
@@ -348,15 +349,18 @@ The naive calculation provides less than six digits of precision:
 array([1.04428263e+00, 2.49149179e-02, 5.34889976e-13])
 ```
 
-#### `log1p`
+#### `log1p_doubledouble`
 
-`log1p(z)` computes `log(1 + z)` for complex `z`.  This is an alternative
+`log1p_doubledouble(z)` computes `log(1 + z)` for complex `z`.  This is an alternative
 to `numpy.log1p` and `scipy.special.log1p`.
 
+The function uses double-double numbers for some intermediate calculations to avoid
+loss of precision near the circle |z + 1| = 1 in the complex plane.
+
 ```
->>> from ufunclab import log1p
+>>> from ufunclab import log1p_doubledouble
 >>> z = -0.57113-0.90337j
->>> log1p(z)
+>>> log1p_doubledouble(z)
 (3.4168883248419116e-06-1.1275564209486122j)
 ```
 
@@ -364,9 +368,39 @@ Currently, the only "inner loop" implemented for this ufunc is for
 the data type `np.complex128`, so it will always return a complex result:
 
 ```
->>> log1p.types
+>>> log1p_doubledouble.types
 ['D->D']
->>> log1p([-6e-3, 0, 1e-12, 5e-8, 0.25, 1])
+>>> log1p_doubledouble([-6e-3, 0, 1e-12, 5e-8, 0.25, 1])
+array([-6.01807233e-03+0.j,  0.00000000e+00+0.j,  1.00000000e-12+0.j,
+        4.99999988e-08+0.j,  2.23143551e-01+0.j,  6.93147181e-01+0.j])
+```
+
+#### `log1p_theorem4`
+
+`log1p_theorem4(z)` computes `log(1 + z)` for complex `z`.  This is an alternative
+to `numpy.log1p` and `scipy.special.log1p`.
+
+The function uses the "trick" given as Theorem 4 of Goldberg's paper "What every
+computer scientist should know about floating-point arithmetic".
+
+The precision provided by this function depends on the precision of the function
+`clog` (complex logarithm) provided by the underlying C math library that is used
+to build `ufunclab`.
+
+```
+>>> from ufunclab import log1p_theorem4
+>>> z = -0.57113-0.90337j
+>>> log1p_theorem4(z)
+(3.4168883248419116e-06-1.1275564209486122j)
+```
+
+Currently, the only "inner loop" implemented for this ufunc is for
+the data type `np.complex128`, so it will always return a complex result:
+
+```
+>>> log1p_theorem4.types
+['D->D']
+>>> log1p_theorem4([-6e-3, 0, 1e-12, 5e-8, 0.25, 1])
 array([-6.01807233e-03+0.j,  0.00000000e+00+0.j,  1.00000000e-12+0.j,
         4.99999988e-08+0.j,  2.23143551e-01+0.j,  6.93147181e-01+0.j])
 ```
