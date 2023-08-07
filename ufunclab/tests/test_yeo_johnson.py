@@ -135,6 +135,8 @@ def test_yeo_johnson_basic():
     ('3.0',    0.0, '1.386294361119890618834464242916353136', ldeps)
 ])
 def test_yeo_johnson_longdouble(x, lam, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     lam = np.longdouble(lam)
     expected = np.longdouble(expected)
@@ -147,6 +149,8 @@ def test_yeo_johnson_longdouble(x, lam, expected, rtol):
     ('-1.999999995', '2.25', '-14.999999840000000999999995000000022', 4*ldeps),
 ])
 def test_inv_yeo_johnson_longdouble(x, lam, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     lam = np.longdouble(lam)
     expected = np.longdouble(expected)

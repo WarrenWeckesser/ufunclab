@@ -32,6 +32,8 @@ def test_normal_cdf_double(x, expected, rtol):
     ( 10.0,  '1.0',                      longdouble_eps),
 ])
 def test_normal_cdf_longdouble(x, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     expected = np.longdouble(expected)
     y = normal.cdf(x)
@@ -62,6 +64,8 @@ def test_normal_logcdf_double(x, expected, rtol):
     ( 10.0,  '-7.61985302416052606597337228267936327e-24', 32*longdouble_eps),
 ])
 def test_normal_logcdf_longdouble(x, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     expected = np.longdouble(expected)
     y = normal.logcdf(x)
@@ -93,6 +97,8 @@ def test_erfcx_double(x, expected, rtol):
     ( 1e8,    '5.641895835477562587386002741729624699e-9',  longdouble_eps),
 ])
 def test_erfcx_longdouble(x, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     expected = np.longdouble(expected)
     y = erfcx(x)

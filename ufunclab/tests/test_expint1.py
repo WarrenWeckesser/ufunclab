@@ -41,6 +41,8 @@ def test_logexpint1_basic():
     ('2500.0',     '7.33975594722389377705530492879166952e-1090', 2*ldeps)
 ])
 def test_expint1_longdouble(x, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     expected = np.longdouble(expected)
     y = expint1(x)
@@ -54,6 +56,8 @@ def test_expint1_longdouble(x, expected, rtol):
     ('2500.0',   '-2507.82444577113317199235247002342904',  ldeps),
 ])
 def test_logexpint1_longdouble(x, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     expected = np.longdouble(expected)
     y = logexpint1(x)

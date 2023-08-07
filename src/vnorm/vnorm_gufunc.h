@@ -24,11 +24,14 @@ complex_abs(npy_cdouble z) {
     return npy_cabs(z);
 }
 
+#if NPY_SIZEOF_LONGDOUBLE != NPY_SIZEOF_DOUBLE
+
 static inline npy_longdouble
 complex_abs(npy_clongdouble z) {
     return npy_cabsl(z);
 }
 
+#endif
 
 //
 // `vnorm_core_calc`, the C++ core function

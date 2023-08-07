@@ -6,6 +6,8 @@ from ufunclab import vdot
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_single(dtype):
+    if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     a = np.array([1, 2, 3, 0, 4, 4, 4], dtype=dtype)
     b = np.array([2, 1, 4, 3, 1, 1, 2], dtype=dtype)
     d = vdot(a, b)
@@ -15,6 +17,8 @@ def test_single(dtype):
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_basic_arrays(dtype):
+    if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     a = np.array([[1, 2, 3, 0, 4, 4, 4],
                   [1, 1, 1, 1, 2, 2, 2]], dtype=dtype)
     b = np.array([[2, 1, 4, 3, 1, 1, 2],

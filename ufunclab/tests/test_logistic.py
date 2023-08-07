@@ -80,6 +80,8 @@ def test_log_logistic_basic():
     ('1000', '-5.07595889754945676529180947957433692e-435', ldeps),
 ])
 def test_log_logistic_longdouble(x, expected, rtol):
+    if np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.longdouble(x)
     expected = np.longdouble(expected)
     y = log_logistic(x)

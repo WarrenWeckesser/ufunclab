@@ -26,6 +26,8 @@ exact_test_cases = [
 @pytest.mark.parametrize('dt', [np.float32, np.float64, np.longdouble])
 @pytest.mark.parametrize('sos, x, expected_y', exact_test_cases)
 def test_simple_float(dt, sos, x, expected_y):
+    if dt == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     sos = np.array(sos, dtype=dt)
     x = np.array(x, dtype=dt)
     y = sosfilter(sos, x)

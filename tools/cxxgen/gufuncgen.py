@@ -390,6 +390,10 @@ def gen(extmod):
         for ufunc_source in ufunc.sources:
             corename = ufunc_source.funcname
             coretypes = ufunc_source.typesignatures
+            if np.dtype('g') == np.dtype('d'):
+                # long double is the same as double, so drop any
+                # type signatures containing 'g' or 'G'.
+                coretypes = [t for t in coretypes if 'g' not in t.lower()]
 
             template_types, var_types = classify_typenames(coretypes)
 
@@ -439,6 +443,10 @@ def gen(extmod):
         for ufunc_source in ufunc.sources:
             corename = ufunc_source.funcname
             coretypes = ufunc_source.typesignatures
+            if np.dtype('g') == np.dtype('d'):
+                # long double is the same as double, so drop any
+                # type signatures containing 'g' or 'G'.
+                coretypes = [t for t in coretypes if 'g' not in t.lower()]
             for typesig in coretypes:
                 charcodes = list(typesig.replace('->', ''))
                 npy_typecodes = [npy_types[c] for c in charcodes]

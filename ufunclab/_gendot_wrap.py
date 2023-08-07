@@ -3,6 +3,10 @@ import numpy as np
 from ._gendot import _gendot
 
 
+longdouble_code, longcomplex_code = (
+    (12, 15) if np.dtype('g') == np.dtype('d') else (13, 16)
+)
+
 reverse_typedict = {
     np.bool_: 0,
     np.int8: 1,
@@ -18,10 +22,10 @@ reverse_typedict = {
     np.float16: 23,
     np.float32: 11,
     np.float64: 12,
-    np.longdouble: 13,
+    np.longdouble: longdouble_code,
     np.complex64: 14,
     np.complex128: 15,
-    np.longcomplex: 16,
+    np.longcomplex: longcomplex_code,
     np.object_: 17,
     np.bytes_: 18,
     np.str_: 19,
@@ -32,9 +36,9 @@ reverse_typedict = {
 
 
 def _check_ufunc1(func, argname):
-    if not(isinstance(func, np.ufunc)
-           and func.signature is None
-           and func.nin == 2 and func.nout == 1):
+    if not (isinstance(func, np.ufunc)
+            and func.signature is None
+            and func.nin == 2 and func.nout == 1):
         raise ValueError(f"{argname} must be an element-wise ufunc with 2 "
                          "inputs and 1 output.")
     if len(func.types) > 256:
