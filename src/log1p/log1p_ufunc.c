@@ -1,9 +1,9 @@
 //
 // log1p_ufunc.c
 //
-// This C extension module defines the `log1p` ufunc.  `log1p`
-// is implemented for the type np.complex128 only (type signature
-// is `D->D`).
+// This C extension module defines the ufuncs `log1p_theorem4` and
+// `log1p_doubledouble`.  They are implemented for the type np.complex128
+// only (type signature is `D->D`).
 //
 
 #define PY_SSIZE_T_CLEAN
