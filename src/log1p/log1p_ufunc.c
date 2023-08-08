@@ -89,11 +89,29 @@ double_sum(const doubledouble_t x, const doubledouble_t y,
     two_sum_quick(out->upper, out->lower, out);
 }
 
+//
+// Dekker splitting.  See, for example, Theorem 1 of
+//
+//   Seppa Linnainmaa. Software for Double-Precision Floating-Point
+//   Computations, ACM Transactions on Mathematical Software, Vol 7, No 3,
+//   September 1981, pages 272-283.
+//
+// See also
+//
+//   Claude-Pierre Jeannerod, Jean-Michel Muller, Paul Zimmermann.
+//   On various ways to split a floating-point number. ARITH 2018 - 25th
+//   IEEE Symposium on Computer Arithmetic, Jun 2018, Amherst (MA),
+//   United States. pp.53-60, 10.1109/ARITH.2018.8464793. hal-01774587v2
+//
 static void
 split(double x, doubledouble_t *out)
 {
     double t = ((1 << 27) + 1)*x;
+#ifdef FP_FAST_FMA
+    out->upper = fma(-(1 << 27), x, t);
+#else
     out->upper = t - (t - x);
+#endif
     out->lower = x - out->upper;
 }
 
