@@ -66,7 +66,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        apt-get install libopenblas-dev
+        sudo apt-get install libopenblas-dev
         python -m pip install --upgrade pip wheel
         python -m pip install --upgrade setuptools==59.2.0
         python -m pip install pytest
