@@ -52,8 +52,8 @@ def generate_cxx_gufunc_extmods(dirnames):
 def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration, get_info
 
-    c_compile_args = ['-std=c99', '-Werror']
-    cpp_compile_args = ['-std=c++11', '-Werror']
+    c_compile_args = ['-std=c99']
+    cpp_compile_args = ['-std=c++11']
     config = Configuration(None, parent_package, top_path)
     config.add_subpackage('ufunclab')
     config.add_subpackage('ufunclab/tests')
