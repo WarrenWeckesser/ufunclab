@@ -12,6 +12,8 @@
 #include <complex.h>
 #include <math.h>
 
+#include <stdio.h>
+
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 #include "numpy/ufuncobject.h"
@@ -154,11 +156,19 @@ log1p_doubledouble(double _Complex z)
 
     double x = creal(z);
     double y = cimag(z);
-    if (x > -2.2 && x < 0.2 && y > -1.2 && y < 1.2
-            && fabs(x*(2.0 + x) + y*y) < 0.4) {
-        // The input is close to the unit circle centered at -1+0j.
-        // Use double-double to evaluate the real part of the result.
-        lnr = 0.5*log1p(foo(x, y));
+    if (x > -2.2 && x < 0.2 && y > -1.2 && y < 1.2) {
+        // This nested `if` condition *should* be part of the outer
+        // `if` condition, but clang on Mac OS 13 doesn't seem to
+        // short-circuit the evaluation correctly and generates an
+        // overflow when x and y are sufficiently large.
+        if (fabs(x*(2.0 + x) + y*y) < 0.4) {
+            // The input is close to the unit circle centered at -1+0j.
+            // Use double-double to evaluate the real part of the result.
+            lnr = 0.5*log1p(foo(x, y));
+        }
+        else {
+            lnr = log(hypot(x + 1, y));
+        }
     }
     else {
         lnr = log(hypot(x + 1, y));
