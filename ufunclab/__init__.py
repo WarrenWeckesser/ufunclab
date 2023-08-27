@@ -22,6 +22,7 @@ from ._multivariate_logbeta import multivariate_logbeta
 from ._means import gmean, hmean
 from ._meanvar import meanvar
 from ._corr import pearson_corr
+from ._wjaccard import wjaccard
 from ._mad import mad, rmad, gini
 from ._vnorm import vnorm, rms, vdot
 from ._tri_area import tri_area
@@ -46,7 +47,7 @@ from . import semivar
 import numpy as _np
 
 
-__version__ = "0.0.7.dev13"
+__version__ = "0.0.7.dev14"
 
 
 class op:

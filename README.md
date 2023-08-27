@@ -93,6 +93,7 @@ that can be found in `tools/cxxgen`.
 | [`vnorm`](#vnorm)                               | Vector norm                                           |
 | [`vdot`](#vdot)                                 | Vector dot product for real floating point arrays     |
 | [`pearson_corr`](#pearson_corr)                 | Pearson's product-moment correlation coefficient      |
+| [`wjaccard`](#wjaccard)                         | Weighted Jaccard index.                               |
 | [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                             | 3-d vector cross product                              |
 | [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
@@ -1356,7 +1357,6 @@ array([ 8., 15.])
 array([ 3.,  5., 15.])
 ```
 
-
 #### `pearson_corr`
 
 `pearson_corr(x, y)` computes Pearson's product-moment correlation coefficient.
@@ -1387,6 +1387,23 @@ giving a result with shape (3, 2).
 array([[-0.92758645, -0.76815464],
        [-0.65015428, -0.53015896],
        [-0.43575108, -0.32925148]])
+```
+
+#### `wjaccard`
+
+`wjaccard` is a gufunc with shape signature `(n),(n)->()` that computes
+the weighted Jaccard index, which is defined to be
+
+    Jw(x, y) = min(x, y).sum() / max(x, y).sum()
+
+```
+>>> import numpy as np
+>>> from ufunclab import wjaccard
+
+>>> x = np.array([0.9, 1.0, 0.7, 0.0, 0.8, 0.6])
+>>> y = np.array([0.3, 1.0, 0.9, 0.6, 1.0, 0.2])
+>>> wjaccard(x, y)
+0.6
 ```
 
 #### `cross2`

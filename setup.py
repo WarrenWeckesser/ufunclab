@@ -185,6 +185,13 @@ def configuration(parent_package='', top_path=None):
                                   for name in _corr_srcs],
                          **npymath_info)
 
+    _wjaccard_srcs = ['wjaccard_gufunc.h', '_wjaccardmodule.cxx']
+    config.add_extension('ufunclab._wjaccard',
+                         extra_compile_args=cpp_compile_args,
+                         sources=[join('src', 'wjaccard', name)
+                                  for name in _wjaccard_srcs],
+                         **npymath_info)
+
     _mad_srcs = ['mad_gufunc.h', '_madmodule.cxx']
     config.add_extension('ufunclab._mad',
                          extra_compile_args=cpp_compile_args,
@@ -318,7 +325,8 @@ if __name__ == "__main__":
 
     generate_cxx_gufunc_extmods(['all_same', 'corr', 'mad', 'meanvar',
                                  'minmax', 'multivariate_logbeta',
-                                 'sosfilter', 'tri_area', 'vnorm'])
+                                 'sosfilter', 'tri_area', 'vnorm',
+                                 'wjaccard'])
 
     setup(name='ufunclab',
           version=get_version(),
