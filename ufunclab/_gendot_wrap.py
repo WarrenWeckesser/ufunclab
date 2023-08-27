@@ -3,7 +3,7 @@ import numpy as np
 from ._gendot import _gendot
 
 
-longdouble_code, longcomplex_code = (
+longdouble_code, clongdouble_code = (
     (12, 15) if np.dtype('g') == np.dtype('d') else (13, 16)
 )
 
@@ -25,7 +25,7 @@ reverse_typedict = {
     np.longdouble: longdouble_code,
     np.complex64: 14,
     np.complex128: 15,
-    np.longcomplex: longcomplex_code,
+    np.clongdouble: clongdouble_code,
     np.object_: 17,
     np.bytes_: 18,
     np.str_: 19,
