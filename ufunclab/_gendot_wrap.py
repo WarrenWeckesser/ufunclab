@@ -166,8 +166,10 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
                           for chars in typechars],
                          dtype=np.uint8)
     loop_indices = np.array(loop_indices, dtype=np.uint8)
-    sumfunc_identity_array = np.zeros((len(typechars), np.dtype('G').itemsize),
-                                      dtype=np.uint8)
+    # XXX FIXME: The hardcoded constant 32 in the following must match
+    # the size of the sumfunc_identity_buffer field of gendot_data_t in
+    # gendotmodule.c.
+    sumfunc_identity_array = np.zeros((len(typechars), 32), dtype=np.uint8)
     sumfunc_has_identity = False
     if sumfunc.identity is not None:
         sumfunc_has_identity = True
