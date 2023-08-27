@@ -3,12 +3,11 @@ name: tests
 on: [push, pull_request]
 
 jobs:
-  tests:
+  test-ubuntu-latest:
     strategy:
       matrix:
         python-version: ['3.11', '3.10', '3.9', '3.8']
         numpy-version: ['1.20.3', '1.21.6', '1.22.4', '1.23.5', '1.24.4', '1.25.2']
-        os: [ubuntu-latest, macos-12]
         exclude:
         - python-version: '3.8'
           numpy-version: '1.25.2'
@@ -21,7 +20,49 @@ jobs:
         - python-version: '3.11'
           numpy-version: '1.22.4'
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip wheel
+        python -m pip install --upgrade setuptools
+        python -m pip install pytest
+        python -m pip install numpy==${{ matrix.numpy-version }}
+    - name: Install ufunclab
+      run: |
+        python -m pip install .
+    - name: Test with pytest
+      run: |
+        cd ../..
+        pwd
+        export LOCATION=`python -c "import ufunclab, os; print(os.path.dirname(ufunclab.__file__))"`
+        echo $LOCATION
+        python -m pytest $LOCATION
+
+  test-macos-12:
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.10', '3.9', '3.8']
+        numpy-version: ['1.20.3', '1.21.6', '1.22.4', '1.23.5', '1.24.4', '1.25.2']
+        exclude:
+        - python-version: '3.8'
+          numpy-version: '1.25.2'
+        - python-version: '3.10'
+          numpy-version: '1.20.3'
+        - python-version: '3.11'
+          numpy-version: '1.20.3'
+        - python-version: '3.11'
+          numpy-version: '1.21.6'
+        - python-version: '3.11'
+          numpy-version: '1.22.4'
+
+    runs-on: macos-12
 
     steps:
     - uses: actions/checkout@v3
