@@ -1,15 +1,23 @@
 try:
     import tomllib as toml
+
+    def myload(filename):
+        with open(filename, 'rb') as f:
+            proj = toml.load(f)
+        return proj
+
 except Exception:
     import toml
+
+    def myload(filename):
+        return toml.load(filename)
 
 
 def get_version_from_pyproject_toml(filename):
     """
     Find the value assigned to __version__ in pyproject.toml
     """
-    with open(filename, 'rb') as f:
-        proj = toml.load(f)
+    proj = myload(filename)
     return proj['project']['version']
 
 
