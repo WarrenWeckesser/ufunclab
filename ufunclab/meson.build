@@ -54,7 +54,8 @@ gufunc_cxx_src_dirs = [
     'multivariate_logbeta',
     'sosfilter',
     'tri_area',
-    'vnorm'
+    'vnorm',
+    'wjaccard'
 ]
 
 foreach src_dir : gufunc_cxx_src_dirs
