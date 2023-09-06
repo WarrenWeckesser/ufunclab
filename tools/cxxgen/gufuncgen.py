@@ -116,7 +116,7 @@ _include = """
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
-#include "../util/ufunc_tools.h"
+#include "../src/util/ufunc_tools.h"
 
 """
 
@@ -349,7 +349,7 @@ def create_c_docstring_def(name, docstring):
     return '\n'.join(text)
 
 
-def gen(extmod):
+def gen(extmod, srcpath):
     """
     Generate C++ code to implement a gufunc.  The core operation of the
     gufunc must be implemented separately as C++ templated functions.
@@ -523,4 +523,11 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
     text.append('    return module;')
     text.append('}')
 
-    return '\n'.join(text)
+
+    from os import path
+    print(f"{path.abspath(path.curdir) = }")
+
+    headers = {header_file: open(path.join(srcpath, header_file), 'r').read()
+               for header_file in header_files}
+
+    return '\n'.join(text), headers

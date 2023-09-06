@@ -64,4 +64,5 @@ erfcx_funcs = [
 
 extmods = [ExtMod(modulename='normal',
                   funcs={'normal.h': normal_funcs,
-                         'erfcx_funcs.h': erfcx_funcs})]
+                         'erfcx_funcs.h': erfcx_funcs},
+                  extra_sources=['erfcx_funcs.cxx'])]

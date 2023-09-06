@@ -53,6 +53,16 @@ def typesig_to_ext(typesig):
 
 
 def header_to_concrete_filenames(header):
+    """
+    Generate the "concrete" header and source filenames from the
+    given header.
+
+    Examples
+    --------
+    >>> header_to_concrete_filenames('foo.h')
+    ('foo_concrete.h', 'foo_concrete.cxx')
+
+    """
     root, ext = path.splitext(header)
     ext = ext.lstrip(path.extsep)
     if ext not in ['h', 'hh', 'hpp', 'h++']:

@@ -9,7 +9,7 @@
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
 
-#include "../util/strided.hpp"
+#include "../src/util/strided.hpp"
 
 
 template<typename T>

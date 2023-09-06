@@ -72,3 +72,4 @@ class Func:
 class ExtMod:
     modulename: str
     funcs: List[Func]
+    extra_sources: List[str] = None

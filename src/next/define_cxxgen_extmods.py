@@ -28,4 +28,4 @@ next_funcs = [
 ]
 
 extmods = [ExtMod(modulename='_next',
-                  funcs={'next_funcs.h': next_funcs})]
+                  funcs={'next.h': next_funcs})]

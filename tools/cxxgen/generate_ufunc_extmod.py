@@ -110,20 +110,21 @@ preamble = """
     """
 
 
-def generate_ufunc_extmod(cxxgenpath, extmod):
+def generate_ufunc_extmod(cxxgenpath, extmod, destdir):
     """
     The C implementation of the extension module is written
-    to the file `modulename + 'module.cxx'`.
+    to the file `modulename + '.cxx'` in the directory
+    given by `destdir`.
     """
     modulename = extmod.modulename
-    extmod_filename = modulename + 'module.cxx'
-    if path.exists(extmod_filename):
-        raise RuntimeError(f"file '{extmod_filename} already exists.")
+    extmod_filename = modulename + '.cxx'
 
-    gendir = path.join(cxxgenpath, 'generated')
-    if not path.exists(gendir):
-        os.mkdir(gendir)
-    extmod_fullpath = path.join(gendir, extmod_filename)
+    #gendir = path.join(cxxgenpath, 'generated')
+    #if not path.exists(gendir):
+    #    os.mkdir(gendir)
+    extmod_fullpath = path.join(destdir, extmod_filename)
+    if path.exists(extmod_fullpath):
+        raise RuntimeError(f"file '{extmod_fullpath} already exists.")
 
     all_ufunc_names = [f.ufuncname for f in sum(extmod.funcs.values(), [])]
 
@@ -151,7 +152,9 @@ def generate_ufunc_extmod(cxxgenpath, extmod):
 """, file=f)
 
         for header, funcs in extmod.funcs.items():
-            concrete_header, concrete_filename = header_to_concrete_filenames(header)
+            # Get the header name only.
+            concrete_header = header_to_concrete_filenames(header)[0]
+
             print(f'#include "{concrete_header}"', file=f)
             print(file=f)
             for func in funcs:

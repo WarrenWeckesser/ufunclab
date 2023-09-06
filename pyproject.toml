@@ -1,0 +1,22 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = [
+    'meson-python>=0.14.0',
+    'toml',
+    'numpy',
+]
+
+[project]
+name = 'ufunclab'
+version = '0.0.8.dev0'
+description = 'NumPy ufuncs and utilities.'
+readme = 'README.md'
+requires-python = '>=3.9'
+license = {file = 'LICENSE.txt'}
+authors = [
+  {name = 'Warren Weckesser', email = 'warren.weckesser+ufunclab@gmail.com'},
+]
+# TODO: Determine minimum numpy version.
+dependencies = [
+    'numpy'
+]

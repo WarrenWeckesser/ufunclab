@@ -22,13 +22,28 @@ extern "C" {{
 """
 
 
-def generate_concrete_cfuncs(cxxgenpath, header, funcs):
+def generate_concrete_cfuncs(cxxgenpath, header, funcs, destdir):
+    """
+    Generate C++ files that contain functions that are the C implementations
+    of the templated functions in the file `header`.  These are the functions
+    that will be called from within the ufunc loops generated in the extension
+    module.
+
+    `funcs` must be a sequence of `ufunc_config_types.Func` objects
+    (see ufunclab/tools/cxxgen/ufunc_config_types.py).
+
+    The output files are written to the directory `destdir`.
+    """
+    # Generate filenames for the concrete instantiations, e.g. if header is
+    # 'foo.h', cxxheader will be 'foo_concrete.h' and cxxfilename will be
+    # 'foo_concrete.cxx'.
     cxxheader, cxxfilename = header_to_concrete_filenames(header)
-    gendir = path.join(cxxgenpath, 'generated')
-    if not path.exists(gendir):
-        os.mkdir(gendir)
-    cxxheader_fullpath = path.join(gendir, cxxheader)
-    cxxfilename_fullpath = path.join(gendir, cxxfilename)
+
+    # gendir = path.join(cxxgenpath, 'generated')
+    # if not path.exists(gendir):
+    #     os.mkdir(gendir)
+    cxxheader_fullpath = path.join(destdir, cxxheader)
+    cxxfilename_fullpath = path.join(destdir, cxxfilename)
 
     for filename in [cxxfilename_fullpath, cxxheader_fullpath]:
         if filename.endswith('.h'):

@@ -70,4 +70,4 @@ step_funcs = [
 ]
 
 extmods = [ExtMod(modulename='_step',
-                  funcs={'step_funcs.h': step_funcs})]
+                  funcs={'step.h': step_funcs})]

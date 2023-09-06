@@ -46,8 +46,7 @@ from . import semivar
 
 import numpy as _np
 
-
-__version__ = "0.0.7.dev14"
+from ._version import __version__
 
 
 class op:

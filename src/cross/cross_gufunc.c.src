@@ -16,7 +16,7 @@
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
 
-#include "../util/ufunc_tools.h"
+#include "../src/util/ufunc_tools.h"
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,7 +51,7 @@ static void cross3_@typename@_loop(char **args, const npy_intp *dimensions,
     char *pout = args[2];
     npy_intp nloops = dimensions[0];
 
-    assert(dimensions[1] = 3);
+    assert(dimensions[1] == 3);
 
     for (int j = 0; j < nloops; ++j, pu += steps[0], pv += steps[1],
                                      pout += steps[2]) {
@@ -149,7 +149,7 @@ static void cross3_object_loop(char **args, const npy_intp *dimensions,
     char *pout = args[2];
     npy_intp nloops = dimensions[0];
 
-    assert(dimensions[1] = 3);
+    assert(dimensions[1] == 3);
 
     for (int j = 0; j < nloops; ++j, pu += steps[0], pv += steps[1],
                                      pout += steps[2]) {
