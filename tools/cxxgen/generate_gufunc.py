@@ -34,7 +34,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cxxgendefpath = path.join(args.path)
-    with open(f'/home/warren/mylog.txt', 'a') as f:
-        f.write(cxxgendefpath)
-        f.write('\n')
     generate_gufunc(cxxgendefpath, args.destdir)
