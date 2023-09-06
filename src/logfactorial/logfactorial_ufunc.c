@@ -20,10 +20,10 @@
 // Given the nature of this function, there is no point in creating loops
 // for floating point inputs.  We *could* create loops for all the other
 // integers, but to do that we should use the template processing provided
-// by numpy.distutils.  As this ufunc is intended to be a tutorial, we'll
-// keep it simple and provide just the two loops, coded up explicitly here.
-// That is also why some of the convenience macros provided in the NumPy
-// header files are not used.
+// by tools/conv_template.py (formerly supplied by numpy distutils).  As
+// this ufunc is intended to be a tutorial, we'll  keep it simple and provide
+// just the two loops, coded up explicitly here.  That is also why some of
+// the convenience macros provided in the NumPy header files are not used.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 static void logfactorial_int32_loop(char **args, const npy_intp *dimensions,
