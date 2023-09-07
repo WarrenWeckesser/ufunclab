@@ -18,7 +18,7 @@
 #include "numpy/ndarraytypes.h"
 #include "numpy/ufuncobject.h"
 
-#if (!defined(CMPLX) && defined(__WIN32_))
+#if (!defined(CMPLX) && defined(__WIN32__))
 #define CMPLX(x, y) _Cbuild(x, y)
 #endif
 
