@@ -19,6 +19,15 @@
 #include "numpy/ufuncobject.h"
 
 //
+// We are using C99, so define our own version of CMPLX(x, y)
+// if it is not provided by the compiler.
+// After switching to C11, this macro must be removed.
+//
+#ifndef CMPLX
+#define CMPLX(x, y) ((x) + (y)*_Imaginary_I)
+#endif
+
+//
 // Compute log1p(z) using an implementation that is based on
 // Theorem 4 of David Goldberg's paper "What every computer
 // scientist should know about floating-point arithmetic".
