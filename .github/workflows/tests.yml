@@ -35,7 +35,9 @@ jobs:
 
     - name: Build
       run: |
-        pip -v install --no-build-isolation .
+        meson setup build
+        ninja -v -j 1 -C build
+        # pip -v install --no-build-isolation .
 
     #- name: Test
     #  run: |
