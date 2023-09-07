@@ -40,30 +40,32 @@ Compute the maximum and index of the maximum of the input.
 
 argmin_core = UFuncSource(
     funcname='argmin_core',
-    typesignatures=['b->l', 'B->l',
-                    'h->l', 'H->l',
-                    'i->l', 'I->l',
-                    'l->l', 'L->l',
-                    'f->l', 'd->l', 'g->l'],
+    typesignatures=['b->p', 'B->p',
+                    'h->p', 'H->p',
+                    'i->p', 'I->p',
+                    'l->p', 'L->p',
+                    'q->p', 'Q->p',
+                    'f->p', 'd->p', 'g->p'],
 )
 
 argmin_object_core = UFuncSource(
     funcname='argmin_object_core',
-    typesignatures=['O->l'],
+    typesignatures=['O->p'],
 )
 
 argmax_core = UFuncSource(
     funcname='argmax_core',
-    typesignatures=['b->l', 'B->l',
-                    'h->l', 'H->l',
-                    'i->l', 'I->l',
-                    'l->l', 'L->l',
-                    'f->l', 'd->l', 'g->l'],
+    typesignatures=['b->p', 'B->p',
+                    'h->p', 'H->p',
+                    'i->p', 'I->p',
+                    'l->p', 'L->p',
+                    'q->p', 'Q->p',
+                    'f->p', 'd->p', 'g->p'],
 )
 
 argmax_object_core = UFuncSource(
     funcname='argmax_object_core',
-    typesignatures=['O->l'],
+    typesignatures=['O->p'],
 )
 
 minmax_core = UFuncSource(
@@ -72,6 +74,7 @@ minmax_core = UFuncSource(
                     'h->h', 'H->H',
                     'i->i', 'I->I',
                     'l->l', 'L->L',
+                    'q->q', 'Q->Q',
                     'f->f', 'd->d', 'g->g'],
 )
 
@@ -82,44 +85,47 @@ minmax_object_core = UFuncSource(
 
 argminmax_core = UFuncSource(
     funcname='argminmax_core',
-    typesignatures=['b->l', 'B->l',
-                    'h->l', 'H->l',
-                    'i->l', 'I->l',
-                    'l->l', 'L->l',
-                    'f->l', 'd->l', 'g->l'],
+    typesignatures=['b->p', 'B->p',
+                    'h->p', 'H->p',
+                    'i->p', 'I->p',
+                    'l->p', 'L->p',
+                    'q->p', 'Q->p',
+                    'f->p', 'd->p', 'g->p'],
 )
 
 argminmax_object_core = UFuncSource(
     funcname='argminmax_object_core',
-    typesignatures=['O->l'],
+    typesignatures=['O->p'],
 )
 
 min_argmin_core = UFuncSource(
     funcname='min_argmin_core',
-    typesignatures=['b->bl', 'B->Bl',
-                    'h->hl', 'H->Hl',
-                    'i->il', 'I->Il',
-                    'l->ll', 'L->Ll',
-                    'f->fl', 'd->dl', 'g->gl'],
+    typesignatures=['b->bp', 'B->Bp',
+                    'h->hp', 'H->Hp',
+                    'i->ip', 'I->Ip',
+                    'l->lp', 'L->Lp',
+                    'q->qp', 'Q->Qp',
+                    'f->fp', 'd->dp', 'g->gp'],
 )
 
 min_argmin_object_core = UFuncSource(
     funcname='min_argmin_object_core',
-    typesignatures=['O->Ol'],
+    typesignatures=['O->Op'],
 )
 
 max_argmax_core = UFuncSource(
     funcname='max_argmax_core',
-    typesignatures=['b->bl', 'B->Bl',
-                    'h->hl', 'H->Hl',
-                    'i->il', 'I->Il',
-                    'l->ll', 'L->Ll',
-                    'f->fl', 'd->dl', 'g->gl'],
+    typesignatures=['b->bp', 'B->Bp',
+                    'h->hp', 'H->Hp',
+                    'i->ip', 'I->Ip',
+                    'l->lp', 'L->Lp',
+                    'q->qp', 'Q->Qp',
+                    'f->fp', 'd->dp', 'g->gp'],
 )
 
 max_argmax_object_core = UFuncSource(
     funcname='max_argmax_object_core',
-    typesignatures=['O->Ol'],
+    typesignatures=['O->Op'],
 )
 
 argmin_ufunc = UFunc(
