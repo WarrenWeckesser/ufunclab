@@ -35,7 +35,7 @@ jobs:
 
     - name: Build
       run: |
-        pip install .
+        pip -v install .
 
     #- name: Test
     #  run: |
