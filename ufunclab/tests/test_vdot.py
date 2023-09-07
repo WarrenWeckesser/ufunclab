@@ -4,7 +4,7 @@ from numpy.testing import assert_array_equal
 from ufunclab import vdot
 
 
-@pytest.mark.parametrize('dtype', [np.float32, np.float64]) #, np.longdouble])
+@pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_single(dtype):
     if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
         pytest.skip('longdouble is double')
@@ -15,7 +15,7 @@ def test_single(dtype):
     assert d == 32.0
 
 
-@pytest.mark.parametrize('dtype', [np.float32, np.float64]) #, np.longdouble])
+@pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_basic_arrays(dtype):
     if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
         pytest.skip('longdouble is double')

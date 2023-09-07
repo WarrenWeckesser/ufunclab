@@ -19,11 +19,11 @@ that is less than x.
 next_funcs = [
     Func(cxxname='NextFunctions::next_greater',
          ufuncname='next_greater',
-         types=['f->f', 'd->d'], # 'g->g'],
+         types=['f->f', 'd->d', 'g->g'],
          docstring=next_greater_docstring),
     Func(cxxname='NextFunctions::next_less',
          ufuncname='next_less',
-         types=['f->f', 'd->d'], #, 'g->g'],
+         types=['f->f', 'd->d', 'g->g'],
          docstring=next_less_docstring),
 ]
 

@@ -38,7 +38,7 @@ array([-0.75, -0.5 , -0.25,  0.  ,  0.  ,  0.15,  0.4 ])
 funcs = [
     Func(cxxname='deadzone',
          ufuncname='deadzone',
-         types=['fff->f', 'ddd->d'], # 'ggg->g'],
+         types=['fff->f', 'ddd->d', 'ggg->g'],
          docstring=deadzone_docstring),
 ]
 

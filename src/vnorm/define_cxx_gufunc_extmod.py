@@ -46,12 +46,12 @@ Vector dot product of the real floating point arrays x and y.
 
 vnorm_src_real = UFuncSource(
     funcname='vnorm_core_calc',
-    typesignatures=['ff->f', 'dd->d'], #, 'gg->g'],
+    typesignatures=['ff->f', 'dd->d', 'gg->g'],
 )
 
 vnorm_src_cplx = UFuncSource(
     funcname='cvnorm_core_calc',
-    typesignatures=['Ff->f', 'Dd->d'], #, 'Gg->g'],
+    typesignatures=['Ff->f', 'Dd->d', 'Gg->g'],
 )
 
 vnorm = UFunc(
@@ -64,12 +64,12 @@ vnorm = UFunc(
 
 rms_src_real = UFuncSource(
     funcname='rms_core_calc',
-    typesignatures=['f->f', 'd->d'], # 'g->g'],
+    typesignatures=['f->f', 'd->d', 'g->g'],
 )
 
 rms_src_cplx = UFuncSource(
     funcname='crms_core_calc',
-    typesignatures=['F->f', 'D->d'], # 'G->g'],
+    typesignatures=['F->f', 'D->d', 'G->g'],
 )
 
 rms = UFunc(
@@ -83,7 +83,7 @@ rms = UFunc(
 
 vdot_src_real = UFuncSource(
     funcname='vdot_core_calc',
-    typesignatures=['ff->f', 'dd->d'], # 'gg->g'],
+    typesignatures=['ff->f', 'dd->d', 'gg->g'],
 )
 
 vdot = UFunc(

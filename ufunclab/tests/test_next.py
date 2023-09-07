@@ -7,7 +7,7 @@ from ufunclab import next_greater, next_less
 
 @pytest.mark.parametrize('func, to', [(next_greater, np.inf),
                                       (next_less, -np.inf)])
-@pytest.mark.parametrize('dtype', [np.float32, np.float64]) #, np.longdouble])
+@pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_next_greater(func, to, dtype):
     x = np.array([-np.inf, -1234.5, -1.0, 0, 1.0, 1000, np.inf, np.nan],
                  dtype=dtype)
