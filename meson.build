@@ -10,7 +10,7 @@ project(
 )
 
 # Hack attempt to fix Windows build on CI.
-add_global_arguments('-Wl,allow-multiple-definitiions', language : 'cpp')
+add_global_arguments('-Wl,--allow-multiple-definitiions', language : 'cpp')
 
 cc = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
