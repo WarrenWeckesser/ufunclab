@@ -22,16 +22,16 @@ jobs:
 
     - name: Install rtools (mingw-w64)
       run: |
-        choco install rtools -y --no-progress --force --version=4.3.5550
-        echo "c:\rtools43\ucrt64\bin;" >> $env:GITHUB_PATH
+        choco install rtools -y --no-progress --force --version=4.0.0.20220206
+        echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
 
     - name: Show gcc version
       run: |
         gcc --version
 
-    - name: Install Python depedencies
+    - name: Install Python dependencies
       run: |
-        pip install numpy==1.22.4 meson ninja meson-python pytest
+        pip install numpy==1.22.4 meson ninja meson-python pytest toml
 
     - name: Build
       run: |
