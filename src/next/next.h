@@ -1,3 +1,6 @@
+#ifndef NEXT_H
+#define NEXT_H
+
 #include <cmath>
 
 
@@ -18,3 +21,5 @@ T next_less(T x)
 }
 
 }  // namespace NextFunctions
+
+#endif
