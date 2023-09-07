@@ -24,7 +24,7 @@
 // After switching to C11, this macro must be removed.
 //
 #ifndef CMPLX
-#define CMPLX(x, y) ((x) + (y)*_Imaginary_I)
+#define CMPLX(x, y) ((x) + (y)*_Complex_I)
 #endif
 
 //
