@@ -7,7 +7,7 @@ exponential(h, nugget, sill, rng, /, ...)
 
 Exponential semivariogram:
 
-    γ(h) = N + (S - N)*(1 - exp(-3*h/R))
+    g(h) = N + (S - N)*(1 - exp(-3*h/R))
 
 where N is the nugget, S is the sill and R is the range.
 
@@ -37,8 +37,8 @@ linear(h, nugget, sill, rng, /, ...)
 
 Linear semivariogram:
 
-    γ(h) = N + ((S - N)/R)*h   for h < R
-    γ(h) = S                   for h >= R
+    g(h) = N + ((S - N)/R)*h   for h < R
+    g(h) = S                   for h >= R
 
 where N is the nugget, S is the sill and R is the range.
 
@@ -67,10 +67,10 @@ spherical(h, nugget, sill, rng, /, ...)
 
 Spherical semivariogram:
 
-    γ(h) = N + (S - N)*(ρ/2)*(3 - ρ**2)  for h < R
-    γ(h) = S                             for h >= R
+    g(h) = N + (S - N)*(r/2)*(3 - r**2)  for h < R
+    g(h) = S                             for h >= R
 
-where ρ = h/range, N is the nugget, S is the sill and R is the range.
+where r = h/range, N is the nugget, S is the sill and R is the range.
 
 Parameters
 ----------
