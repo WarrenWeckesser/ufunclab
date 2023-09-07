@@ -1,3 +1,6 @@
+#ifndef TRAPEZOID_PULSE_H
+#define TRAPEZOID_PULSE_H
+
 #include <cmath>
 
 template<typename T>
@@ -23,3 +26,5 @@ T trapezoid_pulse(T x, T a, T b, T c, T d, T amp)
     }
     return result;
 }
+
+#endif

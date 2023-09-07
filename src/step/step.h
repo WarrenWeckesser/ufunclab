@@ -1,3 +1,6 @@
+#ifndef STEP_H
+#define STEP_H
+
 #include <cmath>
 
 
@@ -116,3 +119,5 @@ T smoothstep5(T x, T a, T b, T fa, T fb)
 }
 
 }  // namespace StepFunctions
+
+#endif

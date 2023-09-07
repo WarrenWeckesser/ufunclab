@@ -1,3 +1,6 @@
+#ifndef LOGISTIC_H
+#define LOGISTIC_H
+
 #include <cmath>
 
 
@@ -32,3 +35,5 @@ T swish(T x, T beta)
 {
     return x * logistic(beta * x);
 }
+
+#endif

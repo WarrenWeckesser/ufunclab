@@ -1,3 +1,5 @@
+#ifndef ABS_SQUARED_H
+#define ABS_SQUARED_H
 
 #include <complex>
 
@@ -12,3 +14,5 @@ T abs_squared(std::complex<T> z)
 {
     return z.real()*z.real() + z.imag()*z.imag();
 }
+
+#endif

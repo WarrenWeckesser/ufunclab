@@ -1,3 +1,6 @@
+#ifndef RAMP_H
+#define RAMP_H
+
 #include <cmath>
 
 
@@ -99,3 +102,5 @@ T exponential_ramp(T x, T a)
         return a*std_exponential_ramp(x/a);
     }
 }
+
+#endif

@@ -1,3 +1,5 @@
+#ifndef DEADZONE_H
+#define DEADZONE_H
 
 template<typename T>
 T deadzone(T x, T low, T high)
@@ -12,3 +14,5 @@ T deadzone(T x, T low, T high)
         return 0;
     }
 }
+
+#endif

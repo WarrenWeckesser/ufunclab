@@ -1,3 +1,6 @@
+#ifndef EXPINT1_H
+#define EXPINT1_H
+
 #include <cmath>
 
 #define EULER 0.577215664901532860606512090082402431042159L
@@ -108,3 +111,5 @@ T logexpint1(T x)
     T s = (-1 + (2 + (-6 + (24 - 120/x)/x)/x)/x)/x;
     return -x - std::log(x) + std::log1p(s);
 }
+
+#endif

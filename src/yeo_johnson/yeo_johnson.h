@@ -1,3 +1,6 @@
+#ifndef YEO_JOHNSON_H
+#define YEO_JOHNSON_H
+
 #include <cmath>
 
 template<typename T>
@@ -52,3 +55,5 @@ T inv_yeo_johnson(T x, T lmbda)
         }
     }
 }
+
+#endif
