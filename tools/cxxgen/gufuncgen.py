@@ -1,3 +1,4 @@
+from os import path
 import numpy as np
 
 from generate_utils import typechar_to_npy_type as npy_types
@@ -522,10 +523,6 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
 """)
     text.append('    return module;')
     text.append('}')
-
-
-    from os import path
-    print(f"{path.abspath(path.curdir) = }")
 
     headers = {header_file: open(path.join(srcpath, header_file), 'r').read()
                for header_file in header_files}
