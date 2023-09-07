@@ -4,8 +4,9 @@ on: [push, pull_request]
 
 jobs:
 
-  test-windows-latest:
-    runs-on: windows-latest
+  test-windows-2019
+
+    runs-on: windows-2019
 
     steps:
     - name: Checkout
