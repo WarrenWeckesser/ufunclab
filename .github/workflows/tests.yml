@@ -42,6 +42,8 @@ jobs:
     - name: Test
       run: |
         cd ../..
+        cd
         python -c "import ufunclab, os; print(os.path.dirname(ufunclab.__file__))" > loc.txt
         set /p LOC=<loc.txt
+        echo %LOC%
         python -m pytest %LOC%
