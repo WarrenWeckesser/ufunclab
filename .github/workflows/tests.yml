@@ -39,10 +39,9 @@ jobs:
         ninja -v -j 1 -C build
         # pip -v install --no-build-isolation .
 
-    #- name: Test
-    #  run: |
-    #    cd ../..
-    #    pwd
-    #    export LOCATION=`python -c "import ufunclab, os; print(os.path.dirname(ufunclab.__file__))"`
-    #    echo $LOCATION
-    #    python -m pytest $LOCATION
+    - name: Test
+      run: |
+        cd ../..
+        python -c "import ufunclab, os; print(os.path.dirname(ufunclab.__file__))" > loc.txt
+        set /p LOC=<loc.txt
+        python -m pytest %LOC%
