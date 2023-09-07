@@ -18,6 +18,9 @@
 #include "numpy/ndarraytypes.h"
 #include "numpy/ufuncobject.h"
 
+#if (!defined(CMPLX) && defined(__WIN32_))
+#define CMPLX(x, y) _Cbuild(x, y)
+#endif
 
 //
 // Compute log1p(z) using an implementation that is based on
