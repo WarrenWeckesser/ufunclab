@@ -42,3 +42,10 @@ jobs:
     - name: Test
       run: |
         pytest --pyargs ufunclab -k abs_squared
+        pytest --pyargs ufunclab -k tri_area
+        pytest --pyargs ufunclab -k minmax
+        pytest --pyargs ufunclab -k sosfilter
+        pytest --pyargs ufunclab -k vdot
+        pytest --pyargs ufunclab -k logistic
+        pytest --pyargs ufunclab -k yeo_johnson
+        pytest --pyargs ufunclab -k normal
