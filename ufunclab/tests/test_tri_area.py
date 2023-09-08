@@ -6,6 +6,8 @@ from ufunclab import tri_area
 
 @pytest.mark.parametrize('dt', [np.float32, np.float64, np.longdouble])
 def test_all_zeros(dt):
+    if dt == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.zeros((5, 3, 4), dtype=dt)
     a = tri_area(x)
     assert_array_equal(a, np.zeros(5))
@@ -13,6 +15,8 @@ def test_all_zeros(dt):
 
 @pytest.mark.parametrize('dt', [np.float32, np.float64, np.longdouble])
 def test_basic_2d(dt):
+    if dt == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     p = np.array([[1.0, 1.0], [2.0, 1.0], [2.0, 3.0]], dtype=dt)
     a = tri_area(p)
     assert_allclose(a, 1.0, rtol=64*np.finfo(dt).eps)
