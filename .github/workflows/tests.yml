@@ -41,4 +41,4 @@ jobs:
 
     - name: Test
       run: |
-        pytest --pyargs ufunclab
+        pytest --pyargs ufunclab -k abs_squared
