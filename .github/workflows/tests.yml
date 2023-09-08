@@ -41,14 +41,4 @@ jobs:
 
     - name: Test
       run: |
-        pytest --pyargs ufunclab -k abs_squared
-        pytest --pyargs ufunclab -k fillnan1d
-        pytest --pyargs ufunclab -k logistic
-        pytest --pyargs ufunclab -k next
-        pytest --pyargs ufunclab -k normal
-        pytest --pyargs ufunclab -k sosfilter
-        pytest --pyargs ufunclab -k tri_area
-        pytest --pyargs ufunclab -k vdot
-        pytest --pyargs ufunclab -k vnorm
-        pytest --pyarge ufunclab -k wjaccard
-        pytest --pyargs ufunclab -k yeo_johnson
+        pytest --pyargs ufunclab
