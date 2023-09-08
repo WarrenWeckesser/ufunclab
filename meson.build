@@ -9,11 +9,13 @@ project(
   ],
 )
 
-# Hack attempt to fix Windows build on CI.
-add_project_link_arguments('-Wl,--allow-multiple-definition', language : 'cpp')
-
 cc = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
+
+# Hack attempt to fix Windows build on CI.
+if cpp.get_id() != 'clang'
+    add_project_link_arguments('-Wl,--allow-multiple-definition', language : 'cpp')
+endif
 
 # https://mesonbuild.com/Python-module.html
 py_mod = import('python')
