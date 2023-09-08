@@ -6,6 +6,8 @@ from ufunclab import fillnan1d
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_all_nan(dtype):
+    if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.full(10, fill_value=np.nan, dtype=dtype)
     y = fillnan1d(x)
     assert_array_equal(y, x)
@@ -13,6 +15,8 @@ def test_all_nan(dtype):
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_basic(dtype):
+    if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.array([dtype(1), dtype('nan'), dtype('nan'), dtype(4), dtype(2)])
     y = fillnan1d(x)
     expected = np.array([dtype(1), dtype(2), dtype(3), dtype(4), dtype(2)])
@@ -21,6 +25,8 @@ def test_basic(dtype):
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_basic_with_nan_ends(dtype):
+    if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.array([dtype('nan'), dtype(2), dtype(1), dtype('nan'), dtype('nan'),
                   dtype(4), dtype('nan')])
     y = fillnan1d(x)
@@ -31,6 +37,8 @@ def test_basic_with_nan_ends(dtype):
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_only_one_not_nan(dtype):
+    if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.array([dtype('nan'), dtype('nan'), dtype('nan'), dtype(4),
                   dtype('nan')])
     y = fillnan1d(x)
@@ -41,6 +49,8 @@ def test_only_one_not_nan(dtype):
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_empty(dtype):
+    if dtype == np.longdouble and np.dtype('g') == np.dtype('d'):
+        pytest.skip('longdouble is double')
     x = np.array([], dtype=dtype)
     y = fillnan1d(x)
     assert_array_equal(y, x)
