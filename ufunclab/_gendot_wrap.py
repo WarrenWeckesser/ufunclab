@@ -176,17 +176,6 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
     itemsizes = np.array([np.dtype(c[-1]).itemsize for c in typechars],
                          dtype=np.intp)  # Actually, np.uint8 would be OK.
 
-    # Remote debugging helper code...
-    for chars in typechars:
-        for c in chars:
-            print(f'{c = }')
-            typ = np.dtype(c).type
-            typstr = f'{np.dtype(c).type = }'
-            print(typstr)
-            if typ not in reverse_typedict:
-                raise RuntimeError('np.dtype(c).type is not in reverse_typedict.'
-                                   f'{c = },  {typstr}')
-
     typecodes = np.array([[reverse_typedict[np.dtype(c).type] for c in chars]
                           for chars in typechars],
                          dtype=np.uint8)
