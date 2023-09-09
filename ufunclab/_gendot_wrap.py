@@ -10,8 +10,10 @@ longdouble_code, clongdouble_code = (
 intc_size = np.dtype('i').itemsize
 if intc_size == 4:
     intc_code = 5    # np.int32
+    uintc_code = 6   # np.uint32
 elif intc_size == 8:
     intc_code = 7    # np.int64
+    uintc_code = 8   # np.uint64
 else:
     raise RuntimeError("Unsupported platform: np.dtype('i').itemsize = "
                        f"{intc_size}")
@@ -29,6 +31,7 @@ reverse_typedict = {
     np.longlong: 9,
     np.ulonglong: 10,
     np.intc: intc_code,
+    np.uintc: uintc_code,
     np.float16: 23,
     np.float32: 11,
     np.float64: 12,
