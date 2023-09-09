@@ -5,6 +5,9 @@
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
+#ifdef __clang__
+#include <cfenv>
+#endif
 #include <cstdlib>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
@@ -109,34 +112,26 @@ static void gini_core(
         T *p_out               // pointer to out
 )
 {
-    if (n == 0) {
-        *p_out = NAN;
-        return;
-    }
-
     T sum, total;
     if (unnormalized_mad(n, p_x, x_stride, sum, total) != 0) {
         return;
     }
 
-    npy_intp m;
+    T denom = (*p_unbiased) ? (n - 1)*total : n*total;
 
-    if (*p_unbiased) {
-        m = n - 1;
+    if (sum == 0 && denom == 0) {
+        *p_out = NAN;
+#ifdef __clang__
+        feclearexcept(FE_INVALID);
+#endif
     }
     else {
-        m = n;
-    }
-    if (total == 0 || m == 0) {
-        if (sum != 0) {
+        if (denom == 0) {
             *p_out = INFINITY;
         }
         else {
-            *p_out = NAN;
+            *p_out = sum / denom;
         }
-    }
-    else {
-        *p_out = sum / m / total;
     }
 }
 
@@ -156,7 +151,9 @@ static void rmad_core(
 {
     // RMAD is twice the Gini index.
     gini_core(n, p_x, x_stride, p_unbiased, p_out);
-    *p_out *= 2;
+    if (!isnan(*p_out)) {
+        *p_out *= 2;
+    }
 }
 
 #endif

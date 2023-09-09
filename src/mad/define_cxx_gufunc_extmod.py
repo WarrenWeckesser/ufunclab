@@ -33,6 +33,7 @@ mad_ufunc = UFunc(
     docstring=MAD_DOCSTRING,
     signature='(n),()->()',
     sources=[mad_core_ufunc_src],
+    nonzero_coredims = ['n'],
 )
 
 
@@ -47,6 +48,7 @@ rmad_ufunc = UFunc(
     docstring=RMAD_DOCSTRING,
     signature='(n),()->()',
     sources=[rmad_core_ufunc_src],
+    nonzero_coredims = ['n'],
 )
 
 
@@ -61,6 +63,7 @@ gini_ufunc = UFunc(
     docstring=GINI_DOCSTRING,
     signature='(n),()->()',
     sources=[gini_core_ufunc_src],
+    nonzero_coredims = ['n'],
 )
 
 
