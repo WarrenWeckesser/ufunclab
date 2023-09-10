@@ -17,6 +17,12 @@ if cpp.get_id() != 'clang'
     add_project_link_arguments('-Wl,--allow-multiple-definition', language : 'cpp')
 endif
 
+# We need -lm for all C code.
+m_dep = cc.find_library('m', required : false)
+if m_dep.found()
+  add_project_link_arguments('-lm', language : 'c')
+endif
+
 # https://mesonbuild.com/Python-module.html
 py_mod = import('python')
 py3 = py_mod.find_installation(pure: false)
