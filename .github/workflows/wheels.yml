@@ -1,0 +1,37 @@
+name: Build and test
+
+on: [push, pull_request]
+
+jobs:
+  build_and_test_wheels:
+
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macOS-11]
+        python-version: ['3.9', '3.10', '3.11']
+
+    name: Build wheel on ${{ matrix.os }} for Python ${{ matrix.python-version }}
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout ufunclab
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.15.0
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: "pytest --pyargs ufunclab"
+
+      #- uses: actions/upload-artifact@v3
+      #  with:
+      #    path: ./wheelhouse/*.whl
