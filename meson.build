@@ -18,9 +18,16 @@ if cpp.get_id() != 'clang'
 endif
 
 # We need -lm for all C code.
-m_dep = cc.find_library('m', required : false)
-if m_dep.found()
+c_m_dep = cc.find_library('m', required : false)
+if c_m_dep.found()
   add_project_link_arguments('-lm', language : 'c')
+endif
+
+# C++ shouldn't need -lm, but the Windows build seems to be missing
+# 'feraiseexcept', so let's try...
+cpp_m_dep = cpp.find_library('m', required : false)
+if cpp_m_dep.found()
+  add_project_link_arguments('-lm', language : 'cpp')
 endif
 
 # https://mesonbuild.com/Python-module.html
