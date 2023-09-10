@@ -142,7 +142,7 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pip install numpy=={{ $matrix.numpy-version }} meson ninja meson-python pytest toml
+        pip install numpy==${{ matrix.numpy-version }} meson ninja meson-python pytest toml
 
     - name: Build
       run: |
