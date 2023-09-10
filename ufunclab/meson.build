@@ -78,7 +78,6 @@ foreach src_dir : gufunc_cxx_src_dirs
         [src, '../src/util/ufunc_tools.h'],
         include_directories: [inc_np],
         dependencies: [np_dep, npymath_lib],
-        link_args: ['-lm'],
         install: true,
         subdir: 'ufunclab'
     )
@@ -137,7 +136,6 @@ foreach src_dir : ufunc_cxx_src_dirs_simple
         [mod_src],
         include_directories: [inc_np],
         dependencies: [np_dep, npymath_lib],
-        link_args: ['-lm'],
         install: true,
         subdir: 'ufunclab'
     )
@@ -173,7 +171,6 @@ py3.extension_module(
     cpp_args : ['-std=c++14'],
     include_directories: [inc_np],
     dependencies: [np_dep, npymath_lib],
-    link_args: ['-lm'],
     install: true,
     subdir: 'ufunclab'
 )
