@@ -22,7 +22,7 @@ endif
 ##if c_m_dep.found()
 ##  add_project_link_arguments('-lm', language : 'c')
 ##endif
-add_project_link_arguments('-lm', language : 'c')
+##add_project_link_arguments('-lm', language : 'c')
 
 # C++ shouldn't need -lm, but the Windows build seems to be missing
 # 'feraiseexcept', so let's try...
@@ -30,7 +30,7 @@ add_project_link_arguments('-lm', language : 'c')
 ##if cpp_m_dep.found()
 ##  add_project_link_arguments('-lm', language : 'cpp')
 ##endif
-add_project_link_arguments('-lm', language : 'cpp')
+##add_project_link_arguments('-lm', language : 'cpp')
 
 # https://mesonbuild.com/Python-module.html
 py_mod = import('python')

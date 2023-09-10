@@ -78,6 +78,7 @@ foreach src_dir : gufunc_cxx_src_dirs
         [src, '../src/util/ufunc_tools.h'],
         include_directories: [inc_np],
         dependencies: [np_dep, npymath_lib],
+        link_args: ['-lm'],
         install: true,
         subdir: 'ufunclab'
     )
