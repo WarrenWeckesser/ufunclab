@@ -146,6 +146,9 @@ jobs:
 
     - name: Build
       run: |
+        # Running meson and ninja before pip is only here for debugging
+        # visibility.  Eventually those commands will be removed--all we
+        # need is pip.
         meson setup build
         ninja -v -j 1 -C build
         pip -v install --no-build-isolation .
