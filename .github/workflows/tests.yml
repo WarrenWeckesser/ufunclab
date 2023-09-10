@@ -113,6 +113,10 @@ jobs:
 
   test-windows-2019:
 
+    strategy:
+      matrix:
+        numpy-version: ['1.22.4', '1.25.2']
+
     runs-on: windows-2019
 
     steps:
@@ -138,7 +142,7 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pip install numpy==1.22.4 meson ninja meson-python pytest toml
+        pip install numpy=={{ $matrix.numpy-version }} meson ninja meson-python pytest toml
 
     - name: Build
       run: |
