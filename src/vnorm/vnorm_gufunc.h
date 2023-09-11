@@ -72,7 +72,7 @@ static void vnorm_core_calc(
             if (current_x < 0) {
                 current_x = -current_x;
             }
-            if (npy_isinf(order)) {
+            if (isinf(order)) {
                 sum = std::max(sum, current_x);
             }
             else if (order == 1) {
@@ -82,7 +82,7 @@ static void vnorm_core_calc(
                 sum += pow(current_x/maxabsx, order);
             }
         }
-        if (npy_isinf(order) | (order == 1)) {
+        if (isinf(order) | (order == 1)) {
             p_out[0] = sum;
         }
         else {
@@ -126,7 +126,7 @@ static void cvnorm_core_calc(
         for (int k = 0; k < n; ++k) {
             T current_x = get(p_x, x_stride, k);
             U mag = complex_abs(current_x);
-            if (npy_isinf(order)) {
+            if (isinf(order)) {
                 sum = fmax(sum, mag);
             }
             else if (order == 1) {
@@ -136,7 +136,7 @@ static void cvnorm_core_calc(
                 sum += pow(mag/maxmag, order);
             }
         }
-        if (npy_isinf(order) | (order == 1)) {
+        if (isinf(order) | (order == 1)) {
             p_out[0] = sum;
         }
         else {
