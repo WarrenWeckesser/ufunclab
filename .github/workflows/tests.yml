@@ -115,7 +115,9 @@ jobs:
 
     strategy:
       matrix:
-        numpy-version: ['1.22.4', '1.23.5', '1.24.4', '1.25.2']
+        # The build fails with numpy versions 1.24.4 and 1.25.2.
+        # See https://github.com/numpy/numpy/issues/24678
+        numpy-version: ['1.22.4', '1.23.5']
         os: ['windows-2019', 'windows-latest']
       fail-fast: false
 
