@@ -14,24 +14,12 @@
 #include "../src/util/strided.hpp"
 
 
-static inline npy_float
-complex_abs(npy_cfloat z) {
-    return npy_cabsf(z);
-}
-
-static inline npy_double
-complex_abs(npy_cdouble z) {
-    return npy_cabs(z);
-}
-
-#if NPY_SIZEOF_LONGDOUBLE != NPY_SIZEOF_DOUBLE
-
-static inline npy_longdouble
-complex_abs(npy_clongdouble z) {
-    return npy_cabsl(z);
-}
-
-#endif
+//
+// This macro is used to convert the numpy types npy_cfloat, np_cdouble
+// and npy_clongdouble to std::complex<float>, std::complex<double> and
+// std::complex<long double>, respectively.
+//
+#define std_complex(U, z)  (*(reinterpret_cast<std::complex<U> *>(&(z))))
 
 //
 // `vnorm_core_calc`, the C++ core function
@@ -113,7 +101,7 @@ static void cvnorm_core_calc(
 
     for (int k = 0; k < n; ++k) {
         T current_x = get(p_x, x_stride, k);
-        U mag = complex_abs(current_x);
+        U mag = abs(std_complex(U, current_x));
         if (mag > maxmag) {
             maxmag = mag;
         }
@@ -125,7 +113,7 @@ static void cvnorm_core_calc(
         U sum = 0;
         for (int k = 0; k < n; ++k) {
             T current_x = get(p_x, x_stride, k);
-            U mag = complex_abs(current_x);
+            U mag = abs(std_complex(U, current_x));
             if (isinf(order)) {
                 sum = fmax(sum, mag);
             }
