@@ -29,6 +29,8 @@ from the math module in Python 3.11.4.  See https://docs.python.org/3/license.ht
 for the Python 3.11.4 license information.
 
 The file tools/conv_template.py was copied from NumPy and modified locally.
+There is code in generate_ufunc_extmod.py that is derived from the NumPy
+function `npy_clear_floatstatus_barrier()` in the `npymath` library.
 NumPy source code is released under the BSD 3-clause license:
 
 -----

@@ -102,6 +102,7 @@ preamble = """
 
     #include <stddef.h>
     #include <stdint.h>
+    #include <fenv.h>
 
     #define NPY_NO_DEPRECATED_API NPY_API_VERSION
     #include "numpy/ndarraytypes.h"
@@ -109,6 +110,41 @@ preamble = """
     #include "numpy/ufuncobject.h"
     """
 
+clear_floatstatus_barrier_code = """
+
+//
+// The functions clear_floatstatus_barrier and clear_floatstatus
+// are derived from the function npy_clear_floatstatus() in the
+// NumPy source code.
+//
+
+static int
+clear_floatstatus_barrier(char *param)
+{
+    // Testing float status is 50-100 times faster than clearing on x86.
+    int fpstatus = fetestexcept(FE_DIVBYZERO | FE_OVERFLOW | FE_UNDERFLOW |
+                                FE_INVALID);
+
+    // By using a volatile, the compiler cannot reorder this call.
+    if (param != NULL) {
+        volatile char NPY_UNUSED(c) = *param;
+    }
+
+    if (fpstatus != 0) {
+        feclearexcept(FE_DIVBYZERO | FE_OVERFLOW | FE_UNDERFLOW | FE_INVALID);
+    }
+
+    return fpstatus;
+}
+
+static int
+clear_floatstatus()
+{
+    char x = 0;
+    return clear_floatstatus_barrier(&x);
+}
+
+"""
 
 def generate_ufunc_extmod(cxxgenpath, extmod, destdir):
     """
@@ -144,7 +180,7 @@ def generate_ufunc_extmod(cxxgenpath, extmod, destdir):
                   file=f)
         print('//', file=f)
         print(dedent(preamble), file=f)
-
+        print(clear_floatstatus_barrier_code, file=f)
         print("""
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc loop functions and data definitions.
@@ -199,8 +235,7 @@ def generate_ufunc_extmod(cxxgenpath, extmod, destdir):
                     print(f'        *(({out_ctype} *) pout) = {uname}_{ext}({args});',
                           file=f)
                     print('    }', file=f)
-                    print('    char dummy;', file=f)
-                    print('    npy_clear_floatstatus_barrier(&dummy);', file=f)
+                    print('    clear_floatstatus();', file=f)
                     print('}', file=f)
                     print(file=f)
                 print('END_EXTERN_C', file=f)
