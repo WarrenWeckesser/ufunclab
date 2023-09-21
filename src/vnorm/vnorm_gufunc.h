@@ -5,7 +5,6 @@
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
-#include <complex.h>
 #include <cmath>
 #include <algorithm>
 
@@ -16,14 +15,54 @@
 
 
 //
-// This macro is used to convert the numpy types npy_cfloat, np_cdouble
-// and npy_clongdouble to std::complex<float>, std::complex<double> and
-// std::complex<long double>, respectively.
+// Create a complex abs function that works with MSVC and
+// with compilers that have C99 complex types.
 //
 #ifdef _MSC_VER
-#define std_complex(U, z)  (*(reinterpret_cast<U _Complex *>(&(z))))
+
+#include <ccomplex>
+
+
+static inline float
+my_cabs(npy_cfloat z)
+{
+    return cabsf(*(reinterpret_cast<_Fcomplex *>(&z)));
+}
+
+static inline double
+my_cabs(npy_cdouble z)
+{
+    return cabs(*(reinterpret_cast<_Dcomplex *>(&z)));
+}
+
+static inline long double
+my_cabs(npy_clongdouble z)
+{
+    return cabsl(*(reinterpret_cast<_Lcomplex *>(&z)));
+}
+
 #else
-#define std_complex(U, z)  (*(reinterpret_cast<std::complex<U> *>(&(z))))
+
+#include <complex>
+
+static inline float
+my_cabs(npy_cfloat z)
+{
+    return std::abs(*(reinterpret_cast<std::complex<float> *>(&z)));
+}
+
+static inline double
+my_cabs(npy_cdouble z)
+{
+    return std::abs(*(reinterpret_cast<std::complex<double> *>(&z)));
+}
+
+static inline long double
+my_cabs(npy_clongdouble z)
+{
+    return std::abs(*(reinterpret_cast<std::complex<long double> *>(&z)));
+}
+
 #endif
 
 //
@@ -106,7 +145,7 @@ static void cvnorm_core_calc(
 
     for (int k = 0; k < n; ++k) {
         T current_x = get(p_x, x_stride, k);
-        U mag = abs(std_complex(U, current_x));
+        U mag = my_cabs(current_x);
         if (mag > maxmag) {
             maxmag = mag;
         }
@@ -118,7 +157,7 @@ static void cvnorm_core_calc(
         U sum = 0;
         for (int k = 0; k < n; ++k) {
             T current_x = get(p_x, x_stride, k);
-            U mag = abs(std_complex(U, current_x));
+            U mag = my_cabs(current_x);
             if (isinf(order)) {
                 sum = fmax(sum, mag);
             }
