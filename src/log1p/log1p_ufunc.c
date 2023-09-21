@@ -69,7 +69,8 @@ log1p_theorem4(double_complex z)
             // w = clog(u) * (z / (u - 1.0));
             double_complex um1 = CMPLX(creal(u) - 1.0, cimag(u));
             double_complex logu = clog(u);
-            w = TOCMPLX(_Py_c_prod(TOPY(logu), _Py_c_quot(TOPY(z), TOPY(um1))));
+            Py_complex v = _Py_c_prod(TOPY(logu), _Py_c_quot(TOPY(z), TOPY(um1)));
+            w = TOCMPLX(v);
         }
     }
     return w;
@@ -242,8 +243,8 @@ log1p_theorem4_D_D_loop(char **args, const npy_intp *dimensions,
     npy_intp out_step = steps[1];
 
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        double _Complex w;
-        double _Complex z = *(double _Complex *) in;
+        double_complex w;
+        double_complex z = *(double_complex *) in;
 
         if (isnan(creal(z)) || isnan(cimag(z))) {
             w = CMPLX(NAN, NAN);
@@ -251,7 +252,7 @@ log1p_theorem4_D_D_loop(char **args, const npy_intp *dimensions,
         else {
             w = log1p_theorem4(z);
         }
-        *((double _Complex *) out) = w;
+        *((double_complex *) out) = w;
     }
 }
 
@@ -265,8 +266,8 @@ log1p_doubledouble_D_D_loop(char **args, const npy_intp *dimensions,
     npy_intp out_step = steps[1];
 
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        double _Complex w;
-        double _Complex z = *(double _Complex *) in;
+        double_complex w;
+        double_complex z = *(double_complex *) in;
 
         if (isnan(creal(z)) || isnan(cimag(z))) {
             w = CMPLX(NAN, NAN);
@@ -274,7 +275,7 @@ log1p_doubledouble_D_D_loop(char **args, const npy_intp *dimensions,
         else {
             w = log1p_doubledouble(z);
         }
-        *((double _Complex *) out) = w;
+        *((double_complex *) out) = w;
     }
 }
 
