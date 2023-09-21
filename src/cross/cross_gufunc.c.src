@@ -30,10 +30,13 @@
 
 
 /**begin repeat
- * #typename   = int32,   int64,   float, double, longdouble,  cfloat,        cdouble,        clongdouble         #
- * #ctype      = int32_t, int64_t, float, double, long double, complex float, complex double, complex long double #
- * #msvc_ctype = int32_t, int64_t, float, double, long double, _Fcomplex,     _Dcomplex,      _Lcomplex           #
- * #msvc_cmul  =        ,        ,      ,       ,            , _FCmulcc,      _Cmulcc,        _LCmulcc            #
+ * #typename    = int32,   int64,   float, double, longdouble,  cfloat,        cdouble,        clongdouble         #
+ * #ctype       = int32_t, int64_t, float, double, long double, complex float, complex double, complex long double #
+ * #msvc_ctype  = int32_t, int64_t, float, double, long double, _Fcomplex,     _Dcomplex,      _Lcomplex           #
+ * #msvc_cmul   =        ,        ,      ,       ,            , _FCmulcc,      _Cmulcc,        _LCmulcc            #
+ * #msvc_cbuild =        ,        ,      ,       ,            , _FCbuild,      _Cbuild,        _LCbuild            #
+ * #msvc_imag   =        ,        ,      ,       ,            , cimagf,        cimag,          cimagl              #
+ * #msvc_real   =        ,        ,      ,       ,            , crealf,        creal,          creall              #
  */
 
 static void cross3_@typename@_loop(char **args, const npy_intp *dimensions,
@@ -71,17 +74,20 @@ static void cross3_@typename@_loop(char **args, const npy_intp *dimensions,
 
         p1 = @msvc_cmul@(u1, v2);
         p2 = @msvc_cmul@(u2, v1);
-        d = (@msvc_ctype@){p1.real - p2.real, p1.imag - p2.imag};
+        d = @msvc_cbuild@(@msvc_real@(p1) - @msvc_real@(p2),
+                          @msvc_imag@(p1) - @msvc_imag@(p2));
         *(@msvc_ctype@ *) pout = d;
 
         p1 = @msvc_cmul@(u2, v0);
         p2 = @msvc_cmul@(u0, v2);
-        d = (@msvc_ctype@){p1.real - p2.real, p1.imag - p2.imag};
+        d = @msvc_cbuild@(@msvc_real@(p1) - @msvc_real@(p2),
+                          @msvc_imag@(p1) - @msvc_imag@(p2));
         *(@msvc_ctype@ *) (pout + steps[5]) = d;
 
         p1 = @msvc_cmul@(u0, v1);
         p2 = @msvc_cmul@(u1, v0);
-        d = (@msvc_ctype@){p1.real - p2.real, p1.imag - p2.imag};            
+        d = @msvc_cbuild@(@msvc_real@(p1) - @msvc_real@(p2),
+                          @msvc_imag@(p1) - @msvc_imag@(p2));
         *(@msvc_ctype@ *) (pout + 2*steps[5]) = d;
 
 #else
@@ -129,7 +135,8 @@ static void cross2_@typename@_loop(char **args, const npy_intp *dimensions,
 
         p1 = @msvc_cmul@(u0, v1);
         p2 = @msvc_cmul@(u1, v0);
-        d = (@msvc_ctype@){p1.real - p2.real, p1.imag - p2.imag};
+        d = @msvc_cbuild@(@msvc_real@(p1) - @msvc_real@(p2),
+                          @msvc_imag@(p1) - @msvc_imag@(p2));
         *(@msvc_ctype@ *) pout = d;
 
 #else
