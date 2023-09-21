@@ -94,13 +94,13 @@ static void pearson_corr_core(
     if (n == 2) {
         T x0 = *p_x;
         T x1 = get(p_x, x_stride, 1);
-        if (!isfinite(x0) || !isfinite(x1) || (x0 == x1)) {
+        if (!std::isfinite(x0) || !std::isfinite(x1) || (x0 == x1)) {
             *p_out = NAN;
             return;
         } 
         T y0 = *p_y;
         T y1 = get(p_y, y_stride, 1);
-        if (!isfinite(y0) || !isfinite(y1) || (y0 == y1)) {
+        if (!std::isfinite(y0) || !std::isfinite(y1) || (y0 == y1)) {
             *p_out = NAN;
             return;
         }
