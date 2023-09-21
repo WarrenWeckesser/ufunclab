@@ -21,24 +21,22 @@
 //
 #ifdef _MSC_VER
 
-#include <ccomplex>
-
 static inline float
 my_cabs(npy_cfloat z)
 {
-    return cabsf(*(reinterpret_cast<_Fcomplex *>(&z)));
+    return std::abs(*(reinterpret_cast<std::complex<float> *>(&z)));
 }
 
 static inline double
 my_cabs(npy_cdouble z)
 {
-    return cabs(*(reinterpret_cast<_Dcomplex *>(&z)));
+    return std::abs(*(reinterpret_cast<std::complex<double> *>(&z)));
 }
 
 static inline long double
 my_cabs(npy_clongdouble z)
 {
-    return cabsl(*(reinterpret_cast<_Lcomplex *>(&z)));
+    return std::abs(*(reinterpret_cast<std::complex<long double> *>(&z)));
 }
 
 #else
