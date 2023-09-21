@@ -52,8 +52,13 @@ array([[-0.92758645, -0.76815464],
 
 pearson_corr_src = UFuncSource(
     funcname='pearson_corr_core',
+    typesignatures=['ff->f', 'dd->d', 'gg->g'],
+)
+
+pearson_corr_int_src = UFuncSource(
+    funcname='pearson_corr_int_core',
     typesignatures=['bb->d', 'BB->d', 'hh->d', 'HH->d', 'ii->d', 'II->d',
-                    'll->d', 'LL->d', 'ff->f', 'dd->d', 'gg->g'],
+                    'll->d', 'LL->d'],
 )
 
 pearson_corr_ufunc = UFunc(
@@ -61,7 +66,7 @@ pearson_corr_ufunc = UFunc(
     header='corr_gufunc.h',
     docstring=PEARSON_CORR_DOCSTRING,
     signature='(n),(n)->()',
-    sources=[pearson_corr_src],
+    sources=[pearson_corr_int_src, pearson_corr_src],
     # n must be at least 2 for the correlation coefficent to be meaningful,
     # but currently the only code-generation option is for n > 0.
     nonzero_coredims=['n'],
