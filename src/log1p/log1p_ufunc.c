@@ -48,6 +48,7 @@
 #ifdef _MSC_VER
 
 #define TOPY(z) (*(Py_complex *) &(z))
+#define TOCMPLX(z) (*(double_complex *) &(z))
 
 static double_complex
 log1p_theorem4(double_complex z)
@@ -68,7 +69,7 @@ log1p_theorem4(double_complex z)
             // w = clog(u) * (z / (u - 1.0));
             double_complex um1 = CMPLX(creal(u) - 1.0, cimag(u));
             double_complex logu = clog(u);
-            w = _Py_c_prod(TOPY(logu), _Py_c_quot(TOPY(z), TOPY(um1)));
+            w = TOCMPLX(_Py_c_prod(TOPY(logu), _Py_c_quot(TOPY(z), TOPY(um1))));
         }
     }
     return w;
@@ -198,8 +199,8 @@ foo(double x, double y)
 // This function assumes that neither part of z is nan.
 //
 
-static double _Complex
-log1p_doubledouble(double _Complex z)
+static double_complex
+log1p_doubledouble(double_complex z)
 {
     double lnr;
 
