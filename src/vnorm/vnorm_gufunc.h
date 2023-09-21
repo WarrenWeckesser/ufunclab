@@ -5,6 +5,7 @@
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
+#include <complex>
 #include <cmath>
 #include <algorithm>
 
@@ -21,7 +22,6 @@
 #ifdef _MSC_VER
 
 #include <ccomplex>
-
 
 static inline float
 my_cabs(npy_cfloat z)
@@ -42,8 +42,6 @@ my_cabs(npy_clongdouble z)
 }
 
 #else
-
-#include <complex>
 
 static inline float
 my_cabs(npy_cfloat z)
