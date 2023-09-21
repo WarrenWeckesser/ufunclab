@@ -16,10 +16,8 @@
 
 
 //
-// Create a complex abs function that works with MSVC and
-// with compilers that have C99 complex types.
+// Create a complex abs function for the numpy complex types.
 //
-#ifdef _MSC_VER
 
 static inline float
 my_cabs(npy_cfloat z)
@@ -38,28 +36,6 @@ my_cabs(npy_clongdouble z)
 {
     return std::abs(*(reinterpret_cast<std::complex<long double> *>(&z)));
 }
-
-#else
-
-static inline float
-my_cabs(npy_cfloat z)
-{
-    return std::abs(*(reinterpret_cast<std::complex<float> *>(&z)));
-}
-
-static inline double
-my_cabs(npy_cdouble z)
-{
-    return std::abs(*(reinterpret_cast<std::complex<double> *>(&z)));
-}
-
-static inline long double
-my_cabs(npy_clongdouble z)
-{
-    return std::abs(*(reinterpret_cast<std::complex<long double> *>(&z)));
-}
-
-#endif
 
 //
 // `vnorm_core_calc`, the C++ core function
