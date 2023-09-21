@@ -33,10 +33,10 @@ BEGIN_EXTERN_C
 
 static struct PyModuleDef moduledef = {{
     PyModuleDef_HEAD_INIT,
-    .m_name = "{modulename}",
-    .m_doc = "Module that defines the ufuncs: {ufunc_names}",
-    .m_size = -1,
-    .m_methods = {cap(modulename)}Methods
+    "{modulename}",
+    "Module that defines the ufuncs: {ufunc_names}",
+    -1,
+    {cap(modulename)}Methods
 }};
 
 

@@ -482,10 +482,10 @@ static PyMethodDef {extmod.module}_methods[] = {{
 
 static struct PyModuleDef moduledef = {{
     PyModuleDef_HEAD_INIT,
-    .m_name = "{extmod.module}",
-    .m_doc = MODULE_DOCSTRING,
-    .m_size = -1,
-    .m_methods = {extmod.module}_methods
+    "{extmod.module}",
+    MODULE_DOCSTRING,
+    -1,
+    {extmod.module}_methods
 }};
 """)
 
