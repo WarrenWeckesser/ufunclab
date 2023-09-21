@@ -22,7 +22,17 @@
 // After switching to C11, this macro must be removed.
 //
 #ifndef CMPLX
+#ifdef _MSC_VER
+#define CMPLX(x, y) _Cbuild(x, y)
+#else
 #define CMPLX(x, y) ((x) + (y)*_Complex_I)
+#endif
+#endif
+
+#ifdef _MSC_VER
+#define double_complex _DComplex
+#else
+#define double_complex double _Complex
 #endif
 
 //
@@ -35,12 +45,41 @@
 //
 // This function assumes that neither part of z is nan.
 //
-static double _Complex
-log1p_theorem4(double _Complex z)
-{
-    double _Complex w;
+#ifdef _MSC_VER
 
-    double _Complex u = z + 1.0;
+static double_complex
+log1p_theorem4(double_complex z)
+{
+    double_complex w;
+
+    double_complex u = CMPLX(creal(z) + 1.0, cimag(z));
+    if (creal(u) == 1.0 && cimag(u) == 0.0) {
+        // z + 1 == 1
+        w = z;
+    }
+    else {
+        if (creal(u) - 1.0 == creal(z)) {
+            // u - 1 == z
+            w = clog(u);
+        }
+        else {
+            // w = clog(u) * (z / (u - 1.0));
+            double_complex um1 = CMPLX(creal(u) - 1.0, cimag(u));
+            w = _Py_c_prod((Py_complex) clog(u),
+                           _Py_c_quot((Py_complex) z,  (Py_complex) um1));
+        }
+    }
+    return w;
+}
+
+#else
+
+static double_complex
+log1p_theorem4(double_complex z)
+{
+    double_complex w;
+
+    double_complex u = z + 1.0;
     if (creal(u) == 1.0 && cimag(u) == 0.0) {
         // z + 1 == 1
         w = z;
@@ -56,6 +95,8 @@ log1p_theorem4(double _Complex z)
     }
     return w;
 }
+
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Double-double functions used by log1p to avoid loss of precision
