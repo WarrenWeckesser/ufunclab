@@ -47,6 +47,8 @@
 //
 #ifdef _MSC_VER
 
+#define TOPY(z) (*(Py_complex *) &(z))
+
 static double_complex
 log1p_theorem4(double_complex z)
 {
@@ -65,8 +67,8 @@ log1p_theorem4(double_complex z)
         else {
             // w = clog(u) * (z / (u - 1.0));
             double_complex um1 = CMPLX(creal(u) - 1.0, cimag(u));
-            w = _Py_c_prod((Py_complex) clog(u),
-                           _Py_c_quot((Py_complex) z,  (Py_complex) um1));
+            double_complex logu = clog(u);
+            w = _Py_c_prod(TOPY(logu), _Py_c_quot(TOPY(z), TOPY(um1)));
         }
     }
     return w;
