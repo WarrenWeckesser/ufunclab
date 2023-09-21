@@ -20,7 +20,11 @@
 // and npy_clongdouble to std::complex<float>, std::complex<double> and
 // std::complex<long double>, respectively.
 //
+#ifdef _MSC_VER
+#define std_complex(U, z)  (*(reinterpret_cast<U _Complex *>(&(z))))
+#else
 #define std_complex(U, z)  (*(reinterpret_cast<std::complex<U> *>(&(z))))
+#endif
 
 //
 // `vnorm_core_calc`, the C++ core function
