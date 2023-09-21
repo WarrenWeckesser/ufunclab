@@ -30,7 +30,7 @@
 #endif
 
 #ifdef _MSC_VER
-#define double_complex _DComplex
+#define double_complex _Dcomplex
 #else
 #define double_complex double _Complex
 #endif
