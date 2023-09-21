@@ -7,6 +7,7 @@
 
 #include <complex.h>
 #include <cmath>
+#include <algorithm>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
