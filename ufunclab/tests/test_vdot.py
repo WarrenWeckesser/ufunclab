@@ -11,7 +11,7 @@ def test_single(dtype):
     a = np.array([1, 2, 3, 0, 4, 4, 4], dtype=dtype)
     b = np.array([2, 1, 4, 3, 1, 1, 2], dtype=dtype)
     d = vdot(a, b)
-    assert type(d) == dtype
+    assert isinstance(d, dtype)
     assert d == 32.0
 
 

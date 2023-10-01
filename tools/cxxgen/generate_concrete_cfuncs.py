@@ -1,5 +1,3 @@
-
-import os
 from os import path
 
 from generate_utils import (typechar_to_ctype, typesig_to_ext,
@@ -39,9 +37,6 @@ def generate_concrete_cfuncs(cxxgenpath, header, funcs, destdir):
     # 'foo_concrete.cxx'.
     cxxheader, cxxfilename = header_to_concrete_filenames(header)
 
-    # gendir = path.join(cxxgenpath, 'generated')
-    # if not path.exists(gendir):
-    #     os.mkdir(gendir)
     cxxheader_fullpath = path.join(destdir, cxxheader)
     cxxfilename_fullpath = path.join(destdir, cxxfilename)
 

@@ -1,4 +1,3 @@
-import os
 from os import path
 from textwrap import dedent
 from generate_utils import (typechar_to_ctype, typesig_to_ext,
@@ -18,7 +17,8 @@ def cap(s):
 
 def print_extmod_start(extmod, file):
     modulename = extmod.modulename
-    ufunc_names = ', '.join([f.ufuncname for f in sum(extmod.funcs.values(), [])])
+    ufunc_names = ', '.join([f.ufuncname
+                             for f in sum(extmod.funcs.values(), [])])
     tmpl = \
 f"""
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -146,6 +146,7 @@ clear_floatstatus()
 
 """
 
+
 def generate_ufunc_extmod(cxxgenpath, extmod, destdir):
     """
     The C implementation of the extension module is written
@@ -155,9 +156,6 @@ def generate_ufunc_extmod(cxxgenpath, extmod, destdir):
     modulename = extmod.modulename
     extmod_filename = modulename + '.cxx'
 
-    #gendir = path.join(cxxgenpath, 'generated')
-    #if not path.exists(gendir):
-    #    os.mkdir(gendir)
     extmod_fullpath = path.join(destdir, extmod_filename)
     if path.exists(extmod_fullpath):
         raise RuntimeError(f"file '{extmod_fullpath} already exists.")
