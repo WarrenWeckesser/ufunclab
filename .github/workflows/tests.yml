@@ -144,7 +144,7 @@ jobs:
 
     strategy:
       matrix:
-        numpy-version: ['1.25.2', '1.26.2']
+        numpy-version: ['1.25.2', '1.26.4']
         os: ['windows-2019', 'windows-latest']
       fail-fast: false
 
