@@ -76,9 +76,10 @@ C file.
 *Generalized ufuncs*
 
 Note, for anyone looking at the source code: some of these implementations
-are in C and use NumPy templating (look for filenames that end in `.src`);
-others use templated C++ functions combined with code generation tools
-that can be found in `tools/cxxgen`.
+are in C and use the legacy NumPy templating language (look for filenames
+that end in `.src`); others use templated C++ functions combined with code
+generation tools that can be found in `tools/cxxgen`.  The `.src` files are
+processed with the script in `ufunclab/tools/conv_template.py`.
 
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
