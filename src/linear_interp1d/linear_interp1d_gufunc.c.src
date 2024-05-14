@@ -1,10 +1,8 @@
 //
 // linear_interp1d_gufunc.c.src
 //
-// gufunc implementation of linear_interp1d(x, xp, xp)
+// gufunc implementation of linear_interp1d(x, xp, fp)
 // Shape signature is '(),(n),(n)->()'.
-// The '1d' in the name refers to the inputs `x` and `xp`.
-// `x`, and elements of `xp`, and scalars.
 //
 
 #define PY_SSIZE_T_CLEAN
