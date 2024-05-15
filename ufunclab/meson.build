@@ -269,6 +269,10 @@ endforeach
 #----------------------------------------------------------------------
 
 modules = [
+    ['_debye1',
+        ['../src/debye1/debye1_ufunc.c',
+         '../src/debye1/debye1_generated.h',
+         '../src/debye1/debye1_generated.c']],
     ['_cabssq',
         ['../src/cabssq/cabssq_ufunc.c']],
     ['_log1p',

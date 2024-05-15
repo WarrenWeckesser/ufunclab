@@ -36,9 +36,9 @@ Most of the element-wise ufuncs are implemented by writing the core
 calculation as a templated C++ function, and using some Python code to
 automate the generation of all the necessary boilerplate and wrappers
 that implement a ufunc around the core calculation.  The exceptions
-are `logfactorial`, `log1p`, `loggamma1p`, `issnan`, and `cabssq`, which
-are implemented in C, with all boilerplate code written "by hand" in the
-C file.
+are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, `issnan`, and
+`cabssq`, which are implemented in C, with all boilerplate code written
+"by hand" in the C file.
 
 | Function                                      | Description                                                   |
 | --------                                      | -----------                                                   |
@@ -56,6 +56,7 @@ C file.
 | [`smoothstep5`](#smoothstep5)                 | Smooth step using a degree 5 polynomial                       |
 | [`trapezoid_pulse`](#trapezoid_pulse)         | Trapezoid pulse function                                      |
 | [`pow1pm1`](#pow1pm1)                         | Compute `(1 + x)**y - 1`                                      |
+| [`debye1`](#debye1)                           | Compute the Debye function D1(x)                              |
 | [`expint1`](#expint1)                         | Exponential integral E₁ for real inputs                       |
 | [`log1p_doubledouble`](#log1p_doubledouble)   | `log(1 + z)` for complex z.                                   |
 | [`log1p_theorem4`](#log1p_theorem4)           | `log(1 + z)` for complex z.                                   |
@@ -328,7 +329,7 @@ the script `trapezoid_pulse_demo.py` in the `examples` directory):
 
 ![trapezoid_pulse plot1](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/trapezoid_pulse_demo.png)
 
-### `pow1pm1`
+#### `pow1pm1`
 
 `pow1pm1(x, y)` computes `(1 + x)**y - 1` for `x >= -1`.
 
@@ -349,6 +350,25 @@ The naive calculation provides less than six digits of precision:
 
 >>> (1 + x)**y - 1
 -4.339861803259737e-13
+
+```
+
+#### `debye1`
+
+`debye1(x)` computes the Debye function D1(x).
+
+See the wikipedia article
+
+    https://en.wikipedia.org/wiki/Debye_function
+
+for more details.
+
+```
+>>> from ufunclab import debye1
+
+>>> debye1([-2, -1.5, 0, 0.25, 0.5, 2.5, 50, 100])
+array([1.60694728, 1.43614531, 1.        , 0.93923503, 0.88192716,
+       0.53878957, 0.03289868, 0.01644934])
 
 ```
 

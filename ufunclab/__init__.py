@@ -8,6 +8,7 @@ from ._issnan import issnan
 from ._abs_squared import abs_squared
 from ._cabssq import cabssq
 from ._log1p import log1p_theorem4, log1p_doubledouble
+from ._debye1 import debye1
 from ._expint1 import expint1, logexpint1
 from ._pow1pm1 import pow1pm1
 from ._logistic import logistic, logistic_deriv, log_logistic, swish
