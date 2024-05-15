@@ -19,7 +19,7 @@ compiler are required.
 
 The unit tests require [pytest](https://docs.pytest.org/).
 
-The test suite is run with Python versions 3.9 to 3.11, with several
+The test suite is run with Python versions 3.9 to 3.12, with several
 recent releases of NumPy, and with the NumPy main development branch.
 `ufunclab` might work with older Python and NumPy versions, but they
 are not regularly tested.
@@ -355,7 +355,7 @@ The naive calculation provides less than six digits of precision:
 
 #### `debye1`
 
-`debye1(x)` computes the Debye function D1(x).
+`debye1(x)` computes the Debye function D₁(x).
 
 See the wikipedia article
 
