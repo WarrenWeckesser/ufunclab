@@ -56,7 +56,7 @@ are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, `issnan`, and
 | [`smoothstep5`](#smoothstep5)                 | Smooth step using a degree 5 polynomial                       |
 | [`trapezoid_pulse`](#trapezoid_pulse)         | Trapezoid pulse function                                      |
 | [`pow1pm1`](#pow1pm1)                         | Compute `(1 + x)**y - 1`                                      |
-| [`debye1`](#debye1)                           | Compute the Debye function D1(x)                              |
+| [`debye1`](#debye1)                           | Compute the Debye function D₁(x)                              |
 | [`expint1`](#expint1)                         | Exponential integral E₁ for real inputs                       |
 | [`log1p_doubledouble`](#log1p_doubledouble)   | `log(1 + z)` for complex z.                                   |
 | [`log1p_theorem4`](#log1p_theorem4)           | `log(1 + z)` for complex z.                                   |
@@ -357,10 +357,7 @@ The naive calculation provides less than six digits of precision:
 
 `debye1(x)` computes the Debye function D₁(x).
 
-See the wikipedia article
-
-    https://en.wikipedia.org/wiki/Debye_function
-
+See the wikipedia article https://en.wikipedia.org/wiki/Debye_function
 for more details.
 
 ```
@@ -371,6 +368,12 @@ array([1.60694728, 1.43614531, 1.        , 0.93923503, 0.88192716,
        0.53878957, 0.03289868, 0.01644934])
 
 ```
+
+The script `debye1_demo.py` in the `examples` directory generates
+the plot
+
+![debye1 plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/debye1_demo.png)
+
 
 #### `expint1`
 
