@@ -91,7 +91,7 @@ static struct PyModuleDef moduledef = {
 "loggamma1p(x, /, ...)\n"                             \
 "\n"                                                  \
 "Natural logarithm of gamma(1+x) for real x > -1.\n"  \
-""                                                    \
+"\n"                                                  \
 "nan is returned if x <= -1.\n"                       \
 "\n"
 
