@@ -6,6 +6,7 @@ import mpmath
 
 mpmath.mp.dps = 200
 
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 def erfcx_mp(x):
@@ -143,6 +144,7 @@ erfcx({type_str} x)
     }}
 }}
 """
+
 
 def generate_erfcx(type_str):
     dtype, sfx, cfbound, N = _float_type_info[type_str]
