@@ -179,8 +179,15 @@ square(double x, doubledouble_t *out)
                   + xsplit.lower*xsplit.lower;
 }
 
+//
+// As the name makes clear, this function computes x**2 + 2*x + y**2.
+// It uses doubledouble_t for the intermediate calculations.
+//
+// The function is used in log1p_doubledouble() to avoid the loss of
+// precision that can occur in the expression when x**2 + y**2 ≈ -2*x.
+//
 static double
-foo(double x, double y)
+xsquared_plus_2x_plus_ysquared(double x, double y)
 {
     doubledouble_t x2, y2, twox, sum1, sum2;
 
@@ -199,7 +206,6 @@ foo(double x, double y)
 //
 // This function assumes that neither part of z is nan.
 //
-
 static double_complex
 log1p_doubledouble(double_complex z)
 {
@@ -215,7 +221,10 @@ log1p_doubledouble(double_complex z)
         if (fabs(x*(2.0 + x) + y*y) < 0.4) {
             // The input is close to the unit circle centered at -1+0j.
             // Use double-double to evaluate the real part of the result.
-            lnr = 0.5*log1p(foo(x, y));
+            // This is equivalent to 0.5*log((1+x)**2 + y**2), since
+            //   log((1 + x)**2 + y**2) = log(1 + 2*x + x**2 + y**2)
+            //                          = log1p(x**2 + 2*x + y**2)
+            lnr = 0.5*log1p(xsquared_plus_2x_plus_ysquared(x, y));
         }
         else {
             lnr = log(hypot(x + 1, y));
