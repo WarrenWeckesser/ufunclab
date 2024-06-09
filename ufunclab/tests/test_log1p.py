@@ -28,7 +28,7 @@ def test_basic(z, wref):
 
 # In this test, the inputs are so small that the output
 # should equal the input.
-@pytest.mark.parametrize('z', [3e-180+2e-175j, 1e-50-3e-55])
+@pytest.mark.parametrize('z', [3e-180+2e-175j, 1e-50-3e-55j])
 def test_tiny(z):
     w = log1p_doubledouble(z)
     assert w == z
