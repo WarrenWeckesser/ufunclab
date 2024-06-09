@@ -2,8 +2,8 @@
 // log1p_ufunc.c
 //
 // This C extension module defines the ufuncs `log1p_theorem4` and
-// `log1p_doubledouble`.  They are implemented for the type np.complex128
-// only (type signature is `D->D`).
+// `log1p_doubledouble`.  They are implemented for the types np.complex64
+// and np.complex128 only.
 //
 
 #define PY_SSIZE_T_CLEAN
@@ -24,14 +24,18 @@
 #ifndef CMPLX
 #ifdef _MSC_VER
 #define CMPLX(x, y) _Cbuild(x, y)
+#define CMPLXF(x, y) _FCbuild(x, y)
 #else
 #define CMPLX(x, y) ((x) + (y)*_Complex_I)
+#define CMPLXF(x, y) ((x) + (y)*_Complex_I)
 #endif
 #endif
 
 #ifdef _MSC_VER
+#define complex_float _Fcomplex
 #define complex_double _Dcomplex
 #else
+#define complex_float float _Complex
 #define complex_double double _Complex
 #endif
 
@@ -50,6 +54,36 @@
 #define TOPY(z) (*(Py_complex *) &(z))
 #define TOCMPLX(z) (*(complex_double *) &(z))
 
+static complex_float
+log1pf_theorem4(complex_float z)
+{
+    complex_float w;
+
+    complex_float u = CMPLXF(crealf(z) + 1.0f, cimagf(z));
+    if (crealf(u) == 1.0f && cimagf(u) == 0.0f) {
+        // z + 1 == 1
+        w = z;
+    }
+    else {
+        if (crealf(u) - 1.0f == crealf(z)) {
+            // u - 1 == z
+            w = clogf(u);
+        }
+        else {
+            // w = clog(u) * (z / (u - 1.0));
+            complex_float um1 = CMPLXF(crealf(u) - 1.0f, cimagf(u));
+            complex_float logu = clogf(u);
+            // Microsoft C doesn't implement complex division ($&@$*@!),
+            // so use Python's functions.  We have to upcast to double.
+            complex_double logu_d = CMPLX((double) crealf(logu), (double) cimagf(logu));
+            complex_double z_d = CMPLX((double) crealf(z), (double) cimagf(z));
+            complex_double um1_d = CMPLX((double) crealf(um1), (double) cimagf(um1));
+            Py_complex v_d = _Py_c_prod(TOPY(logu_d), _Py_c_quot(TOPY(z_d), TOPY(um1_d)));
+            w = CMPLXF((float) v_d.real, (float) v_d.imag);
+        }
+    }
+    return w;
+}
 
 static complex_double
 log1p_theorem4(complex_double z)
@@ -70,6 +104,8 @@ log1p_theorem4(complex_double z)
             // w = clog(u) * (z / (u - 1.0));
             complex_double um1 = CMPLX(creal(u) - 1.0, cimag(u));
             complex_double logu = clog(u);
+            // Microsoft C doesn't implement complex division ($&@$*@!),
+            // so use Python's functions.
             Py_complex v = _Py_c_prod(TOPY(logu), _Py_c_quot(TOPY(z), TOPY(um1)));
             w = TOCMPLX(v);
         }
@@ -78,6 +114,28 @@ log1p_theorem4(complex_double z)
 }
 
 #else
+
+static complex_float
+log1pf_theorem4(complex_float z)
+{
+    complex_float w;
+
+    complex_float u = z + 1.0f;
+    if (crealf(u) == 1.0f && cimagf(u) == 0.0f) {
+        // z + 1 == 1
+        w = z;
+    }
+    else {
+        if (crealf(u) - 1.0f == crealf(z)) {
+            // u - 1 == z
+            w = clogf(u);
+        }
+        else {
+            w = clogf(u) * (z / (u - 1.0f));
+        }
+    }
+    return w;
+}
 
 static complex_double
 log1p_theorem4(complex_double z)
@@ -237,11 +295,72 @@ log1p_doubledouble(complex_double z)
     return CMPLX(lnr, atan2(y, x + 1.0));
 }
 
+//
+// Implement log1pf(z), upgrading to double precision near the unit
+// circle |z + 1| = 1  to avoid loss of precision.
+//
+// This function assumes that neither part of z is nan.
+//
+static complex_float
+log1pf_doubledouble(complex_float z)
+{
+    float lnr;
+
+    float x = crealf(z);
+    float y = cimagf(z);
+    if (x > -2.2f && x < 0.2f && y > -1.2f && y < 1.2f) {
+        // This nested `if` condition *should* be part of the outer
+        // `if` condition, but clang on Mac OS 13 doesn't seem to
+        // short-circuit the evaluation correctly and generates an
+        // overflow when x and y are sufficiently large.
+        if (fabsf(x*(2.0f + x) + y*y) < 0.4f) {
+            // The input is close to the unit circle centered at -1+0j.
+            // Use double-double to evaluate the real part of the result.
+            // This is equivalent to 0.5*log((1+x)**2 + y**2), since
+            //   log((1 + x)**2 + y**2) = log(1 + 2*x + x**2 + y**2)
+            //                          = log1p(x**2 + 2*x + y**2)
+            double x_d = (double) x;
+            double y_d = (double) y;
+            lnr = (float) (0.5*log1p(x_d*x_d + 2*x_d + y_d*y_d));
+        }
+        else {
+            lnr = logf(hypotf(x + 1.0f, y));
+        }
+    }
+    else {
+        lnr = log(hypotf(x + 1.0f, y));
+    }
+    return CMPLXF(lnr, atan2f(y, x + 1.0f));
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // The ufunc "inner loop". The type signatures of the log1p ufunc are
 //     >>> log1p.types
-//     ['D->D']
+//     ['F->F', 'D->D']
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static void
+log1p_theorem4_F_F_loop(char **args, const npy_intp *dimensions,
+                        const npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        complex_float w;
+        complex_float z = *(complex_float *) in;
+
+        if (isnan(crealf(z)) || isnan(cimagf(z))) {
+            w = CMPLXF(NAN, NAN);
+        }
+        else {
+            w = log1pf_theorem4(z);
+        }
+        *((complex_float *) out) = w;
+    }
+}
 
 static void
 log1p_theorem4_D_D_loop(char **args, const npy_intp *dimensions,
@@ -263,6 +382,29 @@ log1p_theorem4_D_D_loop(char **args, const npy_intp *dimensions,
             w = log1p_theorem4(z);
         }
         *((complex_double *) out) = w;
+    }
+}
+
+static void
+log1p_doubledouble_F_F_loop(char **args, const npy_intp *dimensions,
+                            const npy_intp* steps, void* data)
+{
+    char *in = args[0];
+    char *out = args[1];
+    npy_intp in_step = steps[0];
+    npy_intp out_step = steps[1];
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
+        complex_float w;
+        complex_float z = *(complex_float *) in;
+
+        if (isnan(crealf(z)) || isnan(cimagf(z))) {
+            w = CMPLXF(NAN, NAN);
+        }
+        else {
+            w = log1pf_doubledouble(z);
+        }
+        *((complex_float *) out) = w;
     }
 }
 
@@ -296,10 +438,12 @@ log1p_doubledouble_D_D_loop(char **args, const npy_intp *dimensions,
 // This array of loop function pointers will be passed to PyUFunc_FromFuncAndData,
 // along with the arrays log1p_typecodes and log1p_data.
 PyUFuncGenericFunction log1p_theorem4_funcs[] = {
+    (PyUFuncGenericFunction) &log1p_theorem4_F_F_loop,
     (PyUFuncGenericFunction) &log1p_theorem4_D_D_loop,
 };
 
 PyUFuncGenericFunction log1p_doubledouble_funcs[] = {
+    (PyUFuncGenericFunction) &log1p_doubledouble_F_F_loop,
     (PyUFuncGenericFunction) &log1p_doubledouble_D_D_loop,
 };
 
@@ -311,6 +455,7 @@ PyUFuncGenericFunction log1p_doubledouble_funcs[] = {
 // These are the input and return type codes for the inner loops.
 // Same for theorem4 and doubledouble
 static char log1p_typecodes[] = {
+    NPY_CFLOAT, NPY_CFLOAT,
     NPY_CDOUBLE, NPY_CDOUBLE,
 };
 
@@ -330,7 +475,7 @@ static PyMethodDef Log1pMethods[] = {
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_log1p",
-    .m_doc = "Module that defines the log1p function.",
+    .m_doc = "Module that defines the log1p_theorem4 and log1p_doubledouble functions.",
     .m_size = -1,
     .m_methods = Log1pMethods
 };
