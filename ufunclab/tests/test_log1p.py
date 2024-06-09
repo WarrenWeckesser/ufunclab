@@ -17,6 +17,9 @@ from ufunclab import log1p_doubledouble
      (-1.9999999995065196 - 3.141592653092555e-05j,
       -1.4766035946815242e-16 - 3.1415612376632573j),
      (-1.25e-8 + 5e-12j, -1.2500000078124988e-08 + 5.0000000625e-12j),
+     (-1.25e-05 + 0.005j, 7.812499999381789e-11 + 0.005000020833177082j),
+     (-8e-8 - 0.0004j, 3.200000005993663e-15-0.0004000000106666662j),
+     (-0.01524813-0.173952j, -2.228118716056777e-06-0.1748418364650139j),
      (1e200 + 1e200j, 460.8635921890891 + 0.7853981633974483j)],
 )
 def test_basic(z, wref):
@@ -29,7 +32,7 @@ def test_basic(z, wref):
 
 @pytest.mark.parametrize(
     'z, wref',
-    [(0.0, 0.0 +0.0j),
+    [(0.0, 0.0 + 0.0j),
      (-0.57113 - 0.90337j, 3.4470237082984913e-06-1.127556410573303j),
      (-0.5 + 0.866025j, -3.7479517636704777e-07+1.0471973348084478j),
      (-3 - 0.5j, 0.7234594914681627-2.896613990462929j),
@@ -57,22 +60,3 @@ def test_tiny_complex64(z):
     z = np.complex64(z)
     w = log1p_doubledouble(z)
     assert w == z
-
-
-# These are values where real part is not computed with
-# extremely high precision.
-@pytest.mark.parametrize(
-    'z, wref',
-    [(-1.25e-05 + 0.005j, 7.812499999381789e-11 + 0.005000020833177082j),
-     (-8e-8 - 0.0004j, 3.200000005993663e-15-0.0004000000106666662j),
-     (-0.01524813-0.173952j, -2.228118716056777e-06-0.1748418364650139j)],
-)
-def test_real_part_loosely(z, wref):
-    w = log1p_doubledouble(z)
-    # The computed value is very close to the reference value...
-    assert_allclose(w, wref, rtol=1e-15)
-    assert_allclose(w.imag, wref.imag, rtol=1e-15)
-    # ...but the real parts (which are very small) have greater relative
-    # error...
-    # XXX Try smaller rtol again...
-    assert_allclose(w.real, wref.real, rtol=1e-15)
