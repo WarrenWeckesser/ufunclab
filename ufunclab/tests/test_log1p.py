@@ -71,6 +71,8 @@ def test_real_part_loosely(z, wref):
     w = log1p_doubledouble(z)
     # The computed value is very close to the reference value...
     assert_allclose(w, wref, rtol=1e-15)
+    assert_allclose(w.imag, wref.imag, rtol=1e-15)
     # ...but the real parts (which are very small) have greater relative
     # error...
-    assert_allclose(w.real, wref.real, rtol=5e-9)
+    # XXX Try smaller rtol again...
+    assert_allclose(w.real, wref.real, rtol=1e-15)
