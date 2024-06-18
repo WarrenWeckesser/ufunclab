@@ -2,7 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////////////
 //
-//  The code from here to the correspondig comment delimited by lines of
+//  The code from here to the corresponding comment delimited by lines of
 //  forward slashes below was taken from the Python source code file
 //  Python-3.11.4/mathmodule.c.  The code has been modified for use by
 //  the funcion loggamma1p().
