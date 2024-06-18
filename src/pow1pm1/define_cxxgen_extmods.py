@@ -12,6 +12,9 @@ The calculation is formulated to avoid loss of precision when
 
 `nan` is returned when `x < -1`.
 
+The function follows the widely used convention that `pow(0, 0)`
+is 1, so `pow1pm1(-1, 0)` is 0.0.
+
 Parameters
 ----------
 x : array_like

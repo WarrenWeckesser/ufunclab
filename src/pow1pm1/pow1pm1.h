@@ -11,8 +11,9 @@
 template<typename T>
 T pow1pm1(T x, T y)
 {
-    // XXX Maybe handle (x, y) == (-1, 0) as a special case, and return 0
-    // instead of nan?
+    if (x == -1.0 && y == 0.0) {
+        return static_cast<T>(0.0);
+    }
     return std::expm1(y * std::log1p(x));
 }
 

@@ -10,3 +10,8 @@ from ufunclab import pow1pm1
 def test_logexpint1(x, y, expected):
     z = pow1pm1(x, y)
     assert_allclose(z, expected, rtol=1e-15)
+
+
+def test_edge_case():
+    w = pow1pm1(-1.0, 0.0)
+    assert w == 0.0
