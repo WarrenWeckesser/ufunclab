@@ -137,9 +137,9 @@ lanczos_sum(double x)
 
    This is an edited version of m_lgamma() from the Python 3.11.4
    version of Python-3.11.4/mathmodule.c.  Python-specific code has
-   been modified or removed, code related to handle negative a negative
-   input has been removed, and since it is only used in loggamma1p(),
-   some error checking has been removed.
+   been modified or removed, code related to handling a negative
+   input has been removed, and since this function is only used in
+   loggamma1p(), some error checking has been removed.
 */
 
 static double
@@ -183,7 +183,7 @@ m_lgamma(double x)
 //     from mpmath import mp
 //
 //     def loggamma1p(x):
-//         return mp.log(mp.one + x)
+//         return mp.log(mp.gamma(mp.one + x))
 //
 //     mp.dps = 100
 //     ts = mp.taylor(loggamma1p, 0, 24)
