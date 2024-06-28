@@ -22,19 +22,22 @@
 static inline float
 my_cabs(npy_cfloat z)
 {
-    return std::abs(*(reinterpret_cast<std::complex<float> *>(&z)));
+    std::complex<float> zs{npy_crealf(z), npy_cimagf(z)};
+    return std::abs(zs);
 }
 
 static inline double
 my_cabs(npy_cdouble z)
 {
-    return std::abs(*(reinterpret_cast<std::complex<double> *>(&z)));
+    std::complex<double> zs{npy_creal(z), npy_cimag(z)};
+    return std::abs(zs);
 }
 
 static inline long double
 my_cabs(npy_clongdouble z)
 {
-    return std::abs(*(reinterpret_cast<std::complex<long double> *>(&z)));
+    std::complex<long double> zs{npy_creall(z), npy_cimagl(z)};
+    return std::abs(zs);
 }
 
 //
