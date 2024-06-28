@@ -110,6 +110,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                             | 3-d vector cross product                              |
 | [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
+| [`tri_area_indexed`](#tri_area_indexed)         | Area of triangles in n-dimensional space              |
 | [`fillnan1d`](#fillnan1d)                       | Replace `nan` using linear interpolation              |
 | [`linear_interp1d`](#linear_interp1d)           | Linear interpolation, like `numpy.interp`             |
 | [`backlash`](#backlash)                         | Backlash operator                                     |
@@ -1530,7 +1531,7 @@ array([[[ -1.,   0.,   0.],
 
 #### `tri_area`
 
-`tri_area(p)` is a gufunc with signature `(3, n) - > ()`.  It computes the
+`tri_area(p)` is a gufunc with signature `(3, n) -> ()`.  It computes the
 area of a triangle defined by three points in n-dimensional space.
 
 ```
@@ -1548,6 +1549,37 @@ of two triangles in 4-dimensional space.
                    [2.0, 1.0, 2.0, 2.5]]])
 >>> tri_area(p)
 array([1.73205081, 0.70710678])
+```
+
+#### `tri_area_indexed`
+
+`tri_area_indexed(p, i)` is a gufunc with signature `(m, n),(3) -> ()`.
+It computes the area of a triangle defined by three points in n-dimensional
+space.  The first argument, `p`, is an array with shape `(m, n)` holding `m`
+points in n-dimensional space.  The second argument, `i`, is a 1-d array with
+length three that holds indices into `p`.  The core calculation is equivalent
+to `tri_area(p[i])`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import tri_area_indexed, tri_area
+
+>>> p = np.array([[0.0, 0.0, 0.0, 6.0],
+                  [1.0, 2.0, 3.0, 6.0],
+                  [0.0, 2.0, 2.0, 6.0],
+                  [1.5, 1.0, 2.5, 2.0],
+                  [4.0, 1.0, 0.0, 2.5],
+                  [2.0, 1.0, 2.0, 2.5]])
+>>> tri_area_indexed(p, [0, 2, 3])
+6.224949798994367
+>>> tri_area(p[[0, 2, 3]])
+6.224949798994367
+
+Compute the areas of several triangles formed from points in `p`.
+Note that the last two are the same triangles.
+
+>>> tri_area_indexed(p, [[0, 2, 3], [1, 3, 4], [3, 4, 5], [-1, -2, -3]])
+array([6.2249498 , 7.46449931, 0.70710678, 0.70710678])
 ```
 
 #### `fillnan1d`

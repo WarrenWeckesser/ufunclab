@@ -26,7 +26,7 @@ from ._corr import pearson_corr
 from ._wjaccard import wjaccard
 from ._mad import mad, rmad, gini
 from ._vnorm import vnorm, rms, vdot
-from ._tri_area import tri_area
+from ._tri_area import tri_area, tri_area_indexed
 from ._backlash import backlash
 from ._fillnan1d import fillnan1d
 from ._linear_interp1d import linear_interp1d

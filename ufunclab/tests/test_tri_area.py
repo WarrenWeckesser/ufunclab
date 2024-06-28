@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_allclose
-from ufunclab import tri_area
+from ufunclab import tri_area, tri_area_indexed
 
 
 @pytest.mark.parametrize('dt', [np.float32, np.float64, np.longdouble])
@@ -58,3 +58,20 @@ def test_4d():
                   [1.0, 2.0, 5.0, 0.0]])
     a = tri_area(p)
     assert_allclose(a, 1.0, rtol=1e-14)
+
+
+def test_tri_area_indexed_basic():
+    p = np.array([[2, 3, 0, 1],
+                  [0, 0, 0, 0],
+                  [1, 1, 3, 8],
+                  [4, 0, -1, 1],
+                  [3, 3, 3, 2]])
+    a1 = tri_area(p[:3])
+    a2 = tri_area(p[2:])
+    a3 = tri_area(p[::2])
+    a4 = tri_area(p[[-1, -2, 1]])
+    a = tri_area_indexed(p, [[0, 1, 2],
+                             [2, 3, 4],
+                             [0, 2, 4],
+                             [-1, -2, 1]])
+    assert_allclose(a, [a1, a2, a3, a4])
