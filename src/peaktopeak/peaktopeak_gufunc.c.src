@@ -132,11 +132,6 @@ peaktopeak_@typename@_loop(char **args, const npy_intp *dimensions,
 // typical use-cases for these calculations do not encounter this situation.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-#ifdef UNDEFINED
-
-Handling of datetime64 and timedelta64 is disabled.  This code needs to
-be updated for NumPy 2.0
-
 static void peaktopeak_int64_signed_loop(char **args, const npy_intp *dimensions,
                                          const npy_intp* steps, void* data)
 {
@@ -175,8 +170,6 @@ static void peaktopeak_int64_signed_loop(char **args, const npy_intp *dimensions
         *(int64_t *) out = xmax - xmin;
     }
 }
-
-#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loop for object arrays.
@@ -259,8 +252,8 @@ static char peaktopeak_typecodes[] = {
     NPY_FLOAT, NPY_FLOAT,
     NPY_DOUBLE, NPY_DOUBLE,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE,
-    // NPY_DATETIME, NPY_TIMEDELTA,
-    // NPY_TIMEDELTA, NPY_TIMEDELTA,
+    NPY_DATETIME, NPY_TIMEDELTA,
+    NPY_TIMEDELTA, NPY_TIMEDELTA,
     NPY_OBJECT, NPY_OBJECT
 };
 
@@ -276,15 +269,13 @@ static PyUFuncGenericFunction peaktopeak_funcs[] = {
     (PyUFuncGenericFunction) &peaktopeak_float_loop,
     (PyUFuncGenericFunction) &peaktopeak_double_loop,
     (PyUFuncGenericFunction) &peaktopeak_longdouble_loop,
-    // (PyUFuncGenericFunction) &peaktopeak_int64_signed_loop,
-    // (PyUFuncGenericFunction) &peaktopeak_int64_signed_loop,
+    (PyUFuncGenericFunction) &peaktopeak_int64_signed_loop,
+    (PyUFuncGenericFunction) &peaktopeak_int64_signed_loop,
     (PyUFuncGenericFunction) &peaktopeak_object_loop
 };
 
 #define PEAKTOPEAK_NTYPES (sizeof(peaktopeak_funcs)/sizeof(peaktopeak_funcs[0]))
 static void *peaktopeak_data[PEAKTOPEAK_NTYPES];
-
-#ifdef UNDEFINED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // peaktopeak type resolver
@@ -419,8 +410,6 @@ PeakToPeakTypeResolver(PyUFuncObject *ufunc,
     return 0;
 }
 
-#endif
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Python extension module definitions.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -477,7 +466,7 @@ PyMODINIT_FUNC PyInit__peaktopeak(void)
         Py_DECREF(module);
         return NULL;
     }
-    // peaktopeak_gufunc->type_resolver = PeakToPeakTypeResolver;
+    peaktopeak_gufunc->type_resolver = PeakToPeakTypeResolver;
 
     status = PyModule_AddObject(module, "peaktopeak", (PyObject *) peaktopeak_gufunc);
     if (status == -1) {

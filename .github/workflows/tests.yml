@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.12', '3.11', '3.10', '3.9']
-        numpy-version: ['1.20.3', '1.21.6', '1.22.4', '1.23.5', '1.24.4', '1.25.2', '1.26.4', '2.0.0']
+        numpy-version: ['1.20.3', '1.21.6', '1.22.4', '1.23.5', '1.24.4', '1.25.2', '1.26.4']
         exclude:
         - python-version: '3.10'
           numpy-version: '1.20.3'
@@ -59,7 +59,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.12', '3.11', '3.10', '3.9']
-        numpy-version: ['1.20.3', '1.21.6', '1.22.4', '1.23.5', '1.24.4', '1.25.2', '1.26.4', '2.0.0']
+        numpy-version: ['1.20.3', '1.21.6', '1.22.4', '1.23.5', '1.24.4', '1.25.2', '1.26.4']
         exclude:
         - python-version: '3.10'
           numpy-version: '1.20.3'
@@ -107,38 +107,38 @@ jobs:
       run: |
         pytest --pyargs ufunclab
 
-  # main-numpy:
-  #   strategy:
-  #     matrix:
-  #         python-version: ['3.10', '3.11', '3.12']
-  #         os: [ubuntu-latest]
+  main-numpy:
+    strategy:
+      matrix:
+          python-version: ['3.10', '3.11', '3.12']
+          os: [ubuntu-latest]
 
-  #   runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v4
-  #     with:
-  #       python-version: ${{ matrix.python-version }}
-  #   - name: Install dependencies
-  #     run: |
-  #       sudo apt-get install libopenblas-dev
-  #       python -m pip install --upgrade pip wheel
-  #       python -m pip install --upgrade setuptools==59.2.0
-  #       python -m pip install ninja meson-python toml pytest
-  #       pushd .
-  #       cd ..
-  #       git clone --shallow-submodules --recurse-submodules https://github.com/numpy/numpy.git
-  #       cd numpy
-  #       python -m pip install .
-  #       popd
-  #   - name: Install ufunclab
-  #     run: |
-  #       python -m pip install --no-build-isolation .
-  #   - name: Test with pytest
-  #     run: |
-  #       pytest --pyargs ufunclab
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libopenblas-dev
+        python -m pip install --upgrade pip wheel
+        python -m pip install --upgrade setuptools==59.2.0
+        python -m pip install ninja meson-python toml pytest
+        pushd .
+        cd ..
+        git clone --shallow-submodules --recurse-submodules https://github.com/numpy/numpy.git
+        cd numpy
+        python -m pip install .
+        popd
+    - name: Install ufunclab
+      run: |
+        python -m pip install --no-build-isolation .
+    - name: Test with pytest
+      run: |
+        pytest --pyargs ufunclab
 
   windows-msvc:
 

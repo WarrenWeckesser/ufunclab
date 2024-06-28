@@ -64,14 +64,11 @@ def test_fractions_2d():
     assert_array_equal(p1, [Fraction(23, 9), Fraction(0)])
 
 
-# Removed until datetime64 and timedelta64 handling is restored
-# in ufunclab.peaktopeak.
-#
-# def test_dates():
-#     dates = np.array([np.datetime64('2015-11-02T12:34:50'),
-#                       np.datetime64('2015-11-02T10:00:00'),
-#                       np.datetime64('2015-11-02T21:20:19'),
-#                       np.datetime64('2015-11-02T19:25:00')])
-#     timespan = peaktopeak(dates)
-#     assert_equal(timespan.dtype, np.dtype('m8[s]'))
-#     assert_equal(timespan, np.timedelta64(40819, 's'))
+def test_dates():
+    dates = np.array([np.datetime64('2015-11-02T12:34:50'),
+                      np.datetime64('2015-11-02T10:00:00'),
+                      np.datetime64('2015-11-02T21:20:19'),
+                      np.datetime64('2015-11-02T19:25:00')])
+    timespan = peaktopeak(dates)
+    assert_equal(timespan.dtype, np.dtype('m8[s]'))
+    assert_equal(timespan, np.timedelta64(40819, 's'))
