@@ -993,11 +993,11 @@ of a NumPy array, but when the input is signed integers, the output
 is an unsigned integer with the same bit width.
 
 The function handles the standard integer and floating point types,
-`datetime64`, `timedelta64`, and object arrays. The function does not
-accept complex arrays.  Also, the function does not implement any special
-handling of `nan`, so the behavior of this function with arrays containing
-`nan` is undefined (i.e. it might not do what you want, and the behavior
-might change in the next update of the software).
+and object arrays. The function does not accept complex arrays.  Also,
+the function does not implement any special handling of `nan`, so the
+behavior of this function with arrays containing `nan` is undefined
+(i.e. it might not do what you want, and the behavior might change in
+the next update of the software).
 
 ```
 >>> x = np.array([85, 125, 0, -75, -50], dtype=np.int8)
@@ -1030,35 +1030,6 @@ numpy.int8
 ...                Fraction(2, 3), Fraction(5, 9)]], dtype=object)
 >>> peaktopeak(x)
 array([Fraction(59, 21), Fraction(8, 9)], dtype=object)
-
-```
-
-`dates` is an array of `datetime64`.
-
-```
->>> dates = np.array([np.datetime64('2015-11-02T12:34:50'),
-...                   np.datetime64('2016-03-01T16:00:00'),
-...                   np.datetime64('2015-07-02T21:20:19'),
-...                   np.datetime64('2016-05-01T19:25:00')])
-
->>> dates
-array(['2015-11-02T12:34:50', '2016-03-01T16:00:00',
-       '2015-07-02T21:20:19', '2016-05-01T19:25:00'],
-      dtype='datetime64[s]')
->>> timespan = peaktopeak(dates)
->>> timespan
-numpy.timedelta64(26258681,'s')
->>> timespan / np.timedelta64(1, 'D')  # Convert to number of days.
-303.9199189814815
-```
-
-Casting works when the `out` argument is an array with dtype `timedelta64`.
-For example,
-
-```
->>> out = np.empty((), dtype='timedelta64[D]')
->>> peaktopeak(dates, out=out)
-array(303, dtype='timedelta64[D]')
 
 ```
 
