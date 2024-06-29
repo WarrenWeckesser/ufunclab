@@ -120,7 +120,6 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
 | [`fillnan1d`](#fillnan1d)                       | Replace `nan` using linear interpolation              |
-| [`linear_interp1d`](#linear_interp1d)           | Linear interpolation, like `numpy.interp`             |
 | [`backlash`](#backlash)                         | Backlash operator                                     |
 | [`hysteresis_relay`](#hysteresis_relay)         | Relay with hysteresis (Schmitt trigger)               |
 | [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
@@ -133,6 +132,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | --------                                        | -----------                                           |
 | [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                             | 3-d vector cross product                              |
+| [`linear_interp1d`](#linear_interp1d)           | Linear interpolation, like `numpy.interp`             |
 | [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
 | [`tri_area_indexed`](#tri_area_indexed)         | Area of triangles in n-dimensional space              |
 | [`multivariate_logbeta`](#multivariate_logbeta) | Logarithm of the multivariate beta function           |
