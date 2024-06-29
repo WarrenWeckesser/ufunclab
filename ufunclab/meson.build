@@ -47,6 +47,7 @@ npymath_lib = cc.find_library('npymath', dirs: npymath_path)
 
 gufunc_cxx_src_dirs = [
     'all_same',
+    'backlash',
     'corr',
     'mad',
     'meanvar',
@@ -188,7 +189,6 @@ py3.extension_module(
 #----------------------------------------------------------------------
 
 numpy_templated_c_gufunc_dirs = [
-    'backlash',
     'cross',
     'fillnan1d',
     'first',
@@ -201,11 +201,11 @@ numpy_templated_c_gufunc_dirs = [
 
 foreach src_dir : numpy_templated_c_gufunc_dirs
 
-    module_name = '_' + src_dir                       # e.g. '_backlash'
-    output = src_dir + '_gufunc.c'                    # e.g. 'backlash_gufunc.c'
-    src_filename = output + '.src'                    # e.g. 'backlash_gufunc.c.src'
-    src_pth = join_paths('../src', src_dir)           # e.g. '../src/backlash'
-    src_fullpath = join_paths(src_pth, src_filename)  # e.g. '../src/blacklash/backlash_gufunc.c.src'
+    module_name = '_' + src_dir                       # e.g. '_fillnan1d'
+    output = src_dir + '_gufunc.c'                    # e.g. 'fillnan1d_gufunc.c'
+    src_filename = output + '.src'                    # e.g. 'fillnan1d_gufunc.c.src'
+    src_pth = join_paths('../src', src_dir)           # e.g. '../src/fillnan1d'
+    src_fullpath = join_paths(src_pth, src_filename)  # e.g. '../src/fillnan1d/fillnan1d_gufunc.c.src'
 
     mod_src = custom_target(
                   src_dir,
