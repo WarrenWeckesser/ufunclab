@@ -5,6 +5,7 @@
 #include "Python.h"
 
 #include <stdbool.h>
+#include <algorithm>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -27,12 +28,8 @@ static void minmax_core(
 
     for (npy_intp k = 1; k < n; ++k) {
         T x = get(p_x, x_stride, k);
-        if (x < xmin) {
-            xmin = x;
-        }
-        else if (x > xmax) {
-            xmax = x;
-        }
+        xmin = std::min(xmin, x);
+        xmax = std::max(xmax, x);
     }
     *p_out = xmin;
     set(p_out, out_stride, 1, xmax);
