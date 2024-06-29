@@ -82,7 +82,7 @@ that end in `.src`); others use templated C++ functions combined with code
 generation tools that can be found in `tools/cxxgen`.  The `.src` files are
 processed with the script in `ufunclab/tools/conv_template.py`.
 
-*Functions that reduce a one-dimensional sequence to one or two numbers.*
+*Functions that reduce a one-dimensional array to one or two numbers.*
 
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
