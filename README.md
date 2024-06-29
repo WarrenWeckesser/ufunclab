@@ -82,6 +82,8 @@ that end in `.src`); others use templated C++ functions combined with code
 generation tools that can be found in `tools/cxxgen`.  The `.src` files are
 processed with the script in `ufunclab/tools/conv_template.py`.
 
+*Functions that reduce a one-dimensional sequence to one or two numbers.*
+
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
 | [`first`](#first)                               | First value that matches a target comparison          |
@@ -104,13 +106,19 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`gini`](#gini)                                 | Gini coefficient                                      |
 | [`rms`](#rms)                                   | Root-mean-square for real and complex inputs          |
 | [`vnorm`](#vnorm)                               | Vector norm                                           |
+
+*Functions that reduce two one-dimensional arrays to a number.*
+
+| Function                                        | Description                                           |
+| --------                                        | -----------                                           |
 | [`vdot`](#vdot)                                 | Vector dot product for real floating point arrays     |
 | [`pearson_corr`](#pearson_corr)                 | Pearson's product-moment correlation coefficient      |
 | [`wjaccard`](#wjaccard)                         | Weighted Jaccard index.                               |
-| [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
-| [`cross3`](#cross3)                             | 3-d vector cross product                              |
-| [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
-| [`tri_area_indexed`](#tri_area_indexed)         | Area of triangles in n-dimensional space              |
+
+*Functions that transform a one-dimensional array to another one-dimensional array.*
+
+| Function                                        | Description                                           |
+| --------                                        | -----------                                           |
 | [`fillnan1d`](#fillnan1d)                       | Replace `nan` using linear interpolation              |
 | [`linear_interp1d`](#linear_interp1d)           | Linear interpolation, like `numpy.interp`             |
 | [`backlash`](#backlash)                         | Backlash operator                                     |
@@ -118,6 +126,15 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
 | [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
 | [`sosfilter_ic_contig`](#sosfilter_ic_contig)   | SOS linear filter with contiguous array inputs        |
+
+*Other functions.*
+
+| Function                                        | Description                                           |
+| --------                                        | -----------                                           |
+| [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
+| [`cross3`](#cross3)                             | 3-d vector cross product                              |
+| [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
+| [`tri_area_indexed`](#tri_area_indexed)         | Area of triangles in n-dimensional space              |
 | [`multivariate_logbeta`](#multivariate_logbeta) | Logarithm of the multivariate beta function           |
 
 *Other tools*
