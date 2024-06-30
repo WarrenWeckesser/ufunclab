@@ -40,7 +40,7 @@ static void multivariate_logbeta_core(
 )
 {
     if (n == 0) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     if (x_stride == sizeof(T)) {

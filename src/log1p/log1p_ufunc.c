@@ -353,7 +353,7 @@ log1p_theorem4_F_F_loop(char **args, const npy_intp *dimensions,
         complex_float z = *(complex_float *) in;
 
         if (isnan(crealf(z)) || isnan(cimagf(z))) {
-            w = CMPLXF(NAN, NAN);
+            w = CMPLXF(NPY_NAN, NPY_NAN);
         }
         else {
             w = log1pf_theorem4(z);
@@ -376,7 +376,7 @@ log1p_theorem4_D_D_loop(char **args, const npy_intp *dimensions,
         complex_double z = *(complex_double *) in;
 
         if (isnan(creal(z)) || isnan(cimag(z))) {
-            w = CMPLX(NAN, NAN);
+            w = CMPLX(NPY_NAN, NPY_NAN);
         }
         else {
             w = log1p_theorem4(z);
@@ -399,7 +399,7 @@ log1p_doubledouble_F_F_loop(char **args, const npy_intp *dimensions,
         complex_float z = *(complex_float *) in;
 
         if (isnan(crealf(z)) || isnan(cimagf(z))) {
-            w = CMPLXF(NAN, NAN);
+            w = CMPLXF(NPY_NAN, NPY_NAN);
         }
         else {
             w = log1pf_doubledouble(z);
@@ -422,7 +422,7 @@ log1p_doubledouble_D_D_loop(char **args, const npy_intp *dimensions,
         complex_double z = *(complex_double *) in;
 
         if (isnan(creal(z)) || isnan(cimag(z))) {
-            w = CMPLX(NAN, NAN);
+            w = CMPLX(NPY_NAN, NPY_NAN);
         }
         else {
             w = log1p_doubledouble(z);

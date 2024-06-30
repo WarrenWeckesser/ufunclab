@@ -39,7 +39,7 @@ static void logfactorial_int32_loop(char **args, const npy_intp *dimensions,
         // the C function logfactorial(x).
         int64_t x = (int64_t) *(int32_t *)in;
         if (x < 0) {
-            *((double *)out) = NAN;
+            *((double *)out) = NPY_NAN;
         }
         else {
             *((double *)out) = logfactorial(x);
@@ -58,7 +58,7 @@ static void logfactorial_int64_loop(char **args, const npy_intp *dimensions,
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
         int64_t x = *(int64_t *)in;
         if (x < 0) {
-            *((double *)out) = NAN;
+            *((double *)out) = NPY_NAN;
         }
         else {
             *((double *)out) = logfactorial(x);

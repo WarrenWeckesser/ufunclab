@@ -85,7 +85,7 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
             }
         }
         if (has_neg) {
-            *(@ctype_out@ *) out = NAN;
+            *(@ctype_out@ *) out = NPY_NAN;
         }
         else if (has_zero) {
             *(@ctype_out@ *) out = 0.0;        

@@ -92,20 +92,20 @@ static void pearson_corr_int_core(
 )
 {
     if (n == 1) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     if (n == 2) {
         T x0 = *p_x;
         T x1 = get(p_x, x_stride, 1);
         if (x0 == x1) {
-            *p_out = NAN;
+            *p_out = NPY_NAN;
             return;
         }
         T y0 = *p_y;
         T y1 = get(p_y, y_stride, 1);
         if (y0 == y1) {
-            *p_out = NAN;
+            *p_out = NPY_NAN;
             return;
         }
         if (((x0 < x1) && (y0 < y1)) || ((x0 > x1) && (y0 > y1))) {
@@ -120,7 +120,7 @@ static void pearson_corr_int_core(
     U xmean = strided_mean<T, U>(n, p_x, x_stride);
     U x_delta_maxabs = strided_delta_maxabs<T, U>(n, p_x, x_stride, xmean);
     if (x_delta_maxabs == 0) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     U xnorm = strided_delta_norm<T, U>(n, p_x, x_stride, xmean, x_delta_maxabs);
@@ -128,7 +128,7 @@ static void pearson_corr_int_core(
     U ymean = strided_mean<T, U>(n, p_y, y_stride);
     U y_delta_maxabs = strided_delta_maxabs<T, U>(n, p_y, y_stride, ymean);
     if (y_delta_maxabs == 0) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     U ynorm = strided_delta_norm<T, U>(n, p_y, y_stride, ymean, y_delta_maxabs);
@@ -154,20 +154,20 @@ static void pearson_corr_core(
 )
 {
     if (n == 1) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     if (n == 2) {
         T x0 = *p_x;
         T x1 = get(p_x, x_stride, 1);
         if (!std::isfinite(x0) || !std::isfinite(x1) || (x0 == x1)) {
-            *p_out = NAN;
+            *p_out = NPY_NAN;
             return;
         } 
         T y0 = *p_y;
         T y1 = get(p_y, y_stride, 1);
         if (!std::isfinite(y0) || !std::isfinite(y1) || (y0 == y1)) {
-            *p_out = NAN;
+            *p_out = NPY_NAN;
             return;
         }
         if (((x0 < x1) && (y0 < y1)) || ((x0 > x1) && (y0 > y1))) {
@@ -182,7 +182,7 @@ static void pearson_corr_core(
     U xmean = strided_mean<T, U>(n, p_x, x_stride);
     U x_delta_maxabs = strided_delta_maxabs<T, U>(n, p_x, x_stride, xmean);
     if (x_delta_maxabs == 0) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     U xnorm = strided_delta_norm<T, U>(n, p_x, x_stride, xmean, x_delta_maxabs);
@@ -190,7 +190,7 @@ static void pearson_corr_core(
     U ymean = strided_mean<T, U>(n, p_y, y_stride);
     U y_delta_maxabs = strided_delta_maxabs<T, U>(n, p_y, y_stride, ymean);
     if (y_delta_maxabs == 0) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     U ynorm = strided_delta_norm<T, U>(n, p_y, y_stride, ymean, y_delta_maxabs);

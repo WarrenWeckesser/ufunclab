@@ -57,7 +57,7 @@ static void fillnan1d_@typename@_loop(char **args, const npy_intp *dimensions,
         if (k == dimensions[1]) {
             // All values are nan.  Fill output with nan.
             for (int i = 0; i < dimensions[1]; ++i) {
-                *((@ctype@ *) (pout + i*steps[3])) = NAN;
+                *((@ctype@ *) (pout + i*steps[3])) = NPY_NAN;
             }
         }
         else {

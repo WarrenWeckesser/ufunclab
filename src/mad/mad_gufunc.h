@@ -120,7 +120,7 @@ static void gini_core(
     T denom = (*p_unbiased) ? (n - 1)*total : n*total;
 
     if (sum == 0 && denom == 0) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
 #ifdef __clang__
         feclearexcept(FE_INVALID);
 #endif

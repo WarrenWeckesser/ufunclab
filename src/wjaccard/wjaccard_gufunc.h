@@ -37,7 +37,7 @@ static void wjaccard_realtype_core(
     // The gufunc is configured to require n > 0, so it is safe to
     // dereference p_x and p_y without first checking that n > 0.
     if (std::isnan(*p_x) || std::isnan(*p_y)) {
-        *p_out = NAN;
+        *p_out = NPY_NAN;
         return;
     }
     U numer = std::min(*p_x, *p_y);
@@ -46,7 +46,7 @@ static void wjaccard_realtype_core(
         T xk = get(p_x, x_stride, k);
         T yk = get(p_y, y_stride, k);
         if (std::isnan(xk) || std::isnan(yk)) {
-            *p_out = NAN;
+            *p_out = NPY_NAN;
             return;
         }
         numer += std::min(xk, yk);
@@ -54,7 +54,7 @@ static void wjaccard_realtype_core(
     }
     if (denom == 0) {
         if (numer == 0) {
-            *p_out = NAN;
+            *p_out = NPY_NAN;
         }
         else {
             *p_out = -INFINITY;
@@ -93,7 +93,7 @@ static void wjaccard_integer_core(
     }
     if (denom == 0) {
         if (numer == 0) {
-            *p_out = NAN;
+            *p_out = NPY_NAN;
         }
         else {
             *p_out = -INFINITY;

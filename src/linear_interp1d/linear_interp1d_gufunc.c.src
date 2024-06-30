@@ -98,7 +98,7 @@ static void linear_interp1d_@typename@_loop(char **args, const npy_intp *dimensi
             // No extrapolation. Output is NAN if x is outside the values
             // given in xp.
             for (int j = 0; j < nloops; ++j, pout += out_stride) {
-                *((@ctype@ *) pout) = NAN;
+                *((@ctype@ *) pout) = NPY_NAN;
             }
             return;
         }
@@ -127,7 +127,7 @@ static void linear_interp1d_@typename@_loop(char **args, const npy_intp *dimensi
     for (int j = 0; j < nloops; ++j, px += steps[0], pxp += steps[1], pfp += steps[2],
                                      pout += out_stride) {
         if (n < 1) {
-            *((@ctype@ *) pout) = NAN;
+            *((@ctype@ *) pout) = NPY_NAN;
             continue;
         }
         @ctype@ x = *((@ctype@ *) px);
@@ -136,7 +136,7 @@ static void linear_interp1d_@typename@_loop(char **args, const npy_intp *dimensi
         if ((x < left) || (x > right)) {
             // No extrapolation. Output is NAN if x is outside the values
             // given in xp.
-            *((@ctype@ *) pout) = NAN;
+            *((@ctype@ *) pout) = NPY_NAN;
             continue;
         }
 
