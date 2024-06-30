@@ -745,7 +745,7 @@ the result of the ``timeit`` call is 0.6 seconds.
 ```
 >>> from timeit import timeit
 >>> x = np.ones(100000)
->>> x[-] = 0
+>>> x[-1] = 0
 >>> first(x, op.LT, 1.0, np.nan)
 0.0
 >>> timeit('first(x, op.LT, 1.0, np.nan)', number=20000, globals=globals())
