@@ -43,3 +43,6 @@ classifiers = [
     'Operating System :: Unix',
     'Operating System :: MacOS',
 ]
+
+[tool.meson-python.args]
+setup = ['-Doptimization=3']
