@@ -119,23 +119,23 @@ first = UFunc(
 argfirst_src = UFuncSource(
     funcname='argfirst_core_calc',
     typesignatures=[
-        'bbb->l',
-        'BbB->l',
-        'hbh->l',
-        'HbH->l',
-        'ibi->l',
-        'IbI->l',
-        'lbl->l',
-        'LbL->l',
-        'fbf->l',
-        'dbd->l',
-        'gbg->l',
+        'bbb->p',
+        'BbB->p',
+        'hbh->p',
+        'HbH->p',
+        'ibi->p',
+        'IbI->p',
+        'lbl->p',
+        'LbL->p',
+        'fbf->p',
+        'dbd->p',
+        'gbg->p',
     ]
 )
 
 argfirst_src_object = UFuncSource(
     funcname='argfirst_core_calc_object',
-    typesignatures=['ObO->l']
+    typesignatures=['ObO->p']
 )
 
 argfirst = UFunc(
