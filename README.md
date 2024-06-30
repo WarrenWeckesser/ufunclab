@@ -1703,7 +1703,7 @@ It generates the following plot:
 
 #### `backlash`
 
-`backlash(x, deadband, initial)`, a gufunc with signature `(i),(),()->(i)`,
+`backlash(x, deadband, initial)`, a gufunc with signature `(n),(),()->(n)`,
 computes the "backlash" response of a signal; see the Wikipedia article
 [Backlash (engineering)](https://en.wikipedia.org/wiki/Backlash_(engineering)).
 The function emulates the
@@ -1733,7 +1733,7 @@ the plot
 #### `hysteresis_relay`
 
 `hysteresis_relay(x, low_threshold, high_threshold, low_value, high_value, init)`,
-a gufunc with signature `(i),(),(),(),(),()->(i)`, passes `x` through a relay with
+a gufunc with signature `(n),(),(),(),(),()->(n)`, passes `x` through a relay with
 hysteresis (like a [Schmitt trigger](https://en.wikipedia.org/wiki/Schmitt_trigger)).
 The function is similar to the
 [relay block](https://www.mathworks.com/help/simulink/slref/relay.html)
