@@ -521,6 +521,14 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
         return NULL;
     }}
 """)
+    if extmod.extra_module_funcs is not None:
+        for funcname in extmod.extra_module_funcs:
+            text.append(f"""
+    if ({funcname}(module)) {{
+        Py_DECREF(module);
+        return NULL;
+    }}
+""")
     text.append('    return module;')
     text.append('}')
 

@@ -59,6 +59,8 @@ class UFuncExtMod:
     # in the extension module.
     ufuncs: List[UFunc]
 
+    extra_module_funcs: List[str] = None
+
 
 @dataclass
 class Func:

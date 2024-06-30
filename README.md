@@ -14,7 +14,7 @@ installing, run
 
     pytest --pyargs ufunclab
 
-To build `ufunclab`, a C99-compatible C compiler and a C++14-compatible C++
+To build `ufunclab`, a C99-compatible C compiler and a C++17-compatible C++
 compiler are required.
 
 The unit tests require [pytest](https://docs.pytest.org/).
