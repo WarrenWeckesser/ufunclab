@@ -41,18 +41,20 @@ from ._next import next_greater, next_less
 
 from ._gendot_wrap import gendot
 from ._ufunc_inspector import ufunc_inspector
-from .normal import _erfcx as erfcx
+from .normal import erfcx
 from . import normal
+# For the public API, we want erfcx in the top-level module
+# instead of in the 'normal' submodule.
+del normal.erfcx
 from . import semivar
+from ._version import __version__
 
 import numpy as _np
-
-from ._version import __version__
 
 
 class op:
     """
-    Allowed values for the `op` argument of `argfirst`.
+    Allowed values for the `op` argument of `first` and `argfirst`.
     """
     LT = _np.int8(_LT)
     LE = _np.int8(_LE)
@@ -60,3 +62,6 @@ class op:
     NE = _np.int8(_NE)
     GT = _np.int8(_GT)
     GE = _np.int8(_GE)
+
+
+del _np, _LT, _LE, _EQ, _NE, _GT, _GE

@@ -57,7 +57,7 @@ normal_funcs = [
 
 erfcx_funcs = [
     Func(cxxname='erfcx',
-         ufuncname='_erfcx',
+         ufuncname='erfcx',
          types=['f->f', 'd->d', 'g->g'],
          docstring=erfcx_docstring),
 ]
