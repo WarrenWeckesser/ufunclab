@@ -44,7 +44,7 @@ normal_funcs = [
     Func(cxxname='normal_logcdf',
          ufuncname='logcdf',
          types=['f->f', 'd->d', 'g->g'],
-         docstring=normal_cdf_docstring),
+         docstring=normal_logcdf_docstring),
     Func(cxxname='normal_sf',
          ufuncname='sf',
          types=['f->f', 'd->d', 'g->g'],
@@ -52,7 +52,7 @@ normal_funcs = [
     Func(cxxname='normal_logsf',
          ufuncname='logsf',
          types=['f->f', 'd->d', 'g->g'],
-         docstring=normal_sf_docstring),
+         docstring=normal_logsf_docstring),
 ]
 
 erfcx_funcs = [
