@@ -49,6 +49,7 @@ gufunc_cxx_src_dirs = [
     'all_same',
     'backlash',
     'corr',
+    'cross',
     'first',
     'hysteresis_relay',
     'mad',
@@ -191,7 +192,6 @@ py3.extension_module(
 #----------------------------------------------------------------------
 
 numpy_templated_c_gufunc_dirs = [
-    'cross',
     'fillnan1d',
     'linear_interp1d',
     'means',
