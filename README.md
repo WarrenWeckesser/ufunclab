@@ -30,7 +30,7 @@ and gufuncs are given [below](#resources).
 What's in ufunclab?
 -------------------
 
-*Element-wise ufuncs*
+***Element-wise ufuncs***
 
 Most of the element-wise ufuncs are implemented by writing the core
 calculation as a templated C++ function, and using some Python code to
@@ -74,7 +74,7 @@ are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, `issnan`, and
 | [Normal distribution functions](#normal)      | Functions for the normal distribution: cdf, sf, logcdf, logsf |
 | [Semivariograms](#semivariograms)             | Several semivariograms used in kriging interpolation          |
 
-*Generalized ufuncs*
+***Generalized ufuncs***
 
 Note, for anyone looking at the source code: some of these implementations
 are in C and use the legacy NumPy templating language (look for filenames
