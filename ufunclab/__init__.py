@@ -1,55 +1,96 @@
 """
 NumPy ufuncs and utilities.
 """
-
-from ._logfact import logfactorial
-from ._loggamma1p import loggamma1p
-from ._issnan import issnan
-from ._abs_squared import abs_squared
-from ._cabssq import cabssq
-from ._log1p import log1p_theorem4, log1p_doubledouble
-from ._debye1 import debye1
-from ._expint1 import expint1, logexpint1
-from ._pow1pm1 import pow1pm1
-from ._logistic import logistic, logistic_deriv, log_logistic, swish
-from ._ramp import hyperbolic_ramp, exponential_ramp
-from ._yeo_johnson import yeo_johnson, inv_yeo_johnson
-from ._cross import cross3, cross2
-from ._first import first, argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
-from ._searchsorted import searchsortedl, searchsortedr
-from ._peaktopeak import peaktopeak
-from ._minmax import argmin, argmax, minmax, argminmax, min_argmin, max_argmax
-from ._multivariate_logbeta import multivariate_logbeta
-from ._means import gmean, hmean
-from ._meanvar import meanvar
-from ._corr import pearson_corr
-from ._wjaccard import wjaccard
-from ._mad import mad, rmad, gini
-from ._vnorm import vnorm, rms, vdot
-from ._tri_area import tri_area, tri_area_indexed
-from ._backlash import backlash
-from ._fillnan1d import fillnan1d
-from ._linear_interp1d import linear_interp1d
-from ._deadzone import deadzone
-from ._trapezoid_pulse import trapezoid_pulse
-from ._hysteresis_relay import hysteresis_relay
-from ._all_same import all_same
-from ._sosfilter import sosfilter, sosfilter_ic, sosfilter_ic_contig
-
-from ._step import step, linearstep, smoothstep3, invsmoothstep3, smoothstep5
-from ._next import next_greater, next_less
-
-from ._gendot_wrap import gendot
-from ._ufunc_inspector import ufunc_inspector
-from .normal import erfcx
+import importlib as _imp
+# To allow moving 'erfcx' from the 'normal' submodule to the
+# top-level namespace here in __init__.py, 'normal' is not
+# lazy-loaded.
 from . import normal
-# For the public API, we want erfcx in the top-level module
-# instead of in the 'normal' submodule.
+from .normal import erfcx
 del normal.erfcx
-from . import semivar
-from ._version import __version__
 
+# To allow `op` to be created here, ._first is not lazy-loaded.
+# It is imported here to have access to the constants _LT, _LE, etc.
+from ._first import first, argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
 import numpy as _np
+
+
+# The keys of this dict are in modules that are lazy-loaded.
+_name_to_module = {
+    'logfactorial': '._logfact',
+    'loggamma1p': '._loggamma1p',
+    'issnan': '._issnan',
+    'abs_squared': '._abs_squared',
+    'cabssq': '._cabssq',
+    'log1p_theorem4': '._log1p',
+    'log1p_doubledouble': '._log1p',
+    'debye1': '._debye1',
+    'expint1': '._expint1',
+    'logexpint1': '._expint1',
+    'pow1pm1': '._pow1pm1',
+    'logistic': '._logistic',
+    'logistic_deriv': '._logistic',
+    'log_logistic': '._logistic',
+    'swish': '._logistic',
+    'hyperbolic_ramp': '._ramp',
+    'exponential_ramp': '._ramp',
+    'yeo_johnson': '._yeo_johnson',
+    'inv_yeo_johnson': '._yeo_johnson',
+    'cross3': '._cross',
+    'cross2': '._cross',
+    'searchsortedl': '._searchsorted',
+    'searchsortedr': '._searchsorted',
+    'peaktopeak': '._peaktopeak',
+    'argmin': '._minmax',
+    'argmax': '._minmax',
+    'minmax': '._minmax',
+    'argminmax': '._minmax',
+    'min_argmin': '._minmax',
+    'max_argmax': '._minmax',
+    'multivariate_logbeta': '._multivariate_logbeta',
+    'gmean': '._means',
+    'hmean': '._means',
+    'meanvar': '._meanvar',
+    'pearson_corr': '._corr',
+    'wjaccard': '._wjaccard',
+    'mad': '._mad',
+    'rmad': '._mad',
+    'gini': '._mad',
+    'vnorm': '._vnorm',
+    'rms': '._vnorm',
+    'vdot': '._vnorm',
+    'tri_area': '._tri_area',
+    'tri_area_indexed': '._tri_area',
+    'backlash': '._backlash',
+    'fillnan1d': '._fillnan1d',
+    'linear_interp1d': '._linear_interp1d',
+    'deadzone': '._deadzone',
+    'trapezoid_pulse': '._trapezoid_pulse',
+    'hysteresis_relay': '._hysteresis_relay',
+    'all_same': '._all_same',
+    'sosfilter': '._sosfilter',
+    'sosfilter_ic': '._sosfilter',
+    'sosfilter_ic_contig': '._sosfilter',
+    'step': '._step',
+    'linearstep': '._step',
+    'smoothstep3': '._step',
+    'invsmoothstep3': '._step',
+    'smoothstep5': '._step',
+    'next_greater': '._next',
+    'next_less': '._next',
+    'gendot': '._gendot_wrap',
+    'ufunc_inspector': '._ufunc_inspector',
+    '__version__': '._version',
+}
+
+
+def __getattr__(name):
+    try:
+        module_name = _name_to_module[name]
+    except Exception:
+        raise AttributeError
+    module = _imp.import_module(module_name, __name__)
+    return getattr(module, name)
 
 
 class op:
@@ -65,3 +106,10 @@ class op:
 
 
 del _np, _LT, _LE, _EQ, _NE, _GT, _GE
+
+__all__ = sorted(list(_name_to_module.keys()) +
+                 ['first', 'argfirst', 'op'])
+
+
+def __dir__():
+    return __all__
