@@ -1477,8 +1477,6 @@ For example,
 >>> cross2([[1, 2], [6, 0]], [[5, 3], [2, 3]])
 array([-7, 18])
 
->>> cross2([1j, 3], [-1j, 2+3j])
-(-3+5j)
 ```
 
 In the following, `a` and `b` are object arrays; `a` has shape (2,),
