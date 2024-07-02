@@ -63,7 +63,12 @@ tri_area_common_calc(
     // a, b, and c are the lengths of the sides of the triangle,
     // in decreasing order.
 
-    // Numerically stable Heron's formula.
+    // Numerically stable version of Heron's formula.  See for details:
+    //
+    //   W. Kahan, "Miscalculatiing area and angles of a needle-like
+    //   triangle", 2014, preprint available at
+    //   https://people.eecs.berkeley.edu/~wkahan/Triangle.pdf
+    //
     T f1 = a + (b + c);
     T f2 = (c - (a - b));
     T f3 = (c + (a - b));
