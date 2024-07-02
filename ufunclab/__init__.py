@@ -85,6 +85,11 @@ _name_to_module = {
 
 
 def __getattr__(name):
+    if name == 'semivar':
+        # XXX 'semivar' is currently the only public submodule that is
+        # lazily loaded.  If more are added, this special case handling
+        # can be generalized.
+        return _imp.import_module('.' + name, __name__)
     try:
         module_name = _name_to_module[name]
     except Exception:
