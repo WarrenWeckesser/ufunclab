@@ -62,6 +62,7 @@ _name_to_module = {
     'tri_area': '._tri_area',
     'tri_area_indexed': '._tri_area',
     'backlash': '._backlash',
+    'backlash_sum': '._backlash',
     'fillnan1d': '._fillnan1d',
     'linear_interp1d': '._linear_interp1d',
     'deadzone': '._deadzone',

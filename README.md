@@ -121,6 +121,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | --------                                        | -----------                                           |
 | [`fillnan1d`](#fillnan1d)                       | Replace `nan` using linear interpolation              |
 | [`backlash`](#backlash)                         | Backlash operator                                     |
+| [`backlash_sum`](#backlash_sum)                 | Sum backlash operators (Prandtl-Ishlinkskii)          |
 | [`hysteresis_relay`](#hysteresis_relay)         | Relay with hysteresis (Schmitt trigger)               |
 | [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
 | [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
@@ -1727,6 +1728,43 @@ the plot
 
 ![Backlash plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/backlash_demo.png)
 
+#### `backlash_sum`
+
+`backlash_sum` computes the linear combination of `m` `backlash` operations.
+This is known as the Prandtl-Ishlinskii hysteresis model.  The function is a gufunc
+with signature `(n),(m),(m),(m)->(n),(m)`.  The second return value is the final value of
+each of the backlash processes.
+
+For example,
+
+```
+>>> import numpy as np
+>>> from ufunclab import backlash_sum
+
+>>> x = np.array([0.0, 0.2, 0.5, 1.1, 1.25, 1.0, 0.2, -1])
+
+Here the weights are all the same and happen to sum to 1, but that
+is not required in general.
+
+>>> w = np.array([0.25, 0.25, 0.25, 0.25])
+>>> deadband = np.array([0.2, 0.4, 0.6, 0.8])
+>>> initial = np.zeros(4)
+
+>>> y, final = backlash_sum(x, w, deadband, initial)
+>>> y
+array([ 0.    ,  0.025 ,  0.25  ,  0.85  ,  1.    ,  0.9875,  0.45  , -0.75  ])
+```
+
+-----
+
+Another example is in the script `backlash_sum_demo.py` in the `examples` directory.
+It passes two cycles of a sine wave through a Prandtl-Ishlinskii model with three
+backlash operations.  The weights are `w = [0.25, 1.0, 0.5]`, the deadband values
+are `[0.5, 1.0, 2.0]` and the initial values are all zero.
+
+![Backlash_sum plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/backlash_sum_demo_x_vs_t.png)
+
+![Backlash_sum plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/backlash_sum_demo_y_vs_x.png)
 
 #### `hysteresis_relay`
 

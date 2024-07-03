@@ -1,6 +1,6 @@
 import numpy as np
-from numpy.testing import assert_array_equal
-from ufunclab import backlash
+from numpy.testing import assert_array_equal, assert_allclose
+from ufunclab import backlash, backlash_sum
 
 
 def test_all_zeros():
@@ -50,3 +50,18 @@ def test_out_nonstandard_strides():
     y1 = backlash(x, 1, 1)
     y2 = backlash(x, 1, 1, out=out)
     assert_array_equal(y1, y2)
+
+
+def test_backlash_sum():
+    x = np.array([0.25, 0.5, 10.0, 0.125, 0.2, 0.2, 0.2, 0.2])
+    w = np.array([0.5, 3.0, 2.0])
+    deadband = np.array([0.5, 1.0, 0.75])
+    initial = np.array([1.5, 5.0, -2.0])
+    yb = []
+    for k in range(3):
+        y = backlash(x, deadband[k], initial[k])
+        yb.append(y)
+    yb = np.array(yb)
+    yy, final = backlash_sum(x, w, deadband, initial)
+    assert_allclose(yy, w@yb, rtol=1e-14)
+    assert_allclose(final, yb[:, -1], rtol=1e-14)
