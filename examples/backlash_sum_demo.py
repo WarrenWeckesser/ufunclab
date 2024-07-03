@@ -5,21 +5,21 @@ from ufunclab import backlash_sum
 
 
 t = np.linspace(0, 4*np.pi, 1000)
-x = np.sin(t)
+x = 2*np.sin(t)
 
-w = np.array([0.25, 1.0, 1.25])
-deadband = np.array([0.5, 1.0, 2.0])
+w = np.array([0.125, 0.25, 0.25])
+deadband = np.array([0.5, 1.0, 1.5])
 initial = np.zeros(3)
 
 y, final = backlash_sum(x, w, deadband, initial)
-
 
 plt.figure(figsize=(6, 4))
 plt.plot(t, x, linewidth=2, label='x(t)')
 plt.plot(t, y, '--', linewidth=2, label='backlash_sum(x(t))')
 plt.xlabel('t')
 plt.title('backlash_sum')
-plt.legend(shadow=True)
+plt.legend(shadow=True, loc='upper right')
+plt.xlim(-0.99, 14.5)
 plt.grid(alpha=0.6)
 plt.savefig('backlash_sum_demo_x_vs_t.png')
 

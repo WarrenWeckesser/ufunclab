@@ -1757,10 +1757,11 @@ array([ 0.    ,  0.025 ,  0.25  ,  0.85  ,  1.    ,  0.9875,  0.45  , -0.75  ])
 
 -----
 
-Another example is in the script `backlash_sum_demo.py` in the `examples` directory.
-It passes two cycles of a sine wave through a Prandtl-Ishlinskii model with three
-backlash operations.  The weights are `w = [0.25, 1.0, 0.5]`, the deadband values
-are `[0.5, 1.0, 2.0]` and the initial values are all zero.
+Another example is in the script `backlash_sum_demo.py` in the `examples`
+directory. It passes two cycles of a sine wave with amplitude 2 through a
+Prandtl-Ishlinskii model with three backlash operations.  The weights are
+`w = [0.125, 0.25, 0.25]`, the deadband values are `[0.5, 1.0, 1.5]`, and
+the initial values are all zero.
 
 ![Backlash_sum plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/backlash_sum_demo_x_vs_t.png)
 
