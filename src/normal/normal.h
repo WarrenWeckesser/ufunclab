@@ -24,7 +24,7 @@ T normal_cdf(T x)
 }
 
 //
-// The survival function (akak complementary CDF) of the standard
+// The survival function (aka complementary CDF) of the standard
 // normal distribution.
 //
 // The function computes 1 - CDF(x).
