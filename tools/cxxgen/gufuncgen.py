@@ -6,6 +6,53 @@ from generate_utils import typechar_to_npy_ctype
 
 
 def classify_typenames(types):
+    """
+    Identify unique types from a list of type signatures.
+
+    Given a list of ufunc type signatures, this function returns two
+    values:
+
+    * A list of strings containing the unique character codes found in the
+      signatures, but only those where the type in a given position is not
+      the same in all the type signatures. These are the types that will be
+      used to instantiate templated core functions.
+    * a list with length `nin + nout`, where each element in the list is
+      either an integer that is an index into the first return value (if
+      there are varying types in the corresponding position in the input
+      list of types), or the type code that was found in all types in that
+      position.
+
+    Examples
+    --------
+    >>> types = ['ff?->fp',
+    ...          'dd?->dp',
+    ...          'gg?->gp']
+    ...
+    >>> classify_typenames(types)
+    (['fdg'], [0, 0, '?', 0, 'p'])
+
+    In the above example, note that in the columns of the aligned strings,
+    the types are either all the same (`?` and `p`), or contain the sequence
+    `'fdg'`.  That is the only string in first return value.  The integers
+    in the second return value are all zero, so they refer to the first
+    item in the first return value.
+
+    >>> types = ['ii?->fp',
+    ...          'ff?->fp',
+    ...          'dd?->dp',
+    ...          'gg?->gp']
+    ...
+    >>> classify_typenames(types)
+    (['ifdg', 'ffdg'], [0, 0, '?', 1, 'p'])
+
+    In this example, among the columns of types that are not constant, there
+    are two distinct sequences: `'ifdg'` and `'ffdg'`.  These are the values
+    in the first return value.  The first two integers in the second return
+    value are 0, so they refer to the sequence `'ifdg'`.  The third integer
+    that occurs in the second return value is 1, so it refers to the sequence
+    `'ffdg'`.
+
+    """
     types = np.array([list(t.replace('->', '')) for t in types])
     w = [''.join(c) for c in types.T]
     uts = []
