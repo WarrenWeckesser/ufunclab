@@ -70,14 +70,6 @@ def classify_typenames(types):
     return uts, result
 
 
-def ordered_unique(w):
-    u = []
-    for item in w:
-        if item not in u:
-            u.append(item)
-    return u
-
-
 def toseq(s):
     s = s.split(',')
     t = []
