@@ -17,6 +17,9 @@
 #include "numpy/ufuncobject.h"
 #include "numpy/halffloat.h"
 
+#ifdef UNDEFINED
+XXX Temporarily disabled...
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc_get_name_cstr copied from numpy/core/src/umath/ufunc_object.c
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -194,6 +197,7 @@ SearchSortedTypeResolver(PyUFuncObject *ufunc,
     return 0;
 }
 
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc inner loops for integer and floating point types.
@@ -447,8 +451,8 @@ static char searchsorted_typecodes[] = {
     NPY_FLOAT,      NPY_FLOAT,      NPY_INTP,
     NPY_DOUBLE,     NPY_DOUBLE,     NPY_INTP,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_INTP,
-    NPY_DATETIME,   NPY_DATETIME,   NPY_INTP,
-    NPY_TIMEDELTA,  NPY_TIMEDELTA,  NPY_INTP,
+    // NPY_DATETIME,   NPY_DATETIME,   NPY_INTP,
+    // NPY_TIMEDELTA,  NPY_TIMEDELTA,  NPY_INTP,
     NPY_OBJECT,     NPY_OBJECT,     NPY_INTP
 };
 
@@ -468,8 +472,8 @@ static PyUFuncGenericFunction searchsorted@side@_funcs[] = {
     (PyUFuncGenericFunction) &searchsorted@side@_float_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_double_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_longdouble_loop,
-    (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
-    (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
+    // (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
+    // (PyUFuncGenericFunction) &searchsorted@side@_int64_loop,
     (PyUFuncGenericFunction) &searchsorted@side@_object_loop
 };
 
@@ -547,7 +551,7 @@ PyMODINIT_FUNC PyInit__searchsorted(void)
         Py_DECREF(module);
         return NULL;
     }
-    searchsorted@side@_gufunc->type_resolver = SearchSortedTypeResolver;
+    // searchsorted@side@_gufunc->type_resolver = SearchSortedTypeResolver;
 
     status = PyModule_AddObject(module, "searchsorted@side@",
                                 (PyObject *) searchsorted@side@_gufunc);

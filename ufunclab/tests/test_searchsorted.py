@@ -26,52 +26,52 @@ def test_object():
     assert_equal(kr, [1, 3])
 
 
-def test_datetime64():
-    sortedarr = np.array([np.datetime64('2001-01-02T19:18:17', 's'),
-                          np.datetime64('2005-05-04T09:30:00', 's'),
-                          np.datetime64('2005-12-01T15:45:00', 's')])
-    elements = np.array([np.datetime64('2005-05-04T09:30', 'm'),
-                         np.datetime64('2007-11-01T05:05', 'm')])
-    kl = searchsortedl(sortedarr, elements)
-    assert_equal(kl, [1, 3])
-    kr = searchsortedr(sortedarr, elements)
-    assert_equal(kr, [2, 3])
+# def test_datetime64():
+#     sortedarr = np.array([np.datetime64('2001-01-02T19:18:17', 's'),
+#                           np.datetime64('2005-05-04T09:30:00', 's'),
+#                           np.datetime64('2005-12-01T15:45:00', 's')])
+#     elements = np.array([np.datetime64('2005-05-04T09:30', 'm'),
+#                          np.datetime64('2007-11-01T05:05', 'm')])
+#     kl = searchsortedl(sortedarr, elements)
+#     assert_equal(kl, [1, 3])
+#     kr = searchsortedr(sortedarr, elements)
+#     assert_equal(kr, [2, 3])
 
 
-def test_timedelta64():
-    sortedarr = np.array([[np.timedelta64(10, 'm'), np.timedelta64(100, 'm')],
-                          [np.timedelta64(20, 'm'), np.timedelta64(100, 'm')],
-                          [np.timedelta64(30, 'm'), np.timedelta64(200, 'm')]])
-    elements = np.array([np.timedelta64(600, 's'), np.timedelta64(6000, 's')])
-    kl = searchsortedl(sortedarr, elements[:, None])
-    assert_equal(kl, [[0, 0, 0],
-                      [1, 1, 1]])
-    kr = searchsortedr(sortedarr, elements[:, None])
-    assert_equal(kr, [[1, 0, 0],
-                      [2, 2, 1]])
-    kl0 = searchsortedl(sortedarr, elements, axis=0)
-    assert_equal(kl0, [0, 0])
-    kr0 = searchsortedr(sortedarr, elements, axis=0)
-    assert_equal(kr0, [1, 2])
+# def test_timedelta64():
+#     sortedarr = np.array([[np.timedelta64(10, 'm'), np.timedelta64(100, 'm')],
+#                           [np.timedelta64(20, 'm'), np.timedelta64(100, 'm')],
+#                           [np.timedelta64(30, 'm'), np.timedelta64(200, 'm')]])
+#     elements = np.array([np.timedelta64(600, 's'), np.timedelta64(6000, 's')])
+#     kl = searchsortedl(sortedarr, elements[:, None])
+#     assert_equal(kl, [[0, 0, 0],
+#                       [1, 1, 1]])
+#     kr = searchsortedr(sortedarr, elements[:, None])
+#     assert_equal(kr, [[1, 0, 0],
+#                       [2, 2, 1]])
+#     kl0 = searchsortedl(sortedarr, elements, axis=0)
+#     assert_equal(kl0, [0, 0])
+#     kr0 = searchsortedr(sortedarr, elements, axis=0)
+#     assert_equal(kr0, [1, 2])
 
 
-@pytest.mark.parametrize('dtype', [str, bytes])
-def test_str_and_bytes(dtype):
-    sortedarr = np.array([['abc', 'def', 'def', 'xyz'],
-                          ['123', 'ABC', 'JKL', 'XYZ']], dtype=dtype)
-    elements = np.array(['aaa', 'abc', 'ghi', 'JKL', 'XYZ', 'zzz'],
-                        dtype=dtype)[:, None]
-    kl = searchsortedl(sortedarr, elements)
-    assert_equal(kl, np.array([[0, 4],
-                               [0, 4],
-                               [3, 4],
-                               [0, 2],
-                               [0, 3],
-                               [4, 4]]))
-    kr = searchsortedr(sortedarr, elements)
-    assert_equal(kr, np.array([[0, 4],
-                               [1, 4],
-                               [3, 4],
-                               [0, 3],
-                               [0, 4],
-                               [4, 4]]))
+# @pytest.mark.parametrize('dtype', [str, bytes])
+# def test_str_and_bytes(dtype):
+#     sortedarr = np.array([['abc', 'def', 'def', 'xyz'],
+#                           ['123', 'ABC', 'JKL', 'XYZ']], dtype=dtype)
+#     elements = np.array(['aaa', 'abc', 'ghi', 'JKL', 'XYZ', 'zzz'],
+#                         dtype=dtype)[:, None]
+#     kl = searchsortedl(sortedarr, elements)
+#     assert_equal(kl, np.array([[0, 4],
+#                                [0, 4],
+#                                [3, 4],
+#                                [0, 2],
+#                                [0, 3],
+#                                [4, 4]]))
+#     kr = searchsortedr(sortedarr, elements)
+#     assert_equal(kr, np.array([[0, 4],
+#                                [1, 4],
+#                                [3, 4],
+#                                [0, 3],
+#                                [0, 4],
+#                                [4, 4]]))
