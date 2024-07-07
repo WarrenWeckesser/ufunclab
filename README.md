@@ -19,10 +19,8 @@ compiler are required.
 
 The unit tests require [pytest](https://docs.pytest.org/).
 
-The test suite is run with Python versions 3.9 to 3.12, with several
-recent releases of NumPy up to but not including NumPy 2.0.
-
-*NumPy 2.0 is not yet supported!*
+The test suite is run with Python versions 3.9 to 3.12 and with several
+recent releases of NumPy, including NumPy 2.0.
 
 Links to reference material related to NumPy's C API for ufuncs
 and gufuncs are given [below](#resources).
