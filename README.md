@@ -704,7 +704,7 @@ the following plot.
 
 #### `first`
 
-`first` is a gufunc with signature `(i),(),(),()->()` that returns the first
+`first` is a gufunc with signature `(n),(),(),()->()` that returns the first
 value that matches a given comparison.  The function signature is
 `first(x, op, target, otherwise)`, where `op` is one of the values in
 `ufunclab.op` that specifies the comparison to be made. `otherwise` is the
@@ -764,7 +764,7 @@ condition is in the first element of ``x``.
 
 #### `argfirst`
 
-`argfirst` is a gufunc (signature `(i),(),()->()`) that finds the index of
+`argfirst` is a gufunc (signature `(n),(),()->()`) that finds the index of
 the first true value of a comparison of an array with a target value.  If no
 value is found, -1 is return.  Some examples follow.
 
@@ -817,7 +817,7 @@ array([-1,  0,  2,  2])
 
 #### `argmin`
 
-`argmin` is a `gufunc` with signature `(i)->()` that is similar to `numpy.argmin`.
+`argmin` is a `gufunc` with signature `(n)->()` that is similar to `numpy.argmin`.
 
 ```
 >>> from ufunclab import argmin
@@ -832,7 +832,7 @@ array([0, 0, 0, 2, 2])
 
 #### `argmax`
 
-`argmax` is a `gufunc` with signature `(i)->()` that is similar to `numpy.argmax`.
+`argmax` is a `gufunc` with signature `(n)->()` that is similar to `numpy.argmax`.
 
 ```
 >>> from ufunclab import argmax
@@ -847,7 +847,7 @@ array([1, 1, 1, 0, 0])
 
 #### `minmax`
 
-`minmax` is a `gufunc` (signature `(i)->(2)`) that simultaneously computes
+`minmax` is a `gufunc` (signature `(n)->(2)`) that simultaneously computes
 the minimum and maximum of a NumPy array.
 
 The function handles the standard integer and floating point types, and
@@ -911,7 +911,7 @@ array([Fraction(1, 3), Fraction(22, 7)], dtype=object)
 
 #### `argminmax`
 
-`argminmax` is a `gufunc` (signature `(i)->(2)`) that simultaneously
+`argminmax` is a `gufunc` (signature `(n)->(2)`) that simultaneously
 computes the `argmin` and `argmax` of a NumPy array.
 
 ```
@@ -930,7 +930,7 @@ array([[0, 2, 1, 0, 2, 2, 2, 1],
 
 #### `min_argmin`
 
-`min_argmin` is a gufunc (signature `(i)->(),()`) that returns both
+`min_argmin` is a gufunc (signature `(n)->(),()`) that returns both
 the extreme value and the index of the extreme value.
 
 ```
@@ -943,7 +943,7 @@ the extreme value and the index of the extreme value.
 
 #### `max_argmax`
 
-`max_argmax` is a gufunc (signature `(i)->(),()`) that returns both
+`max_argmax` is a gufunc (signature `(n)->(),()`) that returns both
 the extreme value and the index of the extreme value.
 
 ```
@@ -961,7 +961,7 @@ the extreme value and the index of the extreme value.
 
 #### `searchsortedl`
 
-`searchsortedl` is a gufunc with signature `(i),()->()`.  The function
+`searchsortedl` is a gufunc with signature `(n),()->()`.  The function
 is equivalent to `numpy.searchsorted` with `side='left'`, but as a gufunc,
 it supports broadcasting of its arguments.  (Note that `searchsortedl`
 does not provide the `sorter` parameter.)
@@ -982,7 +982,7 @@ array([[2, 4],
 
 #### `searchsortedr`
 
-`searchsortedr` is a gufunc with signature `(i),()->()`.  The function
+`searchsortedr` is a gufunc with signature `(n),()->()`.  The function
 is equivalent to `numpy.searchsorted` with `side='right'`, but as a gufunc,
 it supports broadcasting of its arguments.  (Note that `searchsortedr`
 does not provide the `sorter` parameter.)
@@ -1004,7 +1004,7 @@ array([[3, 6],
 
 #### `peaktopeak`
 
-`peaktopeak` is a `gufunc` (signature `(i)->()`) that computes the
+`peaktopeak` is a `gufunc` (signature `(n)->()`) that computes the
 peak-to-peak range of a NumPy array.  It is like the `ptp` method
 of a NumPy array, but when the input is signed integers, the output
 is an unsigned integer with the same bit width.
@@ -1051,7 +1051,7 @@ array([Fraction(59, 21), Fraction(8, 9)], dtype=object)
 
 #### `all_same`
 
-`all_same` is a gufunc (signature `(i)->()`) that tests that all the
+`all_same` is a gufunc (signature `(n)->()`) that tests that all the
 values in the array along the given axis are the same.
 
 (Note: handling of `datetime64`, `timedelta64` and complex data types
@@ -1083,7 +1083,7 @@ array([ True, False, False])
 
 #### `gmean`
 
-`gmean` is a gufunc (signature `(i)->()`) that computes the
+`gmean` is a gufunc (signature `(n)->()`) that computes the
 [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean).
 
 For example,
@@ -1108,7 +1108,7 @@ array([ 2.60517108,  7.87256685, 12.92252305])
 
 #### `hmean`
 
-`hmean` is a gufunc (signature `(i)->()`) that computes the
+`hmean` is a gufunc (signature `(n)->()`) that computes the
 [harmonic mean](https://en.wikipedia.org/wiki/Harmonic_mean).
 
 For example,
@@ -1216,7 +1216,7 @@ array([0.04      , 0.13333333, 0.22666667])
 #### `rmad`
 
 `rmad(x, unbiased)` computes the relative mean absolute difference (gufunc
-signature is `(i),()->()`).
+signature is `(n),()->()`).
 
 `rmad` is twice the [Gini coefficient](https://en.wikipedia.org/wiki/Gini_coefficient).
 
@@ -1314,7 +1314,7 @@ An equivalent NumPy expression:
 #### `vnorm`
 
 `vnorm(x, p)` computes the vector p-norm of 1D arrays.  It is a gufunc with
-signatue `(i), () -> ()`.
+signatue `(n), () -> ()`.
 
 For example, to compute the 2-norm of [3, 4]:
 ```
@@ -1567,7 +1567,7 @@ array([6.2249498 , 7.46449931, 0.70710678, 0.70710678])
 
 #### `fillnan1d`
 
-`fillnan1d(x)` is a gufunc with signature `(i)->(i)`.  It uses linear
+`fillnan1d(x)` is a gufunc with signature `(n)->(n)`.  It uses linear
 interpolation to replace occurrences of `nan` in `x`.
 
 ```
@@ -1809,11 +1809,11 @@ Compare to
 
 #### `gendot`
 
-`gendot` creates a new gufunc (with signature `(i),(i)->()`) that is
+`gendot` creates a new gufunc (with signature `(n),(n)->()`) that is
 the composition of two ufuncs.  The first ufunc must be an element-wise
 ufunc with two inputs and one output.  The second must be either another
 element-wise ufunc with two inputs and one output, or a gufunc with
-signature `(i)->()`.
+signature `(n)->()`.
 
 The name `gendot` is from "generalized dot product".  The standard
 dot product is the composition of element-wise multiplication and
@@ -1835,14 +1835,14 @@ and then take the maximum of the result:
 1.9
 ```
 
-`minmaxdot` is a gufunc with signature `(i),(i)->()`;  the type
+`minmaxdot` is a gufunc with signature `(n),(n)->()`;  the type
 signatures of the gufunc loop functions were derived by matching
 the signatures of the ufunc loop functions for `np.minimum` and
 `np.maximum`:
 
 ```
 >>> minmaxdot.signature
-'(i),(i)->()'
+'(n),(n)->()'
 
 >>> print(minmaxdot.types)
 ['??->?', 'bb->b', 'BB->B', 'hh->h', 'HH->H', 'ii->i', 'II->I', 'll->l',

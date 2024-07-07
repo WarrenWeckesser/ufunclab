@@ -471,7 +471,7 @@ PyMODINIT_FUNC PyInit__peaktopeak(void)
                             PEAKTOPEAK_NTYPES, nin, nout,
                             PyUFunc_None, "peaktopeak",
                             PEAKTOPEAK_DOCSTRING, 0,
-                            "(i)->()");
+                            "(n)->()");
     if (peaktopeak_gufunc == NULL) {
         Py_DECREF(module);
         return NULL;

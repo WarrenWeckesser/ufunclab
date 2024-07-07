@@ -19,7 +19,7 @@
 # In the wrappers, the processing of the `axis` parameter will be
 # extended to allow `axis` to accept `None` or a tuple.  In each case,
 # the first parameter is the only parameter with a nontrival dimension
-# so for now, we don't have to consider a signature such as `(i),(i)->()`.
+# so for now, we don't have to consider a signature such as `(n),(n)->()`.
 set_reduction_funcs = ['all_same', 'gmean', 'hmean', 'mad', 'mad1',
                        'peaktopeak', 'rmad', 'rmad1']
 
@@ -222,7 +222,7 @@ def _process_axis_for_set_reduction_func(x, axis):
     """
     This enables the wrapper to handle `axis=None` or axis being a
     tuple. This function is intended to be applied *only* to functions
-    with the signature '(i)->()', and really only for those gufuncs for
+    with the signature '(n)->()', and really only for those gufuncs for
     with the input can be considered to be an unordered set.
     """
     if axis is None:

@@ -172,7 +172,7 @@ PyMODINIT_FUNC PyInit__fillnan1d(void)
     import_umath();
 
     // Create the fillnan1d ufunc.
-    if (ul_define_gufunc(module, "fillnan1d", FILLNAN1D_DOCSTRING, "(i)->(i)",
+    if (ul_define_gufunc(module, "fillnan1d", FILLNAN1D_DOCSTRING, "(n)->(n)",
                          FILLNAN1D_NTYPES,
                          fillnan1d_funcs, fillnan1d_data, fillnan1d_typecodes) == NULL) {
         Py_DECREF(module);

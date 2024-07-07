@@ -338,7 +338,7 @@ gendot(PyObject *self, PyObject *args, PyObject *kwargs)
                         gendot_typecodes,  // "2-d" array with shape (nloops, 3)
                         nloops, nin, nout,
                         PyUFunc_None, gendot_name, gendot_doc, unused,
-                        "(i),(i)->()");
+                        "(n),(n)->()");
     if (gufunc == NULL) {
         PyArray_free(mem);
         return NULL;

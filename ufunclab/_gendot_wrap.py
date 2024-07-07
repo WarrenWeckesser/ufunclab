@@ -80,7 +80,7 @@ def _check_ufunc2(func, argname):
     if not ok:
         raise ValueError(f"{argname} must be an element-wise ufunc with 2 "
                          "inputs and 1 output, or a gufunc with signature "
-                         "'(i)->()'.")
+                         "'(n)->()'.")
     if len(func.types) > 256:
         raise ValueError(f"{argname} has {len(func.types)} ufunc inner loops! "
                          "(Sorry, can't handle that many; max is 256.)")
@@ -98,7 +98,7 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
     sumfunc : ufunc
         Must be either a scalar ufunc (i.e. `ufunc.signature` is None),
         with two inputs and one output, or a gufunc with signature
-        `(i)->()`.
+        `(n)->()`.
     name : str, optional
         Name to assign to the `__name__` attribute of the gufunc.
     doc : str, optional
@@ -107,7 +107,7 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
     Returns
     -------
     dotfunc : gufunc
-        A gufunc with signature `(i),(i)->()` that is computed by applying
+        A gufunc with signature `(n),(n)->()` that is computed by applying
         prodfunc element-wise to the inputs, and then reducing the result
         with sumfunc.
 
@@ -123,7 +123,7 @@ def gendot(prodfunc, sumfunc, name=None, doc=None):
     Take a look at a couple of the gufunc attributes:
 
     >>> logical_dot.signature
-    '(i),(i)->()'
+    '(n),(n)->()'
     >>> print(logical_dot.types)
     ['??->?', 'bb->?', 'BB->?', 'hh->?', 'HH->?', 'ii->?', 'II->?', 'll->?',
     'LL->?', 'qq->?', 'QQ->?', 'ee->?', 'ff->?', 'dd->?', 'gg->?', 'FF->?',
