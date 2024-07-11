@@ -119,7 +119,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | --------                                        | -----------                                           |
 | [`fillnan1d`](#fillnan1d)                       | Replace `nan` using linear interpolation              |
 | [`backlash`](#backlash)                         | Backlash operator                                     |
-| [`backlash_sum`](#backlash_sum)                 | Sum backlash operators (Prandtl-Ishlinkskii)          |
+| [`backlash_sum`](#backlash_sum)                 | Sum backlash operators (Prandtl-Ishlinskii)           |
 | [`hysteresis_relay`](#hysteresis_relay)         | Relay with hysteresis (Schmitt trigger)               |
 | [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
 | [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
