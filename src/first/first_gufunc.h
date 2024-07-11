@@ -10,7 +10,6 @@
 
 #include "../src/util/strided.hpp"
 
-#include <cstdio>
 
 enum comparison_op: int8_t {
     LT = Py_LT,
