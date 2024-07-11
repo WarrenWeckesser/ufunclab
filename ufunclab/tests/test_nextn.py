@@ -10,6 +10,7 @@ from ufunclab import nextn_less, nextn_greater
                                 np.dtype('float64'),
                                 np.dtype('longdouble')])
 def test_nextn_less(func, to, dt):
+    to = dt.type(to)
     x = dt.type(2.5)
     n = 5
     out = np.zeros(n, dtype=dt)
