@@ -56,6 +56,7 @@ gufunc_cxx_src_dirs = [
     'meanvar',
     'minmax',
     'multivariate_logbeta',
+    'nextn',
     'sosfilter',
     'tri_area',
     'vnorm',

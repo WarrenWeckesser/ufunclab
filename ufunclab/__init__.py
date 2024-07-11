@@ -79,6 +79,8 @@ _name_to_module = {
     'smoothstep5': '._step',
     'next_greater': '._next',
     'next_less': '._next',
+    'nextn_greater': '._nextn',
+    'nextn_less' : '._nextn',
     'gendot': '._gendot_wrap',
     'ufunc_inspector': '._ufunc_inspector',
     '__version__': '._version',

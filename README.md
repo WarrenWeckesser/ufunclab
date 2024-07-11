@@ -129,6 +129,8 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
+| [`nextn_greater`](#nextn_greater)               | Next n values greater than the given x.               |
+| [`nextn_less`](#nextn_less)                     | Next n values greater than the given x.               |
 | [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                             | 3-d vector cross product                              |
 | [`linear_interp1d`](#linear_interp1d)           | Linear interpolation, like `numpy.interp`             |
@@ -1425,6 +1427,49 @@ the weighted Jaccard index, which is defined to be
 >>> y = np.array([0.3, 1.0, 0.9, 0.6, 1.0, 0.2])
 >>> wjaccard(x, y)
 0.6
+```
+#### `nextn_greater`
+
+`nextn_greater` is a gufunc with signature `()->(n)`.  Given a floating
+point scalar `x`, it computes the next `n` values greater than `x`.
+
+The `out` parameter must be given, as it determines `n`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import nextn_greater
+
+>>> x = np.float32(2.5)
+>>> out = np.zeros(5, dtype=x.dtype)
+
+>>> nextn_greater(x, out=xn)
+array([2.5000002, 2.5000005, 2.5000007, 2.500001 , 2.5000012],
+      dtype=float32)
+>>> xn
+array([2.5000002, 2.5000005, 2.5000007, 2.500001 , 2.5000012],
+      dtype=float32)
+```
+
+#### `nextn_less`
+
+`nextn_less` is a gufunc with signature `()->(n)`.  Given a floating
+point scalar `x`, it computes the next `n` values less than `x`.
+
+The `out` parameter must be given, as it determines `n`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import nextn_less
+
+>>> x = np.float32(2.5)
+>>> out = np.zeros(5, dtype=x.dtype)
+
+>>> nextn_less(x, out=xn)
+array([2.4999998, 2.4999995, 2.4999993, 2.499999 , 2.4999988],
+      dtype=float32)
+>>> xn
+array([2.4999998, 2.4999995, 2.4999993, 2.499999 , 2.4999988],
+      dtype=float32)
 ```
 
 #### `cross2`
