@@ -65,7 +65,7 @@ tri_area_common_calc(
 
     // Numerically stable version of Heron's formula.  See for details:
     //
-    //   W. Kahan, "Miscalculatiing area and angles of a needle-like
+    //   W. Kahan, "Miscalculating area and angles of a needle-like
     //   triangle", 2014, preprint available at
     //   https://people.eecs.berkeley.edu/~wkahan/Triangle.pdf
     //
