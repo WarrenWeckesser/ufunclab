@@ -40,52 +40,57 @@ static void fillnan1d_@typename@_loop(char **args, const npy_intp *dimensions,
     // steps[1]:  output array step
     // steps[2]:  inner x array step
     // steps[3]:  inner output array step
-    char *px = args[0];
+    char *px   = args[0];
     char *pout = args[1];
     npy_intp nloops = dimensions[0];
+    npy_intp n      = dimensions[1];
+    npy_intp x_stride         = steps[0];
+    npy_intp out_stride       = steps[1];
+    npy_intp x_inner_stride   = steps[2];
+    npy_intp out_inner_stride = steps[3];
 
-    for (int j = 0; j < nloops; ++j, px += steps[0], pout += steps[1]) {
+    for (int j = 0; j < nloops; ++j, px += x_stride, pout += out_stride) {
         // Find first non-nan.
         npy_intp k = 0;
-        while (k < dimensions[1]) {
-            @ctype@ x = *((@ctype@ *) (px + k*steps[2]));
+        while (k < n) {
+            @ctype@ x = *((@ctype@ *) (px + k*x_inner_stride));
             if (!isnan(x)) {
                 break;
             }
             ++k;
         }
-        if (k == dimensions[1]) {
+        if (k == n) {
             // All values are nan.  Fill output with nan.
-            for (int i = 0; i < dimensions[1]; ++i) {
-                *((@ctype@ *) (pout + i*steps[3])) = NPY_NAN;
+            for (int i = 0; i < n; ++i) {
+                *((@ctype@ *) (pout + i*out_inner_stride)) = NPY_NAN;
+            }
+            continue;
+        }
+
+        // Replace any initial nan values with the first non-nan value.
+        @ctype@ left_value = *((@ctype@ *) (px + k*x_inner_stride));
+        npy_intp left_index = k;
+        for (npy_intp i = 0; i <= k; ++i) {
+            *((@ctype@ *) (pout + i*out_inner_stride)) = left_value;
+        }
+        for (npy_intp k = left_index + 1; k < n; ++k) {
+            @ctype@ x = *((@ctype@ *) (px + k*x_inner_stride));
+            if (!isnan(x)) {
+                *((@ctype@ *) (pout + k*out_inner_stride)) = x;
+                if (left_index != k - 1) {
+                    long double slope = ((long double) x - (long double) left_value)/(k - left_index);
+                    for (npy_intp i = 1; i < k - left_index; ++i) {
+                        *((@ctype@ *) (pout + (left_index + i)*out_inner_stride)) = left_value + i*slope;
+                    }
+                }
+                left_value = x;
+                left_index = k;
             }
         }
-        else {
-            // Replace any initial nan values with the first non-nan value.
-            @ctype@ left_value = *((@ctype@ *) (px + k*steps[2]));
-            npy_intp left_index = k;
-            for (npy_intp i = 0; i <= k; ++i) {
-                *((@ctype@ *) (pout + i*steps[3])) = left_value;
-            }
-            for (npy_intp k = left_index + 1; k < dimensions[1]; ++k) {
-                @ctype@ x = *((@ctype@ *) (px + k*steps[2]));
-                if (!isnan(x)) {
-                    *((@ctype@ *) (pout + k*steps[3])) = x;
-                    if (left_index != k - 1) {
-                        long double slope = ((long double) x - (long double) left_value)/(k - left_index);
-                        for (npy_intp i = 1; i < k - left_index; ++i) {
-                            *((@ctype@ *) (pout + (left_index + i)*steps[3])) = left_value + i*slope;
-                        }
-                    }
-                    left_value = x;
-                    left_index = k;
-                }
-            }
-            if (left_index != dimensions[1]) {
-                // Handle nan values at the right end.
-                for (npy_intp i = left_index + 1; i < dimensions[1]; ++i) {
-                    *((@ctype@ *) (pout + i*steps[3])) = left_value;
-                }
+        if (left_index != n) {
+            // Handle nan values at the right end.
+            for (npy_intp i = left_index + 1; i < n; ++i) {
+                *((@ctype@ *) (pout + i*out_inner_stride)) = left_value;
             }
         }
     }
