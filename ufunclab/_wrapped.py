@@ -4,7 +4,10 @@ Wrappers of gufuncs that provide a nicer API.
 
 import operator
 import numpy as np
-from numpy.exceptions import AxisError
+try:
+    from numpy.exceptions import AxisError
+except ImportError:
+    from numpy import AxisError
 from ufunclab._convert_to_base import convert_to_base as _convert_to_base
 
 
