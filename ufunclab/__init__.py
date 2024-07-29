@@ -17,6 +17,7 @@ import numpy as _np
 
 # The keys of this dict are in modules that are lazy-loaded.
 _name_to_module = {
+    'convert_to_base': '._wrapped',
     'logfactorial': '._logfact',
     'loggamma1p': '._loggamma1p',
     'issnan': '._issnan',

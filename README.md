@@ -125,6 +125,15 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
 | [`sosfilter_ic_contig`](#sosfilter_ic_contig)   | SOS linear filter with contiguous array inputs        |
 
+*Wrapped generalized ufuncs*
+
+These are Python functions that wrap a gufunc.  The wrapper allows the
+function to provide a capability that is not possible with a gufunc.
+
+| Function                                        | Description                                           |
+| --------                                        | -----------                                           |
+| [`convert_to_base`](#convert_to_base)           | Convert an integer to a given base.                   |
+
 *Other functions.*
 
 | Function                                        | Description                                           |
@@ -1850,6 +1859,40 @@ Compare to
 >>> gammaln(x).sum() - gammaln(x.sum())
 -13.87374699005739
 
+```
+
+#### `convert_to_base`
+
+`convert_to_base(k, base, ndigits, out=None, axis=-1)` is a Python function
+that wraps a gufunc.  The function converts an integer to a given base, using
+`ndigits` "digits".  The output "digits" are the coefficients of powers of
+`base` that sum to `k`.
+
+A gufunc cannot accept an argument such as `ndigits` that determines the
+size of one of the outputs dimensions.  This function is a wrapper of a
+gufunc with signature `(),()->(n)`. The wrapper interprets the inputs to
+produce an `out` array of the appropriate shape that is passed to the gufunc.
+
+```
+>>> import numpy as np
+>>> from ufunclab import convert_to_base
+
+>>> convert_to_base(1249, 8, ndigits=4)
+array([1, 4, 3, 2])
+
+That result follows from 1249 = 1*8**0 + 4*8**1 + 3*8**2 + 2*8**3.
+
+Broadcasting applies to `k` and `base`:
+
+>>> x = np.array([10, 24, 85])    # shape is (3,)
+>>> base = np.array([[8], [16]])  # shape is (2, 1)
+>>> convert_to_base(x, base, ndigits=4)  # output shape is (2, 3, 4)
+array([[[ 2,  1,  0,  0],
+        [ 0,  3,  0,  0],
+        [ 5,  2,  1,  0]],
+       [[10,  0,  0,  0],
+        [ 8,  1,  0,  0],
+        [ 5,  5,  0,  0]]])
 ```
 
 #### `gendot`

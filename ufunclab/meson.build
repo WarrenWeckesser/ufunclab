@@ -48,6 +48,7 @@ npymath_lib = cc.find_library('npymath', dirs: npymath_path)
 gufunc_cxx_src_dirs = [
     'all_same',
     'backlash',
+    'convert_to_base',
     'corr',
     'cross',
     'first',
@@ -310,7 +311,8 @@ endforeach
 
 py3.install_sources(
   ['__init__.py',
-   '_gendot_wrap.py'],
+   '_gendot_wrap.py',
+   '_wrapped.py'],
   pure: false,
   subdir: 'ufunclab'
 )
