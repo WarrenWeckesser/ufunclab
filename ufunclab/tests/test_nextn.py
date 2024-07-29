@@ -9,12 +9,27 @@ from ufunclab import nextn_less, nextn_greater
 @pytest.mark.parametrize('dt', [np.dtype('float32'),
                                 np.dtype('float64'),
                                 np.dtype('longdouble')])
-def test_nextn_less(func, to, dt):
+def test_nextn_gufunc(func, to, dt):
     to = dt.type(to)
     x = dt.type(2.5)
     n = 5
     out = np.zeros(n, dtype=dt)
-    xn = func(x, out=out)
+    xn = func.gufunc(x, out=out)
+    for k in range(n):
+        x = np.nextafter(x, to)
+        assert_equal(xn[k], x)
+
+
+@pytest.mark.parametrize('func, to', [(nextn_less, -np.inf),
+                                      (nextn_greater, np.inf)])
+@pytest.mark.parametrize('dt', [np.dtype('float32'),
+                                np.dtype('float64'),
+                                np.dtype('longdouble')])
+def test_nextn(func, to, dt):
+    to = dt.type(to)
+    x = dt.type(2.5)
+    n = 5
+    xn = func(x, n)
     for k in range(n):
         x = np.nextafter(x, to)
         assert_equal(xn[k], x)

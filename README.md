@@ -133,13 +133,13 @@ function to provide a capability that is not possible with a gufunc.
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
 | [`convert_to_base`](#convert_to_base)           | Convert an integer to a given base.                   |
+| [`nextn_greater`](#nextn_greater)               | Next n values greater than the given x.               |
+| [`nextn_less`](#nextn_less)                     | Next n values greater than the given x.               |
 
 *Other functions.*
 
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
-| [`nextn_greater`](#nextn_greater)               | Next n values greater than the given x.               |
-| [`nextn_less`](#nextn_less)                     | Next n values greater than the given x.               |
 | [`cross2`](#cross2)                             | 2-d vector cross product (returns scalar)             |
 | [`cross3`](#cross3)                             | 3-d vector cross product                              |
 | [`linear_interp1d`](#linear_interp1d)           | Linear interpolation, like `numpy.interp`             |
@@ -1439,44 +1439,32 @@ the weighted Jaccard index, which is defined to be
 ```
 #### `nextn_greater`
 
-`nextn_greater` is a gufunc with signature `()->(n)`.  Given a floating
-point scalar `x`, it computes the next `n` values greater than `x`.
-
-The `out` parameter must be given, as it determines `n`.
+`nextn_greater(x, n, out=None, axis=-1)` is a Python function that wraps a
+gufunc with signature `()->(n)`.  Given a floating point scalar `x`, it
+computes the next `n` values greater than `x`.
 
 ```
 >>> import numpy as np
 >>> from ufunclab import nextn_greater
 
 >>> x = np.float32(2.5)
->>> out = np.zeros(5, dtype=x.dtype)
-
->>> nextn_greater(x, out=xn)
-array([2.5000002, 2.5000005, 2.5000007, 2.500001 , 2.5000012],
-      dtype=float32)
->>> xn
+>>> nextn_greater(x, 5)
 array([2.5000002, 2.5000005, 2.5000007, 2.500001 , 2.5000012],
       dtype=float32)
 ```
 
 #### `nextn_less`
 
-`nextn_less` is a gufunc with signature `()->(n)`.  Given a floating
-point scalar `x`, it computes the next `n` values less than `x`.
-
-The `out` parameter must be given, as it determines `n`.
+`nextn_less(x, n, out=None, axis=-1)` is a Python function that wraps a
+gufunc with signature `()->(n)`.  Given a floating point scalar `x`, it
+computes the next `n` values less than `x`.
 
 ```
 >>> import numpy as np
 >>> from ufunclab import nextn_less
 
 >>> x = np.float32(2.5)
->>> out = np.zeros(5, dtype=x.dtype)
-
->>> nextn_less(x, out=xn)
-array([2.4999998, 2.4999995, 2.4999993, 2.499999 , 2.4999988],
-      dtype=float32)
->>> xn
+>>> nextn_less(x, 5)
 array([2.4999998, 2.4999995, 2.4999993, 2.499999 , 2.4999988],
       dtype=float32)
 ```

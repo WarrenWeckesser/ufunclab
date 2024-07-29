@@ -9,6 +9,8 @@ try:
 except ImportError:
     from numpy import AxisError
 from ufunclab._convert_to_base import convert_to_base as _convert_to_base
+from ufunclab._nextn import (nextn_less as _nextn_less,
+                             nextn_greater as _nextn_greater)
 
 
 # XXX Except for `out` and `axis`, this function does not expose any of the
@@ -80,3 +82,73 @@ def convert_to_base(k, base, ndigits, out=None, axis=-1):
 
 
 convert_to_base.gufunc = _convert_to_base
+
+
+def nextn_greater(x, n, out=None, axis=-1):
+    """
+    Return the next n floating point values greater than x.
+
+    x must be one of the real floating point types np.float32,
+    np.float64 or np.longdouble.
+    """
+    x = np.asarray(x)
+    if x.dtype.char not in 'fdg':
+        raise ValueError('x must be an array of np.float32, np.float64 or '
+                         'np.longdouble.')
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise ValueError(f'n must be an integer; got {n!r}')
+    x_shape = x.shape
+    adjusted_axis = axis
+    if adjusted_axis < 0:
+        adjusted_axis += 1 + len(x_shape)
+    if adjusted_axis < 0 or adjusted_axis > 1 + len(x_shape):
+        raise AxisError(f'invalid axis {axis}')
+    out_shape = (x_shape[:adjusted_axis] + (n,)
+                 + x_shape[adjusted_axis:])
+    if out is not None:
+        if out.shape != out_shape:
+            raise ValueError(f'out.shape must be {out_shape}; '
+                             f'got {out.shape}.')
+    else:
+        out = np.empty(out_shape, dtype=x.dtype)
+    return _nextn_greater(x, out=out, axis=axis)
+
+
+nextn_greater.gufunc = _nextn_greater
+
+
+def nextn_less(x, n, out=None, axis=-1):
+    """
+    Return the next n floating point values less than x.
+
+    x must be one of the real floating point types np.float32,
+    np.float64 or np.longdouble.
+    """
+    x = np.asarray(x)
+    if x.dtype.char not in 'fdg':
+        raise ValueError('x must be a scalar or array of np.float32, '
+                         'np.float64 or np.longdouble.')
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise ValueError(f'n must be an integer; got {n!r}')
+    x_shape = x.shape
+    adjusted_axis = axis
+    if adjusted_axis < 0:
+        adjusted_axis += 1 + len(x_shape)
+    if adjusted_axis < 0 or adjusted_axis > 1 + len(x_shape):
+        raise AxisError(f'invalid axis {axis}')
+    out_shape = (x_shape[:adjusted_axis] + (n,)
+                 + x_shape[adjusted_axis:])
+    if out is not None:
+        if out.shape != out_shape:
+            raise ValueError(f'out.shape must be {out_shape}; '
+                             f'got {out.shape}.')
+    else:
+        out = np.empty(out_shape, dtype=x.dtype)
+    return _nextn_less(x, out=out, axis=axis)
+
+
+nextn_less.gufunc = _nextn_less

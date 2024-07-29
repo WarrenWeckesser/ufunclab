@@ -18,6 +18,8 @@ import numpy as _np
 # The keys of this dict are in modules that are lazy-loaded.
 _name_to_module = {
     'convert_to_base': '._wrapped',
+    'nextn_greater': '._wrapped',
+    'nextn_less' : '._wrapped',
     'logfactorial': '._logfact',
     'loggamma1p': '._loggamma1p',
     'issnan': '._issnan',
@@ -80,8 +82,6 @@ _name_to_module = {
     'smoothstep5': '._step',
     'next_greater': '._next',
     'next_less': '._next',
-    'nextn_greater': '._nextn',
-    'nextn_less' : '._nextn',
     'gendot': '._gendot_wrap',
     'ufunc_inspector': '._ufunc_inspector',
     '__version__': '._version',
