@@ -20,6 +20,7 @@ _name_to_module = {
     'convert_to_base': '._wrapped',
     'nextn_greater': '._wrapped',
     'nextn_less' : '._wrapped',
+    'one_hot': '._wrapped',
     'logfactorial': '._logfact',
     'loggamma1p': '._loggamma1p',
     'issnan': '._issnan',

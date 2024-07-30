@@ -35,6 +35,8 @@ typechar_to_npy_type = {
     'M': 'NPY_DATETIME',
     'm': 'NPY_TIMEDELTA',
     'O': 'NPY_OBJECT',
+    'p': 'NPY_INTP',
+    'P': 'NPY_UINTP'
 }
 
 

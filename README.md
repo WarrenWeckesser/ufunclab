@@ -125,18 +125,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
 | [`sosfilter_ic_contig`](#sosfilter_ic_contig)   | SOS linear filter with contiguous array inputs        |
 
-*Wrapped generalized ufuncs*
-
-These are Python functions that wrap a gufunc.  The wrapper allows the
-function to provide a capability that is not possible with a gufunc.
-
-| Function                                        | Description                                           |
-| --------                                        | -----------                                           |
-| [`convert_to_base`](#convert_to_base)           | Convert an integer to a given base.                   |
-| [`nextn_greater`](#nextn_greater)               | Next n values greater than the given x.               |
-| [`nextn_less`](#nextn_less)                     | Next n values greater than the given x.               |
-
-*Other functions.*
+*Other generalized ufuncs.*
 
 | Function                                        | Description                                           |
 | --------                                        | -----------                                           |
@@ -146,6 +135,18 @@ function to provide a capability that is not possible with a gufunc.
 | [`tri_area`](#tri_area)                         | Area of triangles in n-dimensional space              |
 | [`tri_area_indexed`](#tri_area_indexed)         | Area of triangles in n-dimensional space              |
 | [`multivariate_logbeta`](#multivariate_logbeta) | Logarithm of the multivariate beta function           |
+
+*Wrapped generalized ufuncs*
+
+These are Python functions that wrap a gufunc.  The wrapper allows the
+function to provide a capability that is not possible with a gufunc.
+
+| Function                                        | Description                                            |
+| --------                                        | -----------                                            |
+| [`convert_to_base`](#convert_to_base)           | Convert an integer to a given base.                    |
+| [`nextn_greater`](#nextn_greater)               | Next n values greater than the given x.                |
+| [`nextn_less`](#nextn_less)                     | Next n values greater than the given x.                |
+| [`one_hot`](#one_hot)                           | Create 1-d array that is 1 at index k and 0 elsewhere. |
 
 *Other tools*
 
@@ -1467,6 +1468,26 @@ computes the next `n` values less than `x`.
 >>> nextn_less(x, 5)
 array([2.4999998, 2.4999995, 2.4999993, 2.499999 , 2.4999988],
       dtype=float32)
+```
+
+#### `one_hot`
+
+`one_hot(k, n, out=None, axis=-1)` is a Python function that wraps
+a gufunc with signature `()->(n)`.  Given integers `k` and `n`,
+it returns a 1-d integer array with length `n`, where the value is
+1 at index `k` and 0 elsewhere.  If `k` is less than 0 or greater
+than `n - 1`, the array will be all zeros.
+
+```
+>>> from ufunclab import one_hot
+
+>>> one_hot(3, 10)
+array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0])
+
+>>> one_hot([3, 7, 8], 10)
+array([[0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]])
 ```
 
 #### `cross2`

@@ -11,6 +11,7 @@ except ImportError:
 from ufunclab._convert_to_base import convert_to_base as _convert_to_base
 from ufunclab._nextn import (nextn_less as _nextn_less,
                              nextn_greater as _nextn_greater)
+from ufunclab._one_hot import one_hot as _one_hot
 
 
 # XXX Except for `out` and `axis`, this function does not expose any of the
@@ -152,3 +153,34 @@ def nextn_less(x, n, out=None, axis=-1):
 
 
 nextn_less.gufunc = _nextn_less
+
+
+def one_hot(k, n, out=None, axis=-1):
+    """
+    Create a 1-d integer array of length n, all zero except for 1 at index k.
+    """
+    k = np.asarray(k)
+    if k.dtype.char not in np.typecodes['AllInteger']:
+        raise ValueError('k must be an integer scalar or array.')
+    try:
+        n = operator.index(n)
+    except TypeError:
+        raise ValueError(f'n must be an integer; got {n!r}')
+    k_shape = k.shape
+    adjusted_axis = axis
+    if adjusted_axis < 0:
+        adjusted_axis += 1 + len(k_shape)
+    if adjusted_axis < 0 or adjusted_axis > 1 + len(k_shape):
+        raise AxisError(f'invalid axis {axis}')
+    out_shape = (k_shape[:adjusted_axis] + (n,)
+                 + k_shape[adjusted_axis:])
+    if out is not None:
+        if out.shape != out_shape:
+            raise ValueError(f'out.shape must be {out_shape}; '
+                             f'got {out.shape}.')
+    else:
+        out = np.empty(out_shape, dtype=k.dtype)
+    return _one_hot(k, out=out, axis=axis)
+
+
+one_hot.gufunc = _one_hot
