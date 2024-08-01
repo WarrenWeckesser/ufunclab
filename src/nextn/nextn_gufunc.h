@@ -29,9 +29,9 @@ nextn_greater_core_calc(
 {
     T to = INFINITY;
     T x = *p_x;
-    for (npy_intp i = 0; i < n; ++i, ++p_out) {
+    for (npy_intp i = 0; i < n; ++i) {
         x = std::nextafter(x, to);
-        *p_out = x;
+        set(p_out, out_stride, i, x);
     }
 }
 
@@ -50,9 +50,9 @@ nextn_less_core_calc(
 {
     T to = -INFINITY;
     T x = *p_x;
-    for (npy_intp i = 0; i < n; ++i, ++p_out) {
+    for (npy_intp i = 0; i < n; ++i) {
         x = std::nextafter(x, to);
-        *p_out = x;
+        set(p_out, out_stride, i, x);
     }
 }
 
