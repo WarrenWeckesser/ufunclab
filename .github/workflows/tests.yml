@@ -80,6 +80,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        xcode-select --install
         python -m pip install --upgrade pip wheel
         python -m pip install --upgrade setuptools
         python -m pip install ninja meson-python toml pytest
