@@ -47,7 +47,7 @@ jobs:
       run: |
         pytest --pyargs ufunclab
 
-  macos-12:
+  macos:
     strategy:
       matrix:
         python-version: ['3.12', '3.11', '3.10', '3.9']
