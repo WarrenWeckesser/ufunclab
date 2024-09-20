@@ -6,7 +6,6 @@
 #include "Python.h"
 
 #include <cmath>
-#include <cstdio>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
