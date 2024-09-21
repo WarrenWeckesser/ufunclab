@@ -1943,20 +1943,34 @@ array([[1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
        [1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0]], dtype=uint64)
 ```
 
-    Some examples with weights.
+Some examples with weights.
 
 ```
-    >>> x = np.array([3, 4, 5, 1, 1, 0, 4])
-    >>> w = np.array([1.0, 0.25, 1.5, 0.5, 0.75, 1.0, 1.5])
-    >>> bincount(x, weights=w)
-    array([1.  , 1.25, 0.  , 1.  , 1.75, 1.5 ])
+>>> x = np.array([3, 4, 5, 1, 1, 0, 4])
+>>> w = np.array([1.0, 0.25, 1.5, 0.5, 0.75, 1.0, 1.5])
+>>> bincount(x, weights=w)
+array([1.  , 1.25, 0.  , 1.  , 1.75, 1.5 ])
 
-    >>> x = np.array([[1, 0, 2, 2],
-    ...               [0, 0, 0, 2]])
-    >>> w = np.array([0.25, 0.75, 0.75, 0.5])
-    >>> bincount(x, weights=w)
-    array([[0.75, 0.25, 1.25],
-           [1.75, 0.  , 0.5 ]])
+>>> x = np.array([[1, 0, 2, 2],
+...               [0, 0, 0, 2]])
+>>> w = np.array([0.25, 0.75, 0.75, 0.5])
+>>> bincount(x, weights=w)
+array([[0.75, 0.25, 1.25],
+       [1.75, 0.  , 0.5 ]])
+```
+
+The `weights` array can be integer, float, double, complex float or
+complex double.
+
+```
+>>> x = np.array([[1, 0, 2, 2, 1, 4],
+...               [0, 0, 0, 2, 3, 3]])
+>>> w = np.array([0.25-1j, 0.75+3j, 0.75+0.5j, 0.5+1j, 1.0, -3j],
+...              dtype=np.complex64)
+>>> bincount(x, weights=w)
+array([[0.75+3.j , 1.25-1.j , 1.25+1.5j, 0.  +0.j , 0.  -3.j ],
+       [1.75+2.5j, 0.  +0.j , 0.5 +1.j , 1.  -3.j , 0.  +0.j ]],
+      dtype=complex64)
 ```
 
 #### `convert_to_base`
