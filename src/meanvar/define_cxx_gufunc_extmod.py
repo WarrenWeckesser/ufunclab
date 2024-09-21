@@ -1,3 +1,4 @@
+import numpy as np
 from ufunc_config_types import UFuncExtMod, UFunc, UFuncSource
 
 
@@ -58,10 +59,20 @@ array([[ 3.5       , 13.66666667],
        [ 4.        ,  6.66666667]])
 """
 
+int_types = [np.dtype('int8'), np.dtype('uint8'),
+             np.dtype('int16'), np.dtype('uint16'),
+             np.dtype('int32'), np.dtype('uint32'),
+             np.dtype('int64'), np.dtype('uint64')]
+float_types = [np.dtype('f'), np.dtype('d')]
+if np.dtype('d') != np.dtype('g'):
+    float_types.append(np.dtype('g'))
+
+int_type_sigs = [f'{t.char}p->d' for t in int_types]
+float_type_sigs = [f'{t.char}p->{t.char}' for t in float_types]
+
 ufunc_src = UFuncSource(
     funcname='meanvar_core',
-    typesignatures=['bl->d', 'Bl->d', 'hl->d', 'Hl->d', 'il->d', 'Il->d',
-                    'll->d', 'Ll->d', 'fl->f', 'dl->d', 'gl->g'],
+    typesignatures=int_type_sigs + float_type_sigs,
 )
 
 ufunc = UFunc(
