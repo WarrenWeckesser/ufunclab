@@ -32,10 +32,30 @@ bincount_core_calc(
     // Note that the output array is not initialized to 0.
     // This allows repeated calls to accumulate results.
 
-    for (npy_intp i = 0; i < n; ++i) {
-        T k = get(p_x, x_stride, i);
-        if (k >= 0 && static_cast<npy_intp>(k) < m) {
-            set(p_out, out_stride, k, get(p_out, out_stride, k) + 1);
+    if (x_stride == sizeof(T)) {
+        if (out_stride == sizeof(U)) {
+            for (npy_intp i = 0; i < n; ++i) {
+                T k = p_x[i];
+                if (k >= 0 && static_cast<npy_intp>(k) < m) {
+                    p_out[k] += 1;
+                }
+            }
+        }
+        else {
+            for (npy_intp i = 0; i < n; ++i) {
+                T k = p_x[k];
+                if (k >= 0 && static_cast<npy_intp>(k) < m) {
+                    set(p_out, out_stride, k, get(p_out, out_stride, k) + 1);
+                }
+            }
+        }
+    }
+    else {
+        for (npy_intp i = 0; i < n; ++i) {
+            T k = get(p_x, x_stride, i);
+            if (k >= 0 && static_cast<npy_intp>(k) < m) {
+                set(p_out, out_stride, k, get(p_out, out_stride, k) + 1);
+            }
         }
     }
 }
