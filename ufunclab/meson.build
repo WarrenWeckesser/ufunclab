@@ -47,6 +47,7 @@ npymath_lib = cc.find_library('npymath', dirs: npymath_path)
 
 gufunc_cxx_src_dirs = [
     'all_same',
+    'bincount',
     'backlash',
     'convert_to_base',
     'corr',

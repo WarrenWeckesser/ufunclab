@@ -17,6 +17,7 @@ import numpy as _np
 
 # The keys of this dict are in modules that are lazy-loaded.
 _name_to_module = {
+    'bincount': '._wrapped',
     'convert_to_base': '._wrapped',
     'nextn_greater': '._wrapped',
     'nextn_less' : '._wrapped',

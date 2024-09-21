@@ -8,10 +8,113 @@ try:
     from numpy.exceptions import AxisError
 except ImportError:
     from numpy import AxisError
+from ufunclab._bincount import bincount as _bincount
 from ufunclab._convert_to_base import convert_to_base as _convert_to_base
 from ufunclab._nextn import (nextn_less as _nextn_less,
                              nextn_greater as _nextn_greater)
 from ufunclab._one_hot import one_hot as _one_hot
+
+
+
+def bincount(x, m=None, out=None, axis=-1):
+    """
+    Count the number of occurrences of the positive integers in the 1-d
+    array `x` that are less than `m`.  If `m` is not given, the default
+    value is `max(np.max(x) + 1, 0)`.  If `x` is an n-dimensional array,
+    `axis` selects which axis of `x` the operation is applied to.
+
+    Notes
+    -----
+    This function is a Python wrapper of a gufunc with shape signature
+    `(n)->(m)`.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from ufunclab import bincount
+
+    Create an array to work with.  `x` is an array with shape `(3, 12)`.
+
+    >>> rng = np.random.default_rng(121263137472525314065)
+    >>> x = rng.integers(0, 8, size=(3, 12))
+    >>> x
+    array([[7, 0, 5, 0, 2, 7, 7, 3, 0, 3, 4, 5],
+           [2, 6, 7, 1, 3, 0, 6, 1, 2, 0, 0, 6],
+           [0, 6, 1, 5, 2, 1, 4, 2, 6, 4, 2, 6]])
+
+    By default, `bincount` operates along the last axis.  The default
+    value of `m` is one more than maximum value in `x`, so in this case
+    the output length of the counts will be 8.  That is, the output
+    array will have shape `(3, 8)`.
+
+    >>> bincount(x)
+    array([[3, 0, 1, 2, 1, 2, 0, 3],
+           [3, 2, 2, 1, 0, 0, 3, 1],
+           [1, 2, 3, 0, 2, 1, 3, 0]], dtype=uint64)
+
+    If we given a value for `m` that is larger than 8, the final values
+    will be 0.
+
+    >>> bincount(x, 10)
+    array([[3, 0, 1, 2, 1, 2, 0, 3, 0, 0],
+           [3, 2, 2, 1, 0, 0, 3, 1, 0, 0],
+           [1, 2, 3, 0, 2, 1, 3, 0, 0, 0]], dtype=uint64)
+
+    If the given value of `m` is smaller than `np.max(x) + 1`, the values
+    greater than or equal to `m` are ignored.
+
+    >>> bincount(x, 4)
+    array([[3, 0, 1, 2],
+           [3, 2, 2, 1],
+           [1, 2, 3, 0]], dtype=uint64)
+
+    The `axis` parameter selects the axis of `x` along which `bincount`
+    is applied.  In the following example, since `x` has shape `(3, 12)`,
+    the output has shape `(8, 12)` when `axis=0` is given.
+
+    >>> bincount(x, axis=0)
+    array([[1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+           [0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0],
+           [1, 0, 0, 0, 2, 0, 0, 1, 1, 0, 1, 0],
+           [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+           [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0],
+           [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+           [0, 2, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2],
+           [1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0]], dtype=uint64)
+
+    """
+    x = np.asarray(x)
+    if x.dtype.char not in np.typecodes['AllInteger']:
+        raise ValueError('x must be an integer array.')
+    if m is None:
+        m = max(np.max(x) + 1, 0)
+    else:
+        try:
+            m = operator.index(m)
+        except TypeError:
+            raise ValueError(f'm must be a nonnegative integer; got {m!r}')
+        if m < 0:
+            raise ValueError(f'm must be a nonnegative integer; got {m!r}')
+
+    x_shape = x.shape
+    adjusted_axis = axis
+    if adjusted_axis < 0:
+        adjusted_axis += len(x_shape)
+    if adjusted_axis < 0 or adjusted_axis > len(x_shape):
+        raise AxisError(f'invalid axis {axis}')
+    out_shape = list(x_shape)
+    out_shape[adjusted_axis] = m
+    out_shape = tuple(out_shape)
+    if out is not None:
+        if out.shape != out_shape:
+            raise ValueError(f'out.shape must be {out_shape}; '
+                             f'got {out.shape}.')
+    else:
+        out = np.empty(out_shape, dtype=np.uintp)
+    return _bincount(x, out=out, axes=[axis, axis])
+
+
+bincount.gufunc = _bincount
 
 
 # XXX Except for `out` and `axis`, this function does not expose any of the

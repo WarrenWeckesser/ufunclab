@@ -143,6 +143,7 @@ function to provide a capability that is not possible with a gufunc.
 
 | Function                                        | Description                                            |
 | --------                                        | -----------                                            |
+| [`bincount`](#bincount)                         | Like `np.bincount`, but gufunc-based                   |
 | [`convert_to_base`](#convert_to_base)           | Convert an integer to a given base.                    |
 | [`nextn_greater`](#nextn_greater)               | Next n values greater than the given x.                |
 | [`nextn_less`](#nextn_less)                     | Next n values greater than the given x.                |
@@ -1870,6 +1871,66 @@ Compare to
 
 ```
 
+#### `bincount`
+
+`bincount(x, m=None, out=None, axis=-1)` is a Python function that wraps a
+gufunc with shape signature `(n)->(m)`.  The function is like `np.bincount`,
+but it accepts n-dimensional arrays.  When the input has more than one
+dimension, the operation is applied along the given axis.
+
+```
+>>> import numpy as np
+>>> from ufunclab import bincount
+
+Create an array to work with.  `x` is an array with shape `(3, 12)`.
+
+>>> rng = np.random.default_rng(121263137472525314065)
+>>> x = rng.integers(0, 8, size=(3, 12))
+>>> x
+array([[7, 0, 5, 0, 2, 7, 7, 3, 0, 3, 4, 5],
+       [2, 6, 7, 1, 3, 0, 6, 1, 2, 0, 0, 6],
+       [0, 6, 1, 5, 2, 1, 4, 2, 6, 4, 2, 6]])
+
+By default, `bincount` operates along the last axis.  The default
+value of `m` is one more than maximum value in `x`, so in this case
+the output length of the counts will be 8.  That is, the output
+array will have shape `(3, 8)`.
+
+>>> bincount(x)
+array([[3, 0, 1, 2, 1, 2, 0, 3],
+       [3, 2, 2, 1, 0, 0, 3, 1],
+       [1, 2, 3, 0, 2, 1, 3, 0]], dtype=uint64)
+
+If we given a value for `m` that is larger than 8, the final values
+will be 0.
+
+>>> bincount(x, 10)
+array([[3, 0, 1, 2, 1, 2, 0, 3, 0, 0],
+       [3, 2, 2, 1, 0, 0, 3, 1, 0, 0],
+       [1, 2, 3, 0, 2, 1, 3, 0, 0, 0]], dtype=uint64)
+
+If the given value of `m` is smaller than `np.max(x) + 1`, the values
+greater than or equal to `m` are ignored.
+
+>>> bincount(x, 4)
+array([[3, 0, 1, 2],
+       [3, 2, 2, 1],
+       [1, 2, 3, 0]], dtype=uint64)
+
+The `axis` parameter selects the axis of `x` along which `bincount`
+is applied.  In the following example, since `x` has shape `(3, 12)`,
+the output has shape `(8, 12)` when `axis=0` is given.
+
+>>> bincount(x, axis=0)
+array([[1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+       [0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0],
+       [1, 0, 0, 0, 2, 0, 0, 1, 1, 0, 1, 0],
+       [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+       [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0],
+       [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+       [0, 2, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2],
+       [1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0]], dtype=uint64)
+```
 #### `convert_to_base`
 
 `convert_to_base(k, base, ndigits, out=None, axis=-1)` is a Python function
