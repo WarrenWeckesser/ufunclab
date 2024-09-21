@@ -23,10 +23,17 @@ int_types = [np.dtype('int8'), np.dtype('uint8'),
              np.dtype('int16'), np.dtype('uint16'),
              np.dtype('int32'), np.dtype('uint32'),
              np.dtype('int64'), np.dtype('uint64')]
-float_types = [np.dtype('f'), np.dtype('d')]
-input_types = product(int_types, int_types + float_types)
+
 bincount_types = [f'{t.char}->p' for t in int_types]
-bincountw_types = [f'{in1.char}{in2.char}->{in2.char}' for (in1, in2) in input_types]
+
+float_types = [np.dtype('f'), np.dtype('d')]
+complex_types = [np.dtype('F'), np.dtype('D')]
+bincountw_input_types = product(int_types, int_types + float_types)
+bincountw_types = [f'{in1.char}{in2.char}->{in2.char}'
+                   for (in1, in2) in bincountw_input_types]
+bincountw_complex_input_types = product(int_types, complex_types)
+bincountw_complex_types = [f'{in1.char}{in2.char}->{in2.char}'
+                           for (in1, in2) in bincountw_complex_input_types]
 
 bincount_src = UFuncSource(
     funcname='bincount_core_calc',
@@ -46,12 +53,17 @@ bincountw_src = UFuncSource(
     typesignatures=bincountw_types,
 )
 
+bincountw_complex_src = UFuncSource(
+    funcname='bincountw_complex_core_calc',
+    typesignatures=bincountw_complex_types,
+)
+
 bincountw = UFunc(
     name='bincountw',
     header='bincount_gufunc.h',
     docstring=BINCOUNTW_DOCSTRING,
     signature='(n),(n)->(m)',
-    sources=[bincountw_src],
+    sources=[bincountw_src, bincountw_complex_src],
 )
 
 extmod = UFuncExtMod(
