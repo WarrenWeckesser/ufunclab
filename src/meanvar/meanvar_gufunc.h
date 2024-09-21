@@ -15,7 +15,7 @@ static void meanvar_core(
         npy_intp n,           // core dimension n
         T *p_x,               // pointer to first element of x, a strided 1-d array with n elements
         npy_intp x_stride,    // stride (in bytes) for elements of x
-        npy_long *p_ddof,     // pointer to ddof
+        npy_intp *p_ddof,     // pointer to ddof
         U *p_out,             // pointer to first element of out, a strided 1-d array with 2 elements
         npy_intp out_stride   // stride (in bytes) for elements of out
 ) {
