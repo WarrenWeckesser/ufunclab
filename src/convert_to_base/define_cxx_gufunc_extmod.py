@@ -1,4 +1,4 @@
-
+import numpy as np
 from ufunc_config_types import UFuncExtMod, UFunc, UFuncSource
 
 
@@ -8,18 +8,15 @@ convert_to_base(k, base, /, ...)
 Convert the integer k to the given base.
 """
 
+int_types = [np.dtype('int8'), np.dtype('uint8'),
+             np.dtype('int16'), np.dtype('uint16'),
+             np.dtype('int32'), np.dtype('uint32'),
+             np.dtype('int64'), np.dtype('uint64')]
+type_sigs = [f'{t.char}{t.char}->{t.char}' for t in int_types]
+
 convert_to_base_src = UFuncSource(
     funcname='convert_to_base_core_calc',
-    typesignatures=[
-        'bb->b',
-        'BB->B',
-        'hh->h',
-        'HH->H',
-        'ii->i',
-        'II->I',
-        'll->l',
-        'LL->L',
-    ]
+    typesignatures=type_sigs,
 )
 
 
