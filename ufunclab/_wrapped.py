@@ -8,25 +8,50 @@ try:
     from numpy.exceptions import AxisError
 except ImportError:
     from numpy import AxisError
-from ufunclab._bincount import bincount as _bincount
+from ufunclab._bincount import bincount as _bincount, bincountw as _bincountw
 from ufunclab._convert_to_base import convert_to_base as _convert_to_base
 from ufunclab._nextn import (nextn_less as _nextn_less,
                              nextn_greater as _nextn_greater)
 from ufunclab._one_hot import one_hot as _one_hot
 
 
+def _normalize_axis(ndim, axis):
+    if axis < -ndim or axis >= ndim:
+        msg = f"axis {axis} is out of bounds for array of dimension {ndim}"
+        raise AxisError(msg)
+    if axis < 0:
+        axis = axis + ndim
+    return axis
 
-def bincount(x, m=None, out=None, axis=-1):
+
+def _shape_remove_axis(shape, axis):
+    ndim = len(shape)
+    axis = _normalize_axis(ndim, axis)
+    return shape[:axis] + shape[axis + 1:]
+
+
+def _shape_insert_axis(shape, axis, n):
+    ndim = len(shape)
+    axis = _normalize_axis(ndim + 1, axis)
+    return shape[:axis] + (n,) + shape[axis:]
+
+
+def bincount(x, m=None, weights=None, out=None, axis=-1):
     """
     Count the number of occurrences of the positive integers in the 1-d
-    array `x` that are less than `m`.  If `m` is not given, the default
-    value is `max(np.max(x) + 1, 0)`.  If `x` is an n-dimensional array,
-    `axis` selects which axis of `x` the operation is applied to.
+    array `x` that are less than `m`, or accumulate values from `weights`
+    based in indices found in `x`.
+
+    If `m` is not given, the default value is `max(np.max(x) + 1, 0)`.
+
+    If `x` or `weights` are n-dimensional arrays, `axis` selects which
+    axis of the arrays the operation is applied to.
 
     Notes
     -----
-    This function is a Python wrapper of a gufunc with shape signature
-    `(n)->(m)`.
+    This function is a Python wrapper of two gufuncs, one with shape
+    signature `(n)->(m)` (no weights) and one with shape signature
+    `(n),(n)->(m)`.
 
     Examples
     --------
@@ -34,6 +59,7 @@ def bincount(x, m=None, out=None, axis=-1):
     >>> from ufunclab import bincount
 
     Create an array to work with.  `x` is an array with shape `(3, 12)`.
+    The first set of examples do not use the `weights` parameter.
 
     >>> rng = np.random.default_rng(121263137472525314065)
     >>> x = rng.integers(0, 8, size=(3, 12))
@@ -82,6 +108,20 @@ def bincount(x, m=None, out=None, axis=-1):
            [0, 2, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2],
            [1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0]], dtype=uint64)
 
+    Some examples with weights.
+
+    >>> x = np.array([3, 4, 5, 1, 1, 0, 4])
+    >>> w = np.array([1.0, 0.25, 1.5, 0.5, 0.75, 1.0, 1.5])
+    >>> bincount(x, weights=w)
+    array([1.  , 1.25, 0.  , 1.  , 1.75, 1.5 ])
+
+    >>> x = np.array([[1, 0, 2, 2],
+    ...               [0, 0, 0, 2]])
+    >>> w = np.array([0.25, 0.75, 0.75, 0.5])
+    >>> bincount(x, weights=w)
+    array([[0.75, 0.25, 1.25],
+           [1.75, 0.  , 0.5 ]])
+
     """
     x = np.asarray(x)
     if x.dtype.char not in np.typecodes['AllInteger']:
@@ -96,25 +136,40 @@ def bincount(x, m=None, out=None, axis=-1):
         if m < 0:
             raise ValueError(f'm must be a nonnegative integer; got {m!r}')
 
-    x_shape = x.shape
-    adjusted_axis = axis
-    if adjusted_axis < 0:
-        adjusted_axis += len(x_shape)
-    if adjusted_axis < 0 or adjusted_axis > len(x_shape):
-        raise AxisError(f'invalid axis {axis}')
-    out_shape = list(x_shape)
-    out_shape[adjusted_axis] = m
-    out_shape = tuple(out_shape)
-    if out is not None:
-        if out.shape != out_shape:
-            raise ValueError(f'out.shape must be {out_shape}; '
-                             f'got {out.shape}.')
+    if weights is not None:
+        weights = np.asarray(weights)
+        x_bc_shape = _shape_remove_axis(x.shape, axis)
+        w_bc_shape = _shape_remove_axis(weights.shape, axis)
+        bc_shape = np.broadcast_shapes(x_bc_shape, w_bc_shape)
+        out_shape = _shape_insert_axis(bc_shape, axis, m)
+
+        if out is not None:
+            if out.shape != out_shape:
+                msg = ('For the given inputs, out.shape must be '
+                       f'{out_shape}; got {out.shape}.')
+                raise ValueError(msg)
+        else:
+            out = np.zeros(out_shape, dtype=weights.dtype)
+
+        return _bincountw(x, weights, out=out, axes=[axis, axis, axis])
     else:
-        out = np.empty(out_shape, dtype=np.uintp)
-    return _bincount(x, out=out, axes=[axis, axis])
+        x_shape = x.shape
+        adjusted_axis = _normalize_axis(x.ndim, axis)
+        out_shape = list(x_shape)
+        out_shape[adjusted_axis] = m
+        out_shape = tuple(out_shape)
+        if out is not None:
+            if out.shape != out_shape:
+                raise ValueError(f'out.shape must be {out_shape}; '
+                                 f'got {out.shape}.')
+        else:
+            out = np.zeros(out_shape, dtype=np.intp)
+
+        return _bincount(x, out=out, axes=[axis, axis])
 
 
-bincount.gufunc = _bincount
+bincount._bincount = _bincount
+bincount._bincountw = _bincountw
 
 
 # XXX Except for `out` and `axis`, this function does not expose any of the

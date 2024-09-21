@@ -16,7 +16,7 @@ get(const T *px, ptrdiff_t stride, ptrdiff_t index)
 
 template<typename T>
 static inline void
-set(const T *px, ptrdiff_t stride, ptrdiff_t index, T value)
+set(T *px, ptrdiff_t stride, ptrdiff_t index, T value)
 {
     (*((T *) ((char *) px + index*stride))) = value;
 }
