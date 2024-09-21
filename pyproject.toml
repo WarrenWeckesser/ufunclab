@@ -3,12 +3,12 @@ build-backend = 'mesonpy'
 requires = [
     'meson-python>=0.14.0',
     'toml',
-    'numpy<2.0.0',
+    'numpy',
 ]
 
 [project]
 name = 'ufunclab'
-version = '0.0.8.dev15'
+version = '0.0.8.dev16'
 description = 'NumPy ufuncs and utilities.'
 readme = 'README.md'
 requires-python = '>=3.9'
@@ -18,7 +18,7 @@ authors = [
 ]
 # TODO: Determine minimum numpy version.
 dependencies = [
-    'numpy<2.0.0'
+    'numpy'
 ]
 
 classifiers = [
