@@ -7,12 +7,10 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.12', '3.11', '3.10', '3.9']
-        numpy-version: ['1.23.5', '1.24.4', '1.25.2', '1.26.4', '2.0.2', '2.1.1']
+        numpy-version: ['1.24.4', '1.25.2', '1.26.4', '2.0.2', '2.1.1']
         exclude:
         - python-version: '3.9'
           numpy-version: '2.1.1'
-        - python-version: '3.12'
-          numpy-version: '1.23.5'
         - python-version: '3.12'
           numpy-version: '1.24.4'
         - python-version: '3.12'
@@ -43,12 +41,10 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.12', '3.11', '3.10', '3.9']
-        numpy-version: ['1.23.5', '1.24.4', '1.25.2', '1.26.4', '2.0.2', '2.1.1']
+        numpy-version: ['1.24.4', '1.25.2', '1.26.4', '2.0.2', '2.1.1']
         exclude:
         - python-version: '3.9'
           numpy-version: '2.1.1'
-        - python-version: '3.12'
-          numpy-version: '1.23.5'
         - python-version: '3.12'
           numpy-version: '1.24.4'
         - python-version: '3.12'
