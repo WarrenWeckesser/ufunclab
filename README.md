@@ -713,6 +713,9 @@ the following plot.
 
 `semivar.spherical(h, nugget, sill, rng)` computes the spherical semivariogram.
 
+##### `semivar.parabolic`
+
+`semivar.parabolic(h, nugget, sill, rng)` computes the parabolic semivariogram.
 
 -----
 
