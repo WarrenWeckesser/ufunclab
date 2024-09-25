@@ -15,6 +15,8 @@ plt.plot(h, semivar.linear(h, nugget, sill, rng), '--',
          alpha=0.75, label='linear')
 plt.plot(h, semivar.spherical(h, nugget, sill, rng), '-.',
          alpha=0.75, label='spherical')
+plt.plot(h, semivar.parabolic(h, nugget, sill, rng), ':',
+         alpha=0.75, label='parabolic')
 
 plt.title(f'Semivariograms\n{nugget = }  {sill = }  {rng = }')
 plt.legend(framealpha=1, shadow=True)

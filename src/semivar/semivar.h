@@ -39,4 +39,19 @@ Real semivar_spherical(Real h, Real nugget, Real sill, Real range)
     return v;
 }
 
+template<typename Real>
+Real semivar_parabolic(Real h, Real nugget, Real sill, Real range)
+{
+    Real v, hor;
+
+    if (h > range) {
+        v = sill;
+    }
+    else {
+        hor = h / range;
+        v = nugget + (sill - nugget)*hor*(2.0 - hor);
+    }
+    return v;
+}
+
 #endif

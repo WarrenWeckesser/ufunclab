@@ -92,6 +92,35 @@ v : ndarray or scalar
 """
 
 
+semivar_parabolic_docstring = """\
+parabolic(h, nugget, sill, rng, /, ...)
+
+Parabolic semivariogram:
+
+    g(h) = N + (S - N)*r*(2 - r)  for h < R
+    g(h) = S                      for h >= R
+
+where r = h/range, N is the nugget, S is the sill and R is the range.
+
+Parameters
+----------
+h : array_like
+    The distance from a point.
+nugget : array_like
+    The base local variance.
+sill : array_like
+    The far-field variance.
+rng : array_like
+    The distance at which the variance becomes the constant `sill`
+    and the data are no longer correlated.
+
+Returns
+-------
+v : ndarray or scalar
+    The variance at distance `h`.
+
+"""
+
 semivar_funcs = [
     Func(cxxname='semivar_exponential',
          ufuncname='exponential',
@@ -105,6 +134,10 @@ semivar_funcs = [
          ufuncname='spherical',
          types=['ffff->f', 'dddd->d', 'gggg->g'],
          docstring=semivar_spherical_docstring),
+    Func(cxxname='semivar_parabolic',
+         ufuncname='parabolic',
+         types=['ffff->f', 'dddd->d', 'gggg->g'],
+         docstring=semivar_parabolic_docstring),
 ]
 
 extmods = [ExtMod(modulename='semivar',
