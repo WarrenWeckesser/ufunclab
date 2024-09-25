@@ -1391,7 +1391,7 @@ and `ufunclab.op.KIND_MEAN`.
 array([40., 40., 70., 80.])
 ```
 
-With broadcasting, all for kinds of the calculation can be performed with
+With broadcasting, all four kinds of the calculation can be performed with
 one function call.
 
 ```
