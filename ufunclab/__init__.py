@@ -12,6 +12,12 @@ del normal.erfcx
 # To allow `op` to be created here, ._first is not lazy-loaded.
 # It is imported here to have access to the constants _LT, _LE, etc.
 from ._first import first, argfirst, _LT, _LE, _EQ, _NE, _GT, _GE
+
+# Similarly, percentileofscore is not lazy-loaded.
+# It is imported here to have access to the constants _RANK, _WEAK, _STRICT
+# and _MEAN.
+from ._percentileofscore import percentileofscore, _RANK, _WEAK, _STRICT, _MEAN
+
 import numpy as _np
 
 
@@ -114,12 +120,17 @@ class op:
     NE = _np.int8(_NE)
     GT = _np.int8(_GT)
     GE = _np.int8(_GE)
+    KIND_RANK = _np.intp(_RANK)
+    KIND_WEAK = _np.intp(_WEAK)
+    KIND_STRICT = _np.intp(_STRICT)
+    KIND_MEAN = _np.intp(_MEAN)
 
 
-del _np, _LT, _LE, _EQ, _NE, _GT, _GE
+
+del _np, _LT, _LE, _EQ, _NE, _GT, _GE, _RANK, _WEAK, _STRICT, _MEAN
 
 __all__ = sorted(list(_name_to_module.keys()) +
-                 ['first', 'argfirst', 'op'])
+                 ['first', 'argfirst', 'op', 'percentileofscore'])
 
 
 def __dir__():

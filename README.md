@@ -82,28 +82,29 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 
 *Functions that reduce a one-dimensional array to one or two numbers.*
 
-| Function                                        | Description                                           |
-| --------                                        | -----------                                           |
-| [`first`](#first)                               | First value that matches a target comparison          |
-| [`argfirst`](#argfirst)                         | Index of the first occurrence of a target comparison  |
-| [`argmin`](#argmin)                             | Like `numpy.argmin`, but a gufunc                     |
-| [`argmax`](#argmax)                             | Like `numpy.argmax`, but a gufunc                     |
-| [`minmax`](#minmax)                             | Minimum and maximum                                   |
-| [`argminmax`](#argminmax)                       | Indices of the min and the max                        |
-| [`min_argmin`](#min_argmin)                     | Minimum value and its index                           |
-| [`max_argmax`](#max_argmax)                     | Maximum value and its index                           |
-| [`searchsortedl`](#searchsortedl)               | Find position for given element in sorted seq.        |
-| [`searchsortedr`](#searchsortedr)               | Find position for given element in sorted seq.        |
-| [`peaktopeak`](#peaktopeak)                     | Alternative to `numpy.ptp`                            |
-| [`all_same`](#all_same)                         | Check all values are the same                         |
-| [`gmean`](#gmean)                               | Geometric mean                                        |
-| [`hmean`](#hmean)                               | Harmonic mean                                         |
-| [`meanvar`](#meanvar)                           | Mean and variance                                     |
-| [`mad`](#mad)                                   | Mean absolute difference (MAD)                        |
-| [`rmad`](#rmad)                                 | Relative mean absolute difference (RMAD)              |
-| [`gini`](#gini)                                 | Gini coefficient                                      |
-| [`rms`](#rms)                                   | Root-mean-square for real and complex inputs          |
-| [`vnorm`](#vnorm)                               | Vector norm                                           |
+| Function                                        | Description                                                 |
+| --------                                        | -----------                                                 |
+| [`first`](#first)                               | First value that matches a target comparison                |
+| [`argfirst`](#argfirst)                         | Index of the first occurrence of a target comparison        |
+| [`argmin`](#argmin)                             | Like `numpy.argmin`, but a gufunc                           |
+| [`argmax`](#argmax)                             | Like `numpy.argmax`, but a gufunc                           |
+| [`minmax`](#minmax)                             | Minimum and maximum                                         |
+| [`argminmax`](#argminmax)                       | Indices of the min and the max                              |
+| [`min_argmin`](#min_argmin)                     | Minimum value and its index                                 |
+| [`max_argmax`](#max_argmax)                     | Maximum value and its index                                 |
+| [`searchsortedl`](#searchsortedl)               | Find position for given element in sorted seq.              |
+| [`searchsortedr`](#searchsortedr)               | Find position for given element in sorted seq.              |
+| [`peaktopeak`](#peaktopeak)                     | Alternative to `numpy.ptp`                                  |
+| [`all_same`](#all_same)                         | Check all values are the same                               |
+| [`gmean`](#gmean)                               | Geometric mean                                              |
+| [`hmean`](#hmean)                               | Harmonic mean                                               |
+| [`meanvar`](#meanvar)                           | Mean and variance                                           |
+| [`mad`](#mad)                                   | Mean absolute difference (MAD)                              |
+| [`rmad`](#rmad)                                 | Relative mean absolute difference (RMAD)                    |
+| [`gini`](#gini)                                 | Gini coefficient                                            |
+| [`rms`](#rms)                                   | Root-mean-square for real and complex inputs                |
+| [`vnorm`](#vnorm)                               | Vector norm                                                 |
+| [`percentileofscore`](#percentileofscore)       | Percentile of score (like `scipy.stats.percentileofscore`)  |
 
 *Functions that reduce two one-dimensional arrays to a number.*
 
@@ -1368,6 +1369,61 @@ with orders 1, 2, 3, and inf.  (Note that `abs(z)` is [2, 5, 0, 14].)
 >>> z = np.array([-2j, 3+4j, 0, 14])
 >>> vnorm(z, [1, 2, 3, np.inf])
 array([21.        , 15.        , 14.22263137, 14.        ])
+```
+
+### `percentileofscore`
+
+`percentileofscore(x, score, kind)`, a gufunc with signature `(n),(),()->()`,
+performs the same calculation as `scipy.stats.percentileofscore`.  As a gufunc,
+it broadcasts all of its arguments, including `kind`.
+
+Unlike the `kind` parameter of `scipy.stats.percentilescore`, here the third
+argument is required, and it must be an integer type.  The allowed values
+are `ufunclab.op.KIND_RANK`, `ufunclab.op.KIND_WEAK`, `ufunclab.op.KIND_STRICT`
+and `ufunclab.op.KIND_MEAN`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import percentileofscore, op
+
+>>> a = [1, 2, 3, 3, 4]
+>>> percentileofscore(a, [2, 2.5, 3, 3.5], op.KIND_RANK)
+array([40., 40., 70., 80.])
+```
+
+With broadcasting, all for kinds of the calculation can be performed with
+one function call.
+
+```
+>>> percentileofscore(a, 3, [op.KIND_RANK, op.KIND_WEAK, op.KIND_STRICT, op.KIND_MEAN])
+array([70., 80., 40., 60.])
+```
+
+A more common application of broadcasting might be to compute the percentile
+of a score in several arrays.
+
+```
+>>> rng = np.random.default_rng(121263137472525314065)
+>>> x = rng.integer(0, 20, size=(3, 16))
+array([[19,  0, 13,  0,  6, 19, 17,  9,  0,  9, 11, 14,  6, 15, 18,  3],
+       [ 7,  0, 16,  3,  5,  1,  1, 16,  0, 16,  3, 14,  5,  2, 10,  6],
+       [17, 10,  5, 17,  8, 11, 13, 18, 15,  7,  3,  3,  6,  0, 17, 15]])
+```
+
+Get the percentile of 10 in each row of x:
+
+```
+>>> percentileofscore(x, 10, op.KIND_RANK)
+array([50., 75., 50.])
+```
+
+Get the percentiles of 9 and 10 for each row.  For broadcasting, the `score`
+has shape (2, 1).
+
+```
+>>> percentileofscore(x, [[9], [10]], op.KIND_RANK)
+array([[46.875, 68.75 , 43.75 ],
+       [50.   , 75.   , 50.   ]])
 ```
 
 #### `vdot`
