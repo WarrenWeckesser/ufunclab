@@ -43,7 +43,7 @@ bincount_core_calc(
         }
         else {
             for (npy_intp i = 0; i < n; ++i) {
-                T k = p_x[k];
+                T k = p_x[i];
                 if (k >= 0 && static_cast<npy_intp>(k) < m) {
                     set(p_out, out_stride, k, get(p_out, out_stride, k) + 1);
                 }

@@ -64,6 +64,14 @@ def test_weights():
     assert_equal(b, [3, 10, 0, 9])
 
 
+def test_out_strides():
+    x = np.array([1, 2, 2, 2, 2, 3, 5, 5])
+    buffer = np.zeros(12, dtype=np.intp)
+    out = buffer[::2]
+    b = bincount(x, out=out)
+    assert_equal(b, [0, 1, 4, 1, 0, 2])
+
+
 def test_weights_axis():
     x = np.array([[3, 1, 1],
                   [2, 3, 3],
