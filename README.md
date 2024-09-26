@@ -2207,12 +2207,6 @@ Here's a collection of resources for learning about the C API for ufuncs.
   * In particular, the section
     ["Function call"](https://numpy.org/devdocs/dev/internals.code-explanations.html#function-call)
     explains when the GIL is released.
-* When implementing inner loops for many NumPy dtypes, the
-  [NumPy distutils](https://numpy.org/doc/stable/reference/distutils_guide.html)
-  [template preprocessor](https://numpy.org/doc/stable/reference/distutils_guide.html#conversion-of-src-files-using-templates)
-  is a useful tool. (See the ["Other files"](https://numpy.org/doc/stable/reference/distutils_guide.html#other-files)
-  section for the syntax that would be used in, say, a C file.)
-  However, the `distutils` subpackage of NumPy is deprecated.
 * Some relevant NumPy source code, if you want to dive deep:
   * `PyUFuncObject` along with related C types and macros are defined in
    [`numpy/numpy/_core/include/numpy/ufuncobject.h`](https://github.com/numpy/numpy/blob/main/numpy/_core/include/numpy/ufuncobject.h).
@@ -2222,3 +2216,9 @@ Here's a collection of resources for learning about the C API for ufuncs.
   * [2.2.2 Universal Functions](https://scipy-lectures.org/advanced/advanced_numpy/index.html#universal-functions)
 * [Data Type API](https://numpy.org/doc/stable/reference/c-api/dtype.html) --
   a handy reference.
+* *NumPy's distutils module and the corresponding template processor are deprecated.  Do not use in new code!*
+  When implementing inner loops for many NumPy dtypes, the
+  [NumPy distutils](https://numpy.org/doc/stable/reference/distutils_guide.html)
+  [template preprocessor](https://numpy.org/doc/stable/reference/distutils_guide.html#conversion-of-src-files-using-templates)
+  is a useful tool. (See the ["Other files"](https://numpy.org/doc/stable/reference/distutils_guide.html#other-files)
+  section for the syntax that would be used in, say, a C file.)
