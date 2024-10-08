@@ -6,15 +6,23 @@ jobs:
   ubuntu-latest:
     strategy:
       matrix:
-        python-version: ['3.12', '3.11', '3.10', '3.9']
-        numpy-version: ['1.24.4', '1.25.2', '1.26.4', '2.0.2', '2.1.1']
+        python-version: ['3.13', '3.12', '3.11', '3.10', '3.9']
+        numpy-version: ['1.24.4', '1.25.2', '1.26.4', '2.0.2', '2.1.2']
         exclude:
         - python-version: '3.9'
-          numpy-version: '2.1.1'
+          numpy-version: '2.1.2'
         - python-version: '3.12'
           numpy-version: '1.24.4'
         - python-version: '3.12'
           numpy-version: '1.25.2'
+        - python-version: '3.13'
+          numpy-version: '1.24.4'
+        - python-version: '3.13'
+          numpy-version: '1.25.2'
+        - python-version: '3.13'
+          numpy-version: '1.26.4'
+        - python-version: '3.13'
+          numpy-version: '2.0.2'
 
     runs-on: ubuntu-latest
 
@@ -108,7 +116,7 @@ jobs:
 
     strategy:
       matrix:
-        numpy-version: ['1.25.2', '1.26.4', '2.0.2', '2.1.1']
+        numpy-version: ['1.25.2', '1.26.4', '2.0.2', '2.1.2']
         os: ['windows-2019', 'windows-latest']
       fail-fast: false
 
