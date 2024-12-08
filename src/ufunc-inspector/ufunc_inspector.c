@@ -165,7 +165,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
     }
     printf("ntypes = %d\n", ufunc->ntypes);
 
-    if (ufunc->ntypes > 0 && ufunc->nin > 0 && ufunc->nin < 4 && ufunc->nout == 1) {
+    if (ufunc->ntypes > 0 && ufunc->nin > 0 && ufunc->nin < 5 && ufunc->nout == 1) {
         printf("loop types:\n");
     }
     for (int i = 0; i < ufunc->ntypes; ++i) {
@@ -229,6 +229,18 @@ ufunc_inspector(PyObject *self, PyObject *arg)
                                      get_typechar_from_typenum(ufunc->types[4*i+1]),
                                      get_typechar_from_typenum(ufunc->types[4*i+2]),
                                      get_typechar_from_typenum(ufunc->types[4*i+3]));
+            printf("\n");
+        }
+        else if (ufunc->nin == 4 && ufunc->nout == 1) {
+            printf("%3d: (%3d, %3d, %3d, %3d) -> %3d  ", i,
+                   ufunc->types[5*i], ufunc->types[5*i+1],
+                   ufunc->types[5*i+2], ufunc->types[5*i+3],
+                   ufunc->types[5*i+4]);
+            printf("(%c%c%c%c->%c)  ", get_typechar_from_typenum(ufunc->types[5*i]),
+                                       get_typechar_from_typenum(ufunc->types[5*i+1]),
+                                       get_typechar_from_typenum(ufunc->types[5*i+2]),
+                                       get_typechar_from_typenum(ufunc->types[5*i+3]),
+                                       get_typechar_from_typenum(ufunc->types[5*i+4]));
             printf("\n");
         }
     }
