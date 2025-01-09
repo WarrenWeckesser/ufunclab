@@ -3,6 +3,10 @@ ufunclab
 
 Some NumPy `ufuncs`, and some related tools.
 
+Links to reference material related to NumPy's C API for ufuncs
+and gufuncs are given [below](#resources).
+
+
 Building and installing
 -----------------------
 
@@ -22,11 +26,9 @@ compiler are required.
 
 The unit tests require [pytest](https://docs.pytest.org/).
 
-The test suite is run with Python versions 3.9 to 3.13 and with several
-recent releases of NumPy, including NumPy 2.0.
+The test suite is run as a GitHub actions workflow with Python versions
+3.9 to 3.13 and with several recent releases of NumPy.
 
-Links to reference material related to NumPy's C API for ufuncs
-and gufuncs are given [below](#resources).
 
 What's in ufunclab?
 -------------------
