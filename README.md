@@ -3,8 +3,11 @@ ufunclab
 
 Some NumPy `ufuncs`, and some related tools.
 
+Building and installing
+-----------------------
+
 `ufunclab` uses `meson-python` as its build system.  Currently no
-pre-built wheels are provided, so to install it, you'll have to check
+pre-built wheels are provided, so to install it, you will have to check
 out the git repository, and in the top-level directory, run
 
     pip install .
@@ -19,7 +22,7 @@ compiler are required.
 
 The unit tests require [pytest](https://docs.pytest.org/).
 
-The test suite is run with Python versions 3.9 to 3.12 and with several
+The test suite is run with Python versions 3.9 to 3.13 and with several
 recent releases of NumPy, including NumPy 2.0.
 
 Links to reference material related to NumPy's C API for ufuncs
