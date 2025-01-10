@@ -47,6 +47,10 @@ def bincount(x, m=None, weights=None, out=None, axis=-1):
     If `x` or `weights` are n-dimensional arrays, `axis` selects which
     axis of the arrays the operation is applied to.
 
+    `out`, if given, must be a NumPy array with the appropriate shape.
+    When `out` is given, it is *not initialized to zero*.  This allows
+    the counts to be accumulated over repeated calls to `bincount`.
+
     Notes
     -----
     This function is a Python wrapper of two gufuncs, one with shape
@@ -122,6 +126,28 @@ def bincount(x, m=None, weights=None, out=None, axis=-1):
     array([[0.75, 0.25, 1.25],
            [1.75, 0.  , 0.5 ]])
 
+    The `out` parameter allows the result to be placed in a preallocated
+    array.
+
+    >>> out = np.zeros(8, dtype=np.int32)
+    >>> x = np.array([3, 3, 2, 7, 0, 0, 3, 3, 3])
+    >>> bincount(x, out=out)
+    array([2, 0, 1, 5, 0, 0, 0, 1], dtype=int32)
+
+    When `out` is given, the return value is `out`:
+
+    >>> out
+    array([2, 0, 1, 5, 0, 0, 0, 1], dtype=int32)
+
+    `bincount` does not initialize `out` with zeros, so the same array
+    may be used in repeated calls to accumulate the counts for multiple
+    input arrays.
+
+    >>> y = np.array([0, 6, 6, 6, 7, 7, 7])
+    >>> bincount(y, out=out)
+    array([3, 0, 1, 5, 0, 0, 3, 4], dtype=int32)
+    >>> out
+    array([3, 0, 1, 5, 0, 0, 3, 4], dtype=int32)
     """
     x = np.asarray(x)
     if x.dtype.char not in np.typecodes['AllInteger']:
