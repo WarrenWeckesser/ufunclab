@@ -20,3 +20,10 @@ def test_wjaccard_float32():
     y = np.array([2.0, 0.5, 2.5, 0.5, 2.0], dtype=np.float32)
     w = wjaccard(x, y)
     assert_allclose(w, 0.5, rtol=1e-7)
+
+
+def test_wjaccard_float32_with_nan():
+    x = np.array([1.0, 2.5, 3.0, np.nan, 0.5], dtype=np.float32)
+    y = np.array([2.0, 0.5, 2.5, 0.5, 2.0], dtype=np.float32)
+    w = wjaccard(x, y)
+    assert np.isnan(w)

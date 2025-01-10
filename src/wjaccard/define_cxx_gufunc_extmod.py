@@ -39,15 +39,10 @@ Example
 >>> 0.45652173913043476
 """
 
-wjaccard_integer_src = UFuncSource(
-    funcname='wjaccard_integer_core',
+wjaccard_src = UFuncSource(
+    funcname='wjaccard_core',
     typesignatures=['bb->d', 'BB->d', 'hh->d', 'HH->d', 'ii->d', 'II->d',
-                    'll->d', 'LL->d'],
-)
-
-wjaccard_realtype_src = UFuncSource(
-    funcname='wjaccard_realtype_core',
-    typesignatures=['ff->f', 'dd->d'],
+                    'll->d', 'LL->d', 'ff->f', 'dd->d'],
 )
 
 wjaccard_ufunc = UFunc(
@@ -55,7 +50,7 @@ wjaccard_ufunc = UFunc(
     header='wjaccard_gufunc.h',
     docstring=WJACCARD_DOCSTRING,
     signature='(n),(n)->()',
-    sources=[wjaccard_integer_src, wjaccard_realtype_src],
+    sources=[wjaccard_src],
     nonzero_coredims=['n'],
 )
 
