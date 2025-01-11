@@ -44,14 +44,10 @@ vdot(x, y, /, ...)
 Vector dot product of the real floating point arrays x and y.
 """
 
-vnorm_src_real = UFuncSource(
+vnorm_src = UFuncSource(
     funcname='vnorm_core_calc',
-    typesignatures=['ff->f', 'dd->d', 'gg->g'],
-)
-
-vnorm_src_cplx = UFuncSource(
-    funcname='cvnorm_core_calc',
-    typesignatures=['Ff->f', 'Dd->d', 'Gg->g'],
+    typesignatures=[
+        'ff->f', 'dd->d', 'gg->g', 'Ff->f', 'Dd->d', 'Gg->g'],
 )
 
 vnorm = UFunc(
@@ -59,7 +55,7 @@ vnorm = UFunc(
     header='vnorm_gufunc.h',
     docstring=VNORM_DOCSTRING,
     signature='(n),()->()',
-    sources=[vnorm_src_real, vnorm_src_cplx],
+    sources=[vnorm_src],
 )
 
 rms_src_real = UFuncSource(

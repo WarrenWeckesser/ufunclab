@@ -8,6 +8,7 @@
 #include <complex>
 #include <cmath>
 #include <algorithm>
+#include <type_traits>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -16,102 +17,58 @@
 
 
 //
-// Create a complex abs function for the numpy complex types.
+// Create an abs function that we can specialize for the numpy complex types.
 //
 
+template<typename T>
+static inline T
+my_abs(T x)
+{
+    if constexpr (std::is_unsigned_v<T>) {
+        return x;
+    }
+    else {
+        return std::abs(x);
+    }
+}
+
 static inline float
-my_cabs(npy_cfloat z)
+my_abs(npy_cfloat z)
 {
     std::complex<float> zs{npy_crealf(z), npy_cimagf(z)};
     return std::abs(zs);
 }
 
 static inline double
-my_cabs(npy_cdouble z)
+my_abs(npy_cdouble z)
 {
     std::complex<double> zs{npy_creal(z), npy_cimag(z)};
     return std::abs(zs);
 }
 
 static inline long double
-my_cabs(npy_clongdouble z)
+my_abs(npy_clongdouble z)
 {
     std::complex<long double> zs{npy_creall(z), npy_cimagl(z)};
     return std::abs(zs);
 }
 
+
 //
 // `vnorm_core_calc`, the C++ core function
 // for the gufunc `vnorm` with signature '(n),()->()'
-// for types ['ff->f', 'dd->d', 'gg->g'].
-//
-template<typename T>
-static void vnorm_core_calc(
-        npy_intp n,         // core dimension n
-        T *p_x,             // pointer to first element of x, a strided 1-d array with n elements
-        npy_intp x_stride,  // stride (in bytes) for elements of x
-        T *p_order,         // pointer to order
-        T *p_out            // pointer to out
-) {
-    T maxabsx = 0;
-    T order = *p_order;
-    if (order <= 0) {
-        p_out[0] = NPY_NAN;
-        return;
-    }
-
-    for (int k = 0; k < n; ++k) {
-        T current_x = get(p_x, x_stride, k);
-        if (current_x < 0) {
-            current_x = -current_x;
-        }
-        if (current_x > maxabsx) {
-            maxabsx = current_x;
-        }
-    }
-    if (maxabsx == 0) {
-        p_out[0] = 0;
-    }
-    else {
-        T sum = 0;
-        for (int k = 0; k < n; ++k) {
-            T current_x = get(p_x, x_stride, k);
-            if (current_x < 0) {
-                current_x = -current_x;
-            }
-            if (isinf(order)) {
-                sum = std::max(sum, current_x);
-            }
-            else if (order == 1) {
-                sum += current_x;
-            }
-            else {
-                sum += pow(current_x/maxabsx, order);
-            }
-        }
-        if (isinf(order) | (order == 1)) {
-            p_out[0] = sum;
-        }
-        else {
-            p_out[0] = maxabsx * pow(sum, 1/order);
-        }
-    }
-}
-
-//
-// `cvnorm_core_calc`, the C++ core function
-// for the gufunc `vnorm` with signature '(n),()->()'
-// for types ['Ff->f', 'Dd->d', 'Gg->g'].
+// for types ['ff->f', 'dd->d', 'gg->g', 'Ff->f', 'Dd->d', 'Gg->g'].
 //
 template<typename T, typename U>
-static void cvnorm_core_calc(
+static void vnorm_core_calc(
         npy_intp n,         // core dimension n
         T *p_x,             // pointer to first element of x, a strided 1-d array with n elements
         npy_intp x_stride,  // stride (in bytes) for elements of x
         U *p_order,         // pointer to order
         U *p_out            // pointer to out
-) {
-    U maxmag = 0;
+)
+{
+    U maxabsx = 0;
     U order = *p_order;
     if (order <= 0) {
         p_out[0] = NPY_NAN;
@@ -120,34 +77,34 @@ static void cvnorm_core_calc(
 
     for (int k = 0; k < n; ++k) {
         T current_x = get(p_x, x_stride, k);
-        U mag = my_cabs(current_x);
-        if (mag > maxmag) {
-            maxmag = mag;
+        U abs_x = my_abs(current_x);
+        if (abs_x > maxabsx) {
+            maxabsx = abs_x;
         }
     }
-    if (maxmag == 0) {
+    if (maxabsx == 0) {
         p_out[0] = 0;
     }
     else {
         U sum = 0;
         for (int k = 0; k < n; ++k) {
             T current_x = get(p_x, x_stride, k);
-            U mag = my_cabs(current_x);
+            U abs_x = my_abs(current_x);
             if (isinf(order)) {
-                sum = fmax(sum, mag);
+                sum = std::max(sum, abs_x);
             }
             else if (order == 1) {
-                sum += mag;
+                sum += abs_x;
             }
             else {
-                sum += pow(mag/maxmag, order);
+                sum += pow(abs_x/maxabsx, order);
             }
         }
         if (isinf(order) | (order == 1)) {
             p_out[0] = sum;
         }
         else {
-            p_out[0] = maxmag * pow(sum, 1/order);
+            p_out[0] = maxabsx * pow(sum, 1/order);
         }
     }
 }
