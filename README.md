@@ -152,7 +152,7 @@ function to provide a capability that is not possible with a gufunc.
 | [`bincount`](#bincount)                         | Like `np.bincount`, but gufunc-based                   |
 | [`convert_to_base`](#convert_to_base)           | Convert an integer to a given base.                    |
 | [`nextn_greater`](#nextn_greater)               | Next n values greater than the given x.                |
-| [`nextn_less`](#nextn_less)                     | Next n values greater than the given x.                |
+| [`nextn_less`](#nextn_less)                     | Next n values less than the given x.                   |
 | [`one_hot`](#one_hot)                           | Create 1-d array that is 1 at index k and 0 elsewhere. |
 
 *Other tools*
