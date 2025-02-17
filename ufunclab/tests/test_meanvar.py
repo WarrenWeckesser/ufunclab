@@ -50,3 +50,11 @@ def test_size_zero():
     x = np.zeros((3, 0))
     mv = meanvar(x, 1, axes=[(0,), (), (1,)])
     assert mv.shape == (0, 2)
+
+
+@pytest.mark.parametrize('x0', [np.pi, 1.23456789e+125, 1.3e-126])
+def test_meanvar_array_of_equal_values(x0):
+    x = np.full(1000, fill_value=x0)
+    m, v = meanvar(x, 0)
+    assert m == x0
+    assert v == 0.0
