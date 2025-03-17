@@ -36,7 +36,7 @@ def _shape_insert_axis(shape, axis, n):
     return shape[:axis] + (n,) + shape[axis:]
 
 
-def bincount(x, m=None, weights=None, out=None, axis=-1):
+def bincount(x, m=None, weights=None, *, out=None, axis=-1):
     """
     Count the number of occurrences of the positive integers in the 1-d
     array `x` that are less than `m`, or accumulate values from `weights`
@@ -201,7 +201,7 @@ bincount._bincountw = _bincountw
 # XXX Except for `out` and `axis`, this function does not expose any of the
 # gufunc keyword parameters.
 #
-def convert_to_base(k, base, ndigits, out=None, axis=-1):
+def convert_to_base(k, base, ndigits, *, out=None, axis=-1):
     """
     Convert the integer `k` to the given `base`, using `ndigits` digits.
     The "digits" are the integer coefficients of the expansion of `k` as
@@ -269,7 +269,7 @@ def convert_to_base(k, base, ndigits, out=None, axis=-1):
 convert_to_base.gufunc = _convert_to_base
 
 
-def nextn_greater(x, n, out=None, axis=-1):
+def nextn_greater(x, n, *, out=None, axis=-1):
     """
     Return the next n floating point values greater than x.
 
@@ -304,7 +304,7 @@ def nextn_greater(x, n, out=None, axis=-1):
 nextn_greater.gufunc = _nextn_greater
 
 
-def nextn_less(x, n, out=None, axis=-1):
+def nextn_less(x, n, *, out=None, axis=-1):
     """
     Return the next n floating point values less than x.
 
@@ -339,7 +339,7 @@ def nextn_less(x, n, out=None, axis=-1):
 nextn_less.gufunc = _nextn_less
 
 
-def one_hot(k, n, out=None, axis=-1):
+def one_hot(k, n, *, out=None, axis=-1):
     """
     Create a 1-d integer array of length n, all zero except for 1 at index k.
     """
