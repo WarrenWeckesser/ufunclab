@@ -122,7 +122,7 @@ T rms_core_contig(npy_intp n, T *p_x)
 
 //
 // `rms_core_calc`, the C++ core function
-// for the gufunc `vnorm` with signature '(n)->()'
+// for the gufunc `rms` with signature '(n)->()'
 // for types ['f->f', 'd->d', 'g->g'].
 //
 // XXX This calculation can overflow if elements
@@ -162,7 +162,7 @@ T crms_core_contig(npy_intp n, T *p_z)
 
 //
 // `crms_core_calc`, the C++ core function
-// for the gufunc `vnorm` with signature '(n),()->()'
+// for the gufunc `rms` with signature '(n),()->()'
 // for types ['F->f', 'D->d', 'G->g'].
 //
 // XXX This calculation can overflow if elements
