@@ -98,7 +98,7 @@ endforeach
 # in tools/cxxgen/generate_ufuncs.py.  This meson code takes advantage
 # of the simplicity of these particular extension modules; the code for
 # the ufuncs in the `normal` subdirectory requires some customization
-# and it not include here.
+# and is not included here.
 #----------------------------------------------------------------------
 
 ufunc_cxx_src_dirs_simple = [
@@ -106,6 +106,7 @@ ufunc_cxx_src_dirs_simple = [
     'deadzone',
     'expint1',
     'logistic',
+    'nan_to_num',
     'next',
     # 'normal',
     'pow1pm1',

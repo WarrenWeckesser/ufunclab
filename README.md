@@ -47,6 +47,7 @@ are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, `issnan`, and
 | --------                                      | -----------                                                   |
 | [`logfactorial`](#logfactorial)               | Log of the factorial of integers                              |
 | [`issnan`](#issnan)                           | Like `isnan`, but for signaling nans only.                    |
+| [`nan_to_num`](#nan_to_num)                   | Replace `nan` with a given value.                             |
 | [`next_less`](#next_less)                     | Equivalent to `np.nextafter(x, -inf)`                         |
 | [`next_greater`](#next_greater)               | Equivalent to `np.nextafter(x, inf)`                          |
 | [`abs_squared`](#abs_squared)                 | Squared absolute value                                        |
@@ -210,6 +211,20 @@ it should).
 ```
 >>> issnan(x)
 array([False,  True, False, False, False])
+```
+
+#### `nan_to_num`
+
+`nan_to_num` is an element-wise ufunc that replaces occurrences of `nan`
+in floating point arrays with a given value.
+
+```
+>>> import numpy as np
+>>> from ufunclab import nan_to_num
+
+>>> x = np.array([3.0, np.nan, 100.0, 0.25, np.nan])
+>>> nan_to_num(x, -1.0)
+array([  3.  ,  -1.  , 100.  ,   0.25,  -1.  ])
 ```
 
 #### `next_less`

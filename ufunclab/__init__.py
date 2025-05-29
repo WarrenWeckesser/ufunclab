@@ -43,6 +43,7 @@ _name_to_module = {
     'logistic_deriv': '._logistic',
     'log_logistic': '._logistic',
     'swish': '._logistic',
+    'nan_to_num': '._nan_to_num',
     'hyperbolic_ramp': '._ramp',
     'exponential_ramp': '._ramp',
     'yeo_johnson': '._yeo_johnson',
