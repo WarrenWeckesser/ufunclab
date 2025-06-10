@@ -121,7 +121,7 @@ jobs:
     strategy:
       matrix:
         numpy-version: ['1.26.4', '2.0.2', '2.1.3', '2.2.6']
-        os: ['windows-2019', 'windows-latest']
+        os: ['windows-latest']
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
