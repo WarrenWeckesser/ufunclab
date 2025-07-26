@@ -115,3 +115,15 @@ def test_pmean_special_cases():
     # Reference values computed with mpsci.stats.pmean.
     ref = np.array([1.7503392130257802, 3.03615501437834, 10.0])
     assert_allclose(m, ref, rtol=1e-15)
+
+
+def test_pmean_with_nan():
+    x = np.array([1.0, 3.0, np.nan, 12.0, 12.5])
+    m = pmean(x, 2.0)
+    assert_equal(m, np.nan)
+
+
+def test_pmean_with_inf():
+    x = np.array([1.0, 3.0, np.inf, 100.0, 121.0])
+    m = pmean(x, 2.0)
+    assert_equal(m, np.inf)

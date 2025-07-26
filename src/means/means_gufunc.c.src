@@ -161,7 +161,11 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
     for (npy_intp i = 0; i < dimensions[0]; ++i, in0 += in0_step,
                                                  in1 += in1_step,
                                                  out += out_step) {
+        bool has_zero = false;
         bool has_neg = false;
+        bool has_nan = false;
+        bool has_inf = false;
+    
         char *inner = in0;
         @ctype_in@ xmax = 0;  // Initializing xmax to 0 isn't actually necessary.
         @ctype_out@ p = *(@ctype_in@ *)in1;
@@ -176,6 +180,13 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
         // Get the max, and check for negative values.
         for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
             @ctype_in@ x = *(@ctype_in@ *)inner;
+            if (isnan(1.0*x)) {
+                has_nan = true;
+                break;
+            }
+            else if (isinf(1.0*x)) {
+                has_inf = true;
+            }
             if (k == 0 || x > xmax) {
                 xmax = x;
             }
@@ -184,12 +195,16 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
                 break;
             }
         }
-        if (has_neg) {
+        if (has_neg || has_nan) {
             *(@ctype_out@ *) out = NPY_NAN;
             break;
         }
         if (xmax == 0) {
             *(@ctype_out@ *) out = 0;
+            break;
+        }
+        if (has_inf) {
+            *(@ctype_out@ *) out = NPY_INFINITY;
             break;
         }
 
