@@ -4,6 +4,7 @@
 // gufunc implementations of:
 //     gmean : geometric mean
 //     hmean : harmonic mean
+//     pmean : power mean (aka generalized mean)
 //
 
 
@@ -125,6 +126,63 @@ static void hmean_@typename@_loop(char **args, const npy_intp *dimensions,
     }
 }
 
+static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
+                                  const npy_intp* steps, void* data)
+{
+    char *in0 = args[0];
+    char *in1 = args[1];
+    char *out = args[2];
+    npy_intp in0_step = steps[0];
+    npy_intp in1_step = steps[1];
+    npy_intp out_step = steps[2];
+    npy_intp inner_step = steps[3];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "pmean requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in0 += in0_step,
+                                                 in1 += in1_step,
+                                                 out += out_step) {
+        bool has_neg = false;
+        char *inner = in0;
+        @ctype_in@ xmax = 0;  // Initializing xmax to 0 isn't actually necessary.
+        // Get the max, and check for negative values.
+        @ctype_out@ p = *(@ctype_in@ *)in1;
+        for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
+            @ctype_in@ x = *(@ctype_in@ *)inner;
+            if (k == 0 || x > xmax) {
+                xmax = x;
+            }
+            if (x < 0.0) {
+                has_neg = true;
+                break;
+            }
+        }
+        if (has_neg) {
+            *(@ctype_out@ *) out = NPY_NAN;
+            break;
+        }
+        if (xmax == 0) {
+            *(@ctype_out@ *) out = 0;
+            break;
+        }
+
+        @ctype_out@ m = 0;
+        inner = in0;
+        for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
+            @ctype_in@ x = *(@ctype_in@ *)inner;
+            m += pow(x/xmax, p);
+        }
+        *(@ctype_out@ *) out = xmax*pow(m/dimensions[1], 1/p);
+    }
+}
+
 /**end repeat**/
 
 
@@ -145,6 +203,13 @@ static char typecodes[] = {
     NPY_FLOAT,      NPY_FLOAT,
     NPY_DOUBLE,     NPY_DOUBLE,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+};
+
+// These are the input and return dtypes of pmean.
+static char pmean_typecodes[] = {
+    NPY_FLOAT,      NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
 };
 
 static PyUFuncGenericFunction gmean_funcs[] = {
@@ -181,6 +246,15 @@ static PyUFuncGenericFunction hmean_funcs[] = {
 #define HMEAN_NTYPES (sizeof(hmean_funcs)/sizeof(hmean_funcs[0]))
 static void *hmean_data[HMEAN_NTYPES];
 
+static PyUFuncGenericFunction pmean_funcs[] = {
+    (PyUFuncGenericFunction) &pmean_float_loop,
+    (PyUFuncGenericFunction) &pmean_double_loop,
+    (PyUFuncGenericFunction) &pmean_longdouble_loop
+};
+
+#define PMEAN_NTYPES (sizeof(pmean_funcs)/sizeof(pmean_funcs[0]))
+static void *pmean_data[PMEAN_NTYPES];
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Python extension module definitions.
@@ -193,7 +267,7 @@ static PyMethodDef MeanMethods[] = {
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     .m_name = "_means",
-    .m_doc = "Module that defines the gmean and hmean functions.",
+    .m_doc = "Module that defines the gmean, hmean and pmean functions.",
     .m_size = -1,
     .m_methods = MeanMethods
 };
@@ -228,6 +302,14 @@ static struct PyModuleDef moduledef = {
 "\n"
 
 
+#define PMEAN_DOCSTRING \
+"pmean(x, p, /, ...)\n"                                                    \
+"\n"                                                                       \
+"Power mean (aka generalized mean) of x.\n"                                \
+"\n"                                                                       \
+"The geometric mean of [x1, x2, ..., xn] is (sum(xi**p)/n)**(1/p).\n"      \
+"If any value in x is negative, nan is returned.\n"
+
 PyMODINIT_FUNC PyInit__means(void)
 {
     PyObject *module;
@@ -252,6 +334,14 @@ PyMODINIT_FUNC PyInit__means(void)
     if (ul_define_gufunc(module, "hmean", HMEAN_DOCSTRING, "(n)->()",
                          HMEAN_NTYPES,
                          hmean_funcs, hmean_data, typecodes) == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    // Create the pmean ufunc.
+    if (ul_define_gufunc(module, "pmean", PMEAN_DOCSTRING, "(n),()->()",
+                         PMEAN_NTYPES,
+                         pmean_funcs, pmean_data, pmean_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }

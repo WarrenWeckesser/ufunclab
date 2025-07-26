@@ -62,6 +62,7 @@ _name_to_module = {
     'multivariate_logbeta': '._multivariate_logbeta',
     'gmean': '._means',
     'hmean': '._means',
+    'pmean': '._means',
     'meanvar': '._meanvar',
     'pearson_corr': '._corr',
     'wjaccard': '._wjaccard',

@@ -104,6 +104,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`all_same`](#all_same)                         | Check all values are the same                               |
 | [`gmean`](#gmean)                               | Geometric mean                                              |
 | [`hmean`](#hmean)                               | Harmonic mean                                               |
+| [`pmean`](#pmean)                               | Power mean (aka generalized mean)                           |
 | [`meanvar`](#meanvar)                           | Mean and variance                                           |
 | [`mad`](#mad)                                   | Mean absolute difference (MAD)                              |
 | [`rmad`](#rmad)                                 | Relative mean absolute difference (RMAD)                    |
@@ -1166,6 +1167,39 @@ array([[ 1,  2,  3,  4,  5],
 
 >>> hmean(y, axis=1)
 array([ 2.18978102,  7.74431469, 12.84486077])
+```
+
+#### `pmean`
+
+`pmean` is a gufunc (signature `(n),()->()`) that computes the
+power mean (aka [generalized mean](https://en.wikipedia.org/wiki/Generalized_mean)).
+
+The values in the input array must be nonnegative.  If the input `x` contains
+negative values, `nan` is returned.
+
+For example,
+
+```
+>>> import numpy as np
+>>> from ufunclab import pmean
+
+>>> x = np.array([1, 2, 3, 4, 5])
+>>> pmean(x, 2.5)
+np.float64(3.445094067905562)
+
+>>> y = np.arange(1, 16).reshape(3, 5)
+>>> y
+array([[ 1,  2,  3,  4,  5],
+       [ 6,  7,  8,  9, 10],
+       [11, 12, 13, 14, 15]])
+
+>>> pmean(y, 2.5, axis=1)
+array([ 3.44509407,  8.18410126, 13.11457762])
+
+The usual gufunc broadcasting applies:
+
+>>> pmean(x, [2.0, 2.5, 3.0])
+array([3.31662479, 3.44509407, 3.5568933 ])
 ```
 
 #### `meanvar`

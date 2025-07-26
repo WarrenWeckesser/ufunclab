@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose, assert_equal
-from ufunclab import gmean, hmean
+from ufunclab import gmean, hmean, pmean
 
 
 @pytest.mark.parametrize('func', [gmean, hmean])
@@ -60,3 +60,32 @@ def test_hmean_axis():
 def test_hmean_empty_array():
     with pytest.raises(ValueError, match='length at least 1'):
         hmean([])
+
+
+def test_pmean_basic():
+    x = np.array([1, 2, 3, 4, 5])
+    p = [2.0, 2.5, 3.0]
+    m = pmean(x, p)
+    # Reference values were computed with mpsci.stats.pmean.
+    ref = [3.3166247903554, 3.4450940679055617, 3.556893304490063]
+    assert_allclose(m, ref, rtol=1e-15)
+
+
+def test_pmean_constant_input():
+    x = np.full(8, fill_value=100.0)
+    m = pmean(x, 3.0)
+    assert_equal(m, x[0])
+
+
+def test_pmean_big_values():
+    x = 1e155*np.arange(10)
+    y = pmean(x, 3)
+    # Reference value was computed with mpsci.stats.pmean.
+    assert_allclose(y, 5.872301461753295e+155, rtol=1e-15)
+
+
+def test_pmean_small_values():
+    x = 1e-155*np.arange(10)
+    y = pmean(x, 3)
+    # Reference value was computed with mpsci.stats.pmean.
+    assert_allclose(y, 5.872301461753296e-155, rtol=1e-15)
