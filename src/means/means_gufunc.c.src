@@ -164,8 +164,16 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
         bool has_neg = false;
         char *inner = in0;
         @ctype_in@ xmax = 0;  // Initializing xmax to 0 isn't actually necessary.
-        // Get the max, and check for negative values.
         @ctype_out@ p = *(@ctype_in@ *)in1;
+        if (p == 0) {
+            // In the limit p == 0, the power mean becomes the geometric mean.
+            char *args2[2] = {in0, out};
+            npy_intp dims2[2] = {1, dimensions[1]};
+            npy_intp steps2[3] = {in0_step, out_step, inner_step};
+            gmean_@typename@_loop(args2, dims2, steps2, NULL);
+            continue;
+        }
+        // Get the max, and check for negative values.
         for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
             @ctype_in@ x = *(@ctype_in@ *)inner;
             if (k == 0 || x > xmax) {

@@ -104,3 +104,14 @@ def test_pmean_small_values():
     y = pmean(x, 3)
     # Reference value was computed with mpsci.stats.pmean.
     assert_allclose(y, 5.872301461753296e-155, rtol=1e-15)
+
+
+def test_pmean_special_cases():
+    # p = -1: harmonic mean
+    # p =  0: geometric mean
+    # p =  1: arithmetic mean
+    x = np.array([1.0, 3.0, 43.0, 2.0, 1.0])
+    m = pmean(x, [-1, 0, 1])
+    # Reference values computed with mpsci.stats.pmean.
+    ref = np.array([1.7503392130257802, 3.03615501437834, 10.0])
+    assert_allclose(m, ref, rtol=1e-15)
