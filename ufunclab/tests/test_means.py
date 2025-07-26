@@ -23,9 +23,24 @@ def test_gmean_float(dt, rtol):
 def test_gmean_with_zero_or_neg():
     x = np.array([[1.0, 9.0, 0.0, 4.0],
                   [2.0, 2.0, 3.0, -3.0],
-                  [3.0, 0.0, 3.0, -3.0]])
+                  [3.0, 0.0, 3.0, -3.0],
+                  [3.0, np.inf, 3.0, 0.0]])
     m = gmean(x)
-    assert_equal(m, [0.0, np.nan, np.nan])
+    assert_equal(m, [0.0, np.nan, np.nan, np.nan])
+
+
+def test_gmean_with_nan():
+    x = np.array([[3.0, 4.0, np.nan, 5.5],
+                  [3.0, 0.0, np.nan, 9.0]])
+    m = gmean(x, axis=1)
+    assert_equal(m, [np.nan, np.nan])
+
+
+def test_gmean_with_inf():
+    x = np.array([[3.0, 4.0, np.inf, 5.5],
+                  [3.0, np.inf, np.inf, 9.0]])
+    m = gmean(x, axis=1)
+    assert_equal(m, [np.inf, np.inf])
 
 
 def test_gmean_axis():

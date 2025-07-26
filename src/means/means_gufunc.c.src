@@ -69,11 +69,20 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
         bool has_zero = false;
         bool has_neg = false;
+        bool has_nan = false;
+        bool has_inf = false;
         @ctype_out@ sumlog = 0;
         char *inner = in;
         for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
             @ctype_in@ x = *(@ctype_in@ *)inner;
-            if (x == 0) {
+            if (isnan(1.0*x)) {
+                has_nan = true;
+                break;
+            }
+            else if (isinf(1.0*x)) {
+                has_inf = true;
+            }
+            else if (x == 0) {
                 has_zero = true;
             }
             else if (x < 0.0) {
@@ -85,8 +94,11 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
                 sumlog += logx;
             }
         }
-        if (has_neg) {
+        if (has_neg || has_nan || (has_zero && has_inf)) {
             *(@ctype_out@ *) out = NPY_NAN;
+        }
+        else if (has_inf) {
+            *(@ctype_out@ *) out = NPY_INFINITY;
         }
         else if (has_zero) {
             *(@ctype_out@ *) out = 0.0;        
