@@ -1132,7 +1132,7 @@ For example,
 
 >>> x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
 >>> gmean(x)
-2.992555739477689
+np.float64(2.992555739477689)
 
 >>> y = np.arange(1, 16).reshape(3, 5)
 >>> y
@@ -1157,7 +1157,7 @@ For example,
 
 >>> x = np.array([1, 2, 3, 5, 8], dtype=np.uint8)
 >>> hmean(x)
-2.316602316602317
+np.float64(2.316602316602317)
 
 >>> y = np.arange(1, 16).reshape(3, 5)
 >>> y
@@ -1200,6 +1200,23 @@ The usual gufunc broadcasting applies:
 
 >>> pmean(x, [2.0, 2.5, 3.0])
 array([3.31662479, 3.44509407, 3.5568933 ])
+
+When p is -inf, the power mean is the minimum of x, and when p is +inf, the
+power mean is the maximum:
+
+>>> x = np.array([2.0, 1.0, 3.0, 100.0, 4.0, 5.5])
+>>> pmean(x, [-np.inf, np.inf])  # This should give the min and max of x.
+array([  1., 100.])
+
+When p is 0, the power mean is equivalent to the geometric mean:
+
+>>> pmean(x, 0.0)
+np.float64(4.861410804421904)
+
+>>> from ufunclab import gmean
+>>> gmean(x)
+np.float64(4.861410804421904)
+
 ```
 
 #### `meanvar`
