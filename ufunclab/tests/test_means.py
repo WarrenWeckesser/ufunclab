@@ -72,6 +72,12 @@ def test_hmean_axis():
     assert_allclose(m, [24.0, 11.0, 1.5], rtol=1e-14)
 
 
+def test_hmean_with_zero():
+    x = np.array([1.0, 4.0, 0.0, 76.0, 3.5])
+    m = hmean(x)
+    assert_equal(m, 0.0)
+
+
 def test_hmean_empty_array():
     with pytest.raises(ValueError, match='length at least 1'):
         hmean([])
@@ -86,9 +92,11 @@ def test_pmean_basic():
     assert_allclose(m, ref, rtol=1e-15)
 
 
-def test_pmean_constant_input():
-    x = np.full(8, fill_value=100.0)
-    m = pmean(x, 3.0)
+@pytest.mark.parametrize('p', [-3, 0, 3])
+@pytest.mark.parametrize('fill_value', [0.0, 100.0])
+def test_pmean_constant_input(p, fill_value):
+    x = np.full(8, fill_value=fill_value)
+    m = pmean(x, p)
     assert_equal(m, x[0])
 
 
@@ -127,3 +135,9 @@ def test_pmean_with_inf():
     x = np.array([1.0, 3.0, np.inf, 100.0, 121.0])
     m = pmean(x, 2.0)
     assert_equal(m, np.inf)
+
+
+def test_pmean_special_p_values():
+    x = np.array([1.0, 3.0, 0.5, 99.0, 4.5, 5.5])
+    m = pmean(x, [-np.inf, np.inf, np.nan])
+    assert_equal(m, [x.min(), x.max(), np.nan])

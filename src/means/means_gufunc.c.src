@@ -71,10 +71,16 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
         bool has_neg = false;
         bool has_nan = false;
         bool has_inf = false;
+        bool all_same = true;
+        @ctype_in@ prev;
         @ctype_out@ sumlog = 0;
         char *inner = in;
         for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
             @ctype_in@ x = *(@ctype_in@ *)inner;
+            if (k == 0) {
+                prev = x;
+            }
+            all_same &= prev == x;
             if (isnan(1.0*x)) {
                 has_nan = true;
                 break;
@@ -93,6 +99,7 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
                 @ctype_out@ logx = log@funcsuffix@(x);
                 sumlog += logx;
             }
+            prev = x;
         }
         if (has_neg || has_nan || (has_zero && has_inf)) {
             *(@ctype_out@ *) out = NPY_NAN;
@@ -102,6 +109,9 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
         }
         else if (has_zero) {
             *(@ctype_out@ *) out = 0.0;        
+        }
+        else if (all_same) {
+            *(@ctype_out@ *) out = prev;
         }
         else {
             *(@ctype_out@ *) out = exp@funcsuffix@(sumlog/dimensions[1]);
@@ -132,11 +142,28 @@ static void hmean_@typename@_loop(char **args, const npy_intp *dimensions,
         char *inner = in;
         for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
             @ctype_in@ x = *(@ctype_in@ *)inner;
+            if (x == 0) {
+                sumrecip = NPY_INFINITY;
+                break;
+            }
             sumrecip += 1.0L / x;
         }
         *(@ctype_out@ *) out = dimensions[1] / sumrecip;
     }
 }
+
+/**end repeat**/
+
+//
+// For pmean, only the float, double and long double inner loops are implemented.
+//
+
+/**begin repeat
+ * #typename      = float, double, longdouble#
+ * #ctype_in      = float, double, long double#
+ * #ctype_out     = float, double, long double#
+ * #funcsuffix    = f, , l#
+ */
 
 static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
                                   const npy_intp* steps, void* data)
@@ -167,8 +194,13 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
         bool has_inf = false;
     
         char *inner = in0;
-        @ctype_in@ xmax = 0;  // Initializing xmax to 0 isn't actually necessary.
+        @ctype_in@ xmax;
+        @ctype_in@ xmin;
         @ctype_out@ p = *(@ctype_in@ *)in1;
+        if (isnan(p)) {
+            *(@ctype_out@ *) out = NPY_NAN;
+            continue;
+        }
         if (p == 0) {
             // In the limit p == 0, the power mean becomes the geometric mean.
             char *args2[2] = {in0, out};
@@ -177,44 +209,73 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
             gmean_@typename@_loop(args2, dims2, steps2, NULL);
             continue;
         }
-        // Get the max, and check for negative values.
+        else if (p == -1) {
+            // p == -1 is the harmonic mean.
+            char *args2[2] = {in0, out};
+            npy_intp dims2[2] = {1, dimensions[1]};
+            npy_intp steps2[3] = {in0_step, out_step, inner_step};
+            hmean_@typename@_loop(args2, dims2, steps2, NULL);
+            continue;
+        }
+        // Get the min and max, and check for nan, inf and negative values.
         for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
             @ctype_in@ x = *(@ctype_in@ *)inner;
-            if (isnan(1.0*x)) {
+            if (isnan(x)) {
                 has_nan = true;
                 break;
             }
-            else if (isinf(1.0*x)) {
+            else if (isinf(x)) {
                 has_inf = true;
             }
             if (k == 0 || x > xmax) {
                 xmax = x;
             }
+            if (k == 0 || x < xmin) {
+                xmin = x;
+            }
             if (x < 0.0) {
                 has_neg = true;
                 break;
             }
+            if (x == 0) {
+                has_zero = true;
+            }
         }
         if (has_neg || has_nan) {
             *(@ctype_out@ *) out = NPY_NAN;
-            break;
+            continue;
         }
-        if (xmax == 0) {
-            *(@ctype_out@ *) out = 0;
-            break;
+        if (xmax == xmin) {
+            // All the values in x are the same.
+            *(@ctype_out@ *) out = xmax;
+            continue;
         }
-        if (has_inf) {
+        if (has_inf && p > 0.0) {
             *(@ctype_out@ *) out = NPY_INFINITY;
-            break;
+            continue;
+        }
+        if (has_zero && p < 0.0) {
+            *(@ctype_out@ *) out = 0;
+            continue;
+        }
+        if (isinf(p)) {
+            if (p < 0.0) {
+                *(@ctype_out@ *) out = xmin;
+            }
+            else {
+                *(@ctype_out@ *) out = xmax;
+            }
+            continue;
         }
 
-        @ctype_out@ m = 0;
+        @ctype_out@ sum = 0;
         inner = in0;
+        @ctype_out@ scale = (p > 0) ? xmax : xmin;
         for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
             @ctype_in@ x = *(@ctype_in@ *)inner;
-            m += pow(x/xmax, p);
+            sum += pow(x/scale, p);
         }
-        *(@ctype_out@ *) out = xmax*pow(m/dimensions[1], 1/p);
+        *(@ctype_out@ *) out = scale*pow(sum/dimensions[1], 1/p);
     }
 }
 
@@ -324,8 +385,7 @@ static struct PyModuleDef moduledef = {
 "\n"                                                                        \
 "The harmonic mean of [x1, x2, ..., xn] is n/(1/x1 + 1/x2 + ... + 1/xn).\n" \
 "Typically the function is defined for x > 0, but `hmean` does not\n"       \
-"check the values.  Negative values are accepted.  If x contains 0, a\n"    \
-"`RuntimeWarning` is generated and 0 is returned.\n"                        \
+"check the values.  Negative values are accepted.\n"                        \
 "\n"                                                                        \
 "Examples\n"                                                                \
 "--------\n"                                                                \
