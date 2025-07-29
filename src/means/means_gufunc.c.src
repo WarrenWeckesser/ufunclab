@@ -48,6 +48,59 @@
  * #funcsuffix    = ,,,,,,,, f, , l#
  */
 
+@ctype_out@ gmean_@typename@_1d(char *arg, const npy_intp n, const npy_intp step)
+{
+    bool has_zero = false;
+    bool has_neg = false;
+    bool has_nan = false;
+    bool has_inf = false;
+    bool all_same = true;
+
+    @ctype_in@ prev;
+    @ctype_out@ sumlog = 0;
+    for (npy_intp k = 0; k < n; ++k, arg += step) {
+        @ctype_in@ x = *(@ctype_in@ *)arg;
+        if (k == 0) {
+            prev = x;
+        }
+        all_same &= prev == x;
+        if (isnan(1.0*x)) {
+            has_nan = true;
+            break;
+        }
+        else if (isinf(1.0*x)) {
+            has_inf = true;
+        }
+        else if (x == 0) {
+            has_zero = true;
+        }
+        else if (x < 0.0) {
+            has_neg = true;
+            break;
+        }
+        else {
+            @ctype_out@ logx = log@funcsuffix@(x);
+            sumlog += logx;
+        }
+        prev = x;
+    }
+    if (has_neg || has_nan || (has_zero && has_inf)) {
+        return NPY_NAN;
+    }
+    else if (has_inf) {
+        return NPY_INFINITY;
+    }
+    else if (has_zero) {
+        return 0.0;
+    }
+    else if (all_same) {
+        return prev;
+    }
+    else {
+        return exp@funcsuffix@(sumlog/n);
+    }
+}
+
 static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
                                   const npy_intp* steps, void* data)
 {
@@ -67,55 +120,7 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
     }
 
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        bool has_zero = false;
-        bool has_neg = false;
-        bool has_nan = false;
-        bool has_inf = false;
-        bool all_same = true;
-        @ctype_in@ prev;
-        @ctype_out@ sumlog = 0;
-        char *inner = in;
-        for (npy_intp k = 0; k < dimensions[1]; ++k, inner += inner_step) {
-            @ctype_in@ x = *(@ctype_in@ *)inner;
-            if (k == 0) {
-                prev = x;
-            }
-            all_same &= prev == x;
-            if (isnan(1.0*x)) {
-                has_nan = true;
-                break;
-            }
-            else if (isinf(1.0*x)) {
-                has_inf = true;
-            }
-            else if (x == 0) {
-                has_zero = true;
-            }
-            else if (x < 0.0) {
-                has_neg = true;
-                break;
-            }
-            else {
-                @ctype_out@ logx = log@funcsuffix@(x);
-                sumlog += logx;
-            }
-            prev = x;
-        }
-        if (has_neg || has_nan || (has_zero && has_inf)) {
-            *(@ctype_out@ *) out = NPY_NAN;
-        }
-        else if (has_inf) {
-            *(@ctype_out@ *) out = NPY_INFINITY;
-        }
-        else if (has_zero) {
-            *(@ctype_out@ *) out = 0.0;        
-        }
-        else if (all_same) {
-            *(@ctype_out@ *) out = prev;
-        }
-        else {
-            *(@ctype_out@ *) out = exp@funcsuffix@(sumlog/dimensions[1]);
-        }
+        *(@ctype_out@ *) out = gmean_@typename@_1d(in, dimensions[1], inner_step);
     }
 }
 
@@ -203,10 +208,7 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
         }
         if (p == 0) {
             // In the limit p == 0, the power mean becomes the geometric mean.
-            char *args2[2] = {in0, out};
-            npy_intp dims2[2] = {1, dimensions[1]};
-            npy_intp steps2[3] = {in0_step, out_step, inner_step};
-            gmean_@typename@_loop(args2, dims2, steps2, NULL);
+            *(@ctype_out@ *) out = gmean_@typename@_1d(in0, dimensions[1], inner_step);
             continue;
         }
         else if (p == -1) {
