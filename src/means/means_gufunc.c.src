@@ -206,9 +206,29 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
             *(@ctype_out@ *) out = NPY_NAN;
             continue;
         }
-        if (p == 0) {
+        // The following threshold for the switch to the small-p case was found
+        // by experimenting with an assortment of input arrays.  Usually the
+        // value where using the small-p approximation was better was between
+        // 1e-6 and 1e-5.  The relative error of the pmean calculation for p
+        // around this value was on the order of 1e-12.
+        if (fabs@funcsuffix@(p) < 2e-6) {
             // In the limit p == 0, the power mean becomes the geometric mean.
-            *(@ctype_out@ *) out = gmean_@typename@_1d(in0, dimensions[1], inner_step);
+            @ctype_out@ gm = gmean_@typename@_1d(in0, dimensions[1], inner_step);
+            if (p != 0) {
+                npy_intp n = dimensions[1];
+                @ctype_out@ sumlnx = 0;
+                @ctype_out@ sumlnx_sq = 0;
+                inner = in0;
+                for (npy_intp k = 0; k < n; ++k, inner += inner_step) {
+                    @ctype_in@ x = *(@ctype_in@ *)inner;
+                    @ctype_out@ lnx = log@funcsuffix@(x);
+                    sumlnx += lnx;
+                    sumlnx_sq += lnx*lnx;
+                }
+                @ctype_out@ mean_sumlnx = sumlnx/n;
+                gm *= 1 + 0.5*p*(sumlnx_sq/n - mean_sumlnx*mean_sumlnx);
+            }
+            *(@ctype_out@ *) out = gm;
             continue;
         }
         else if (p == -1) {

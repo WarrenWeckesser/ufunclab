@@ -141,3 +141,14 @@ def test_pmean_special_p_values():
     x = np.array([1.0, 3.0, 0.5, 99.0, 4.5, 5.5])
     m = pmean(x, [-np.inf, np.inf, np.nan])
     assert_equal(m, [x.min(), x.max(), np.nan])
+
+
+# Reference values computed with mpsci.stats.pmean.
+@pytest.mark.parametrize(
+    'x, p, ref',
+    [([0.25, 9.0, 3.5, 4.25, 12.0, 0.75, 0.5], -5e-13, 2.047018252790524),
+     ([425, 120, 750, 300], 1e-14, 327.2940977594054)]
+)
+def test_pmean_small_p(x, p, ref):
+    m = pmean(x, p)
+    assert_allclose(m, ref, rtol=1e-14)
