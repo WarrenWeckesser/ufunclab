@@ -2,24 +2,15 @@
 // means_gufuncs.c.src
 //
 // gufunc implementations of:
-//     gmean : geometric mean
-//     hmean : harmonic mean
-//     pmean : power mean (aka generalized mean)
+//     gmean:  geometric mean
+//     gmeanw: weighted geometric mean
+//     hmean:  harmonic mean
+//     hmeanw: weighted harmonic mean
+//     pmean:  power mean (aka generalized mean)
+//     pmeanw: weight power mean
 //
 
 
-//
-// int8    float64
-// int16   float64
-// int32   float64
-// int64   float64
-// uint8   float64
-// uint16  float64
-// uint32  float64
-// uint64  float64
-// float32 float32
-// float64 float64
-// floatXX floatXX
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -37,15 +28,16 @@
 #include "../src/util/ufunc_tools.h"
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// ufunc inner loops for integer and floating point types.
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+//
+// Only the float, double and long double inner loops are implemented.
+//
 
 /**begin repeat
- * #typename      = int8,    int16,    int32,    int64,     uint8,   uint16,   uint32,   uint64,   float, double, longdouble#
- * #ctype_in      = int8_t,  int16_t,  int32_t,  int64_t,   uint8_t, uint16_t, uint32_t, uint64_t, float, double, long double#
- * #ctype_out     = double*8, float, double, long double#
- * #funcsuffix    = ,,,,,,,, f, , l#
+ * #typename      = float, double, longdouble#
+ * #ctype_in      = float, double, long double#
+ * #ctype_out     = float, double, long double#
+ * #funcsuffix    = f, , l#
  */
 
 @ctype_out@ gmean_@typename@_1d(char *arg, const npy_intp n, const npy_intp step)
@@ -64,11 +56,11 @@
             prev = x;
         }
         all_same &= prev == x;
-        if (isnan(1.0*x)) {
+        if (isnan(x)) {
             has_nan = true;
             break;
         }
-        else if (isinf(1.0*x)) {
+        else if (isinf(x)) {
             has_inf = true;
         }
         else if (x == 0) {
@@ -124,6 +116,97 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
     }
 }
 
+
+@ctype_out@ gmeanw_@typename@_1d(char *arg0, char *arg1, const npy_intp n,
+                                 const npy_intp step0, const npy_intp step1)
+{
+    bool has_zero = false;
+    bool has_neg = false;
+    bool has_nan = false;
+    bool has_inf = false;
+    bool all_same = true;
+
+    @ctype_in@ prevx;
+    @ctype_out@ sumlog = 0;
+    @ctype_out@ sumw = 0;
+    for (npy_intp k = 0; k < n; ++k, arg0 += step0, arg1 += step1) {
+        @ctype_in@ x = *(@ctype_in@ *)arg0;
+        @ctype_in@ w = *(@ctype_in@ *)arg1;
+        sumw += w;
+        if (k == 0) {
+            prevx = x;
+        }
+        all_same &= prevx == x;
+        if (isnan(x)) {
+            has_nan = true;
+            break;
+        }
+        else if (isinf(x)) {
+            has_inf = true;
+        }
+        else if (x == 0) {
+            has_zero = true;
+        }
+        else if (x < 0.0) {
+            has_neg = true;
+            break;
+        }
+        else {
+            @ctype_out@ logx = log@funcsuffix@(x);
+            sumlog += w*logx;
+        }
+        prevx = x;
+    }
+    if (has_neg || has_nan || (has_zero && has_inf)) {
+        return NPY_NAN;
+    }
+    else if (has_inf) {
+        return NPY_INFINITY;
+    }
+    else if (has_zero) {
+        return 0.0;
+    }
+    else if (all_same) {
+        return prevx;
+    }
+    else if (sumw == 0) {
+        return NPY_NAN;
+    }
+    else {
+        return exp@funcsuffix@(sumlog/sumw);
+    }
+}
+
+static void gmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
+{
+    char *in0 = args[0];
+    char *in1 = args[1];
+    char *out = args[2];
+    npy_intp in0_step = steps[0];
+    npy_intp in1_step = steps[1];
+    npy_intp out_step = steps[2];
+    npy_intp inner0_step = steps[3];
+    npy_intp inner1_step = steps[4];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "gmeanw requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in0 += in0_step,
+                                                 in1 += in1_step,
+                                                 out += out_step) {
+        *(@ctype_out@ *) out = gmeanw_@typename@_1d(in0, in1, dimensions[1],
+                                                    inner0_step, inner1_step);
+    }
+}
+
+
 static void hmean_@typename@_loop(char **args, const npy_intp *dimensions,
                                   const npy_intp* steps, void* data)
 {
@@ -157,18 +240,60 @@ static void hmean_@typename@_loop(char **args, const npy_intp *dimensions,
     }
 }
 
-/**end repeat**/
+
+@ctype_out@ hmeanw_@typename@_1d(char *in0, char *in1, const npy_intp n,
+                                 const npy_intp step0, const npy_intp step1)
+{
+    @ctype_out@ sumw = 0;
+    @ctype_out@ sumrecip = 0;
+    for (npy_intp k = 0; k < n; ++k, in0 += step0,
+                                                 in1 += step1) {
+        @ctype_in@ x = *(@ctype_in@ *) in0;
+        @ctype_in@ w = *(@ctype_in@ *) in1;
+        // XXX/TODO: Handle various combination of inf and nan in x and w...
+        if (x == 0) {
+            sumrecip = NPY_INFINITY;
+            break;
+        }
+        sumw += w;
+        sumrecip += w/x;
+    }
+    return sumw / sumrecip;
+}
+
 
 //
-// For pmean, only the float, double and long double inner loops are implemented.
+// Loop function for weighted hmean(x, weights, p)
 //
+static void hmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
+{
+    char *in0 = args[0];
+    char *in1 = args[1];
+    char *out = args[2];
+    npy_intp in0_step = steps[0];
+    npy_intp in1_step = steps[1];
+    npy_intp out_step = steps[2];
+    npy_intp inner0_step = steps[3];
+    npy_intp inner1_step = steps[4];
 
-/**begin repeat
- * #typename      = float, double, longdouble#
- * #ctype_in      = float, double, long double#
- * #ctype_out     = float, double, long double#
- * #funcsuffix    = f, , l#
- */
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "hmeanw requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in0 += in0_step,
+                                                 in1 += in1_step,
+                                                 out += out_step) {
+        *(@ctype_out@ *) out = hmeanw_@typename@_1d(in0, in1, dimensions[1],
+                                                    inner0_step, inner1_step);
+    }
+}
+
 
 static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
                                   const npy_intp* steps, void* data)
@@ -197,7 +322,7 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
         bool has_neg = false;
         bool has_nan = false;
         bool has_inf = false;
-    
+
         char *inner = in0;
         @ctype_in@ xmax;
         @ctype_in@ xmin;
@@ -301,6 +426,156 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
     }
 }
 
+
+static void pmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
+{
+    char *in0 = args[0];  // x
+    char *in1 = args[1];  // w
+    char *in2 = args[2];  // p
+    char *out = args[3];
+    npy_intp in0_step = steps[0];
+    npy_intp in1_step = steps[1];
+    npy_intp in2_step = steps[2];
+    npy_intp out_step = steps[3];
+    npy_intp inner0_step = steps[4];
+    npy_intp inner1_step = steps[5];
+
+    if (dimensions[1] == 0) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+        PyErr_SetString(PyExc_ValueError,
+                        "pmean requires an input with length at least 1.");
+        NPY_DISABLE_C_API
+        return;
+    }
+
+    for (npy_intp i = 0; i < dimensions[0]; ++i, in0 += in0_step,
+                                                 in1 += in1_step,
+                                                 in2 += in2_step,
+                                                 out += out_step) {
+        bool has_zero = false;
+        bool has_neg = false;
+        bool has_nan = false;
+        bool has_inf = false;
+
+        char *inner0 = in0;
+        char *inner1 = in1;
+        @ctype_in@ xmax;
+        @ctype_in@ xmin;
+        @ctype_out@ p = *(@ctype_in@ *)in2;
+        if (isnan(p)) {
+            *(@ctype_out@ *) out = NPY_NAN;
+            continue;
+        }
+        @ctype_out@ sumw = 0;
+
+        // The following threshold for the switch to the small-p case was found
+        // by experimenting with an assortment of input arrays.  Usually the
+        // value where using the small-p approximation was better was between
+        // 1e-6 and 1e-5.  The relative error of the pmean calculation for p
+        // around this value was on the order of 1e-12.
+        if (fabs@funcsuffix@(p) < 2e-6) {
+            // In the limit p == 0, the power mean becomes the geometric mean.
+            @ctype_out@ gm = gmeanw_@typename@_1d(in0, in1, dimensions[1], inner0_step, inner1_step);
+            if (p != 0) {
+                npy_intp n = dimensions[1];
+                @ctype_out@ sumlnx = 0;
+                @ctype_out@ sumlnx_sq = 0;
+                inner0 = in0;
+                inner1 = in1;
+                sumw = 0;
+                for (npy_intp k = 0; k < n; ++k, inner0 += inner0_step,
+                                                 inner1 += inner1_step) {
+                    @ctype_in@ x = *(@ctype_in@ *) inner0;
+                    @ctype_in@ w = *(@ctype_in@ *) inner1;
+                    @ctype_out@ lnx = log@funcsuffix@(x);
+                    sumw += w;
+                    sumlnx += w*lnx;
+                    sumlnx_sq += w*lnx*lnx;
+                }
+                @ctype_out@ mean_sumlnx = sumlnx/sumw;
+                gm *= 1 + 0.5*p*(sumlnx_sq/sumw - mean_sumlnx*mean_sumlnx);
+            }
+            *(@ctype_out@ *) out = gm;
+            continue;
+        }
+        else if (p == -1) {
+            // p == -1 is the harmonic mean.
+            *(@ctype_out@ *) out = hmeanw_@typename@_1d(in0, in1, dimensions[1],
+                                                        inner0_step, inner1_step);
+            continue;
+        }
+        // Get the min and max, and check for nan, inf and negative values.
+        for (npy_intp k = 0; k < dimensions[1]; ++k, inner0 += inner0_step,
+                                                     inner1 += inner1_step) {
+            @ctype_in@ x = *(@ctype_in@ *) inner0;
+            if (isnan(x)) {
+                has_nan = true;
+                break;
+            }
+            else if (isinf(x)) {
+                has_inf = true;
+            }
+            if (k == 0 || x > xmax) {
+                xmax = x;
+            }
+            if (k == 0 || x < xmin) {
+                xmin = x;
+            }
+            if (x < 0.0) {
+                has_neg = true;
+                break;
+            }
+            if (x == 0) {
+                has_zero = true;
+            }
+        }
+        if (has_neg || has_nan) {
+            *(@ctype_out@ *) out = NPY_NAN;
+            continue;
+        }
+        if (xmax == xmin) {
+            // All the values in x are the same.
+            *(@ctype_out@ *) out = xmax;
+            continue;
+        }
+        if (has_inf && p > 0.0) {
+            *(@ctype_out@ *) out = NPY_INFINITY;
+            continue;
+        }
+        if (has_zero && p < 0.0) {
+            *(@ctype_out@ *) out = 0;
+            continue;
+        }
+        if (isinf(p)) {
+            if (p < 0.0) {
+                *(@ctype_out@ *) out = xmin;
+            }
+            else {
+                *(@ctype_out@ *) out = xmax;
+            }
+            continue;
+        }
+
+        @ctype_out@ sum = 0;
+        sumw = 0;
+        inner0 = in0;
+        inner1 = in1;
+        @ctype_out@ scale = (p > 0) ? xmax : xmin;
+        sumw = 0;
+        for (npy_intp k = 0; k < dimensions[1]; ++k, inner0 += inner0_step,
+                                                     inner1 += inner1_step) {
+            @ctype_in@ x = *(@ctype_in@ *) inner0;
+            @ctype_in@ w = *(@ctype_in@ *) inner1;
+            sumw += w;
+            sum += w*pow(x/scale, p);
+        }
+        *(@ctype_out@ *) out = scale*pow(sum/sumw, 1/p);
+    }
+}
+
+
 /**end repeat**/
 
 
@@ -310,17 +585,22 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
 
 // These are the input and return dtypes of gmean and hmean.
 static char typecodes[] = {
-    NPY_INT8,       NPY_DOUBLE,
-    NPY_UINT8,      NPY_DOUBLE,
-    NPY_INT16,      NPY_DOUBLE,
-    NPY_UINT16,     NPY_DOUBLE,
-    NPY_INT32,      NPY_DOUBLE,
-    NPY_UINT32,     NPY_DOUBLE,
-    NPY_INT64,      NPY_DOUBLE,
-    NPY_UINT64,     NPY_DOUBLE,
     NPY_FLOAT,      NPY_FLOAT,
     NPY_DOUBLE,     NPY_DOUBLE,
     NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+};
+
+static char hmeanw_typecodes[] = {
+    NPY_FLOAT,      NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
+};
+
+
+static char gmeanw_typecodes[] = {
+    NPY_FLOAT,      NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE
 };
 
 // These are the input and return dtypes of pmean.
@@ -330,15 +610,14 @@ static char pmean_typecodes[] = {
     NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
 };
 
+// These are the input and return dtypes of pmeanw.
+static char pmeanw_typecodes[] = {
+    NPY_FLOAT,      NPY_FLOAT,      NPY_FLOAT,      NPY_FLOAT,
+    NPY_DOUBLE,     NPY_DOUBLE,     NPY_DOUBLE,     NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE, NPY_LONGDOUBLE,
+};
+
 static PyUFuncGenericFunction gmean_funcs[] = {
-    (PyUFuncGenericFunction) &gmean_int8_loop,
-    (PyUFuncGenericFunction) &gmean_uint8_loop,
-    (PyUFuncGenericFunction) &gmean_int16_loop,
-    (PyUFuncGenericFunction) &gmean_uint16_loop,
-    (PyUFuncGenericFunction) &gmean_int32_loop,
-    (PyUFuncGenericFunction) &gmean_uint32_loop,
-    (PyUFuncGenericFunction) &gmean_int64_loop,
-    (PyUFuncGenericFunction) &gmean_uint64_loop,
     (PyUFuncGenericFunction) &gmean_float_loop,
     (PyUFuncGenericFunction) &gmean_double_loop,
     (PyUFuncGenericFunction) &gmean_longdouble_loop
@@ -348,14 +627,6 @@ static PyUFuncGenericFunction gmean_funcs[] = {
 static void *gmean_data[GMEAN_NTYPES];
 
 static PyUFuncGenericFunction hmean_funcs[] = {
-    (PyUFuncGenericFunction) &hmean_int8_loop,
-    (PyUFuncGenericFunction) &hmean_uint8_loop,
-    (PyUFuncGenericFunction) &hmean_int16_loop,
-    (PyUFuncGenericFunction) &hmean_uint16_loop,
-    (PyUFuncGenericFunction) &hmean_int32_loop,
-    (PyUFuncGenericFunction) &hmean_uint32_loop,
-    (PyUFuncGenericFunction) &hmean_int64_loop,
-    (PyUFuncGenericFunction) &hmean_uint64_loop,
     (PyUFuncGenericFunction) &hmean_float_loop,
     (PyUFuncGenericFunction) &hmean_double_loop,
     (PyUFuncGenericFunction) &hmean_longdouble_loop
@@ -363,6 +634,26 @@ static PyUFuncGenericFunction hmean_funcs[] = {
 
 #define HMEAN_NTYPES (sizeof(hmean_funcs)/sizeof(hmean_funcs[0]))
 static void *hmean_data[HMEAN_NTYPES];
+
+
+static PyUFuncGenericFunction gmeanw_funcs[] = {
+    (PyUFuncGenericFunction) &gmeanw_float_loop,
+    (PyUFuncGenericFunction) &gmeanw_double_loop,
+    (PyUFuncGenericFunction) &gmeanw_longdouble_loop
+};
+
+#define GMEANW_NTYPES (sizeof(gmeanw_funcs)/sizeof(gmeanw_funcs[0]))
+static void *gmeanw_data[GMEANW_NTYPES];
+
+
+static PyUFuncGenericFunction hmeanw_funcs[] = {
+    (PyUFuncGenericFunction) &hmeanw_float_loop,
+    (PyUFuncGenericFunction) &hmeanw_double_loop,
+    (PyUFuncGenericFunction) &hmeanw_longdouble_loop
+};
+
+#define HMEANW_NTYPES (sizeof(hmeanw_funcs)/sizeof(hmeanw_funcs[0]))
+static void *hmeanw_data[HMEANW_NTYPES];
 
 static PyUFuncGenericFunction pmean_funcs[] = {
     (PyUFuncGenericFunction) &pmean_float_loop,
@@ -372,6 +663,15 @@ static PyUFuncGenericFunction pmean_funcs[] = {
 
 #define PMEAN_NTYPES (sizeof(pmean_funcs)/sizeof(pmean_funcs[0]))
 static void *pmean_data[PMEAN_NTYPES];
+
+static PyUFuncGenericFunction pmeanw_funcs[] = {
+    (PyUFuncGenericFunction) &pmeanw_float_loop,
+    (PyUFuncGenericFunction) &pmeanw_double_loop,
+    (PyUFuncGenericFunction) &pmeanw_longdouble_loop
+};
+
+#define PMEANW_NTYPES (sizeof(pmeanw_funcs)/sizeof(pmeanw_funcs[0]))
+static void *pmeanw_data[PMEANW_NTYPES];
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -399,6 +699,12 @@ static struct PyModuleDef moduledef = {
 "The geometric mean of [x1, x2, ..., xn] is (x1*x2*...*xn)**(1/n).\n"   \
 "If any value in x is negative, nan is returned.\n"
 
+#define GMEANW_DOCSTRING \
+"gmeanw(x, weights, /, ...)\n"                                                \
+"\n"                                                                    \
+"Weighted geometric mean of x.\n"                                       \
+"\n"
+
 
 #define HMEAN_DOCSTRING \
 "hmean(x, /, ...)\n"                                                        \
@@ -418,6 +724,11 @@ static struct PyModuleDef moduledef = {
 "array([3.5       , 7.875     , 4.8       , 7.46666667])\n"                 \
 "\n"
 
+#define HMEANW_DOCSTRING \
+"hmeanw(x, weights, /, ...)\n"                                             \
+"\n"                                                                       \
+"Weighted harmonic mean.\n"                                                \
+"\n"
 
 #define PMEAN_DOCSTRING \
 "pmean(x, p, /, ...)\n"                                                    \
@@ -426,6 +737,12 @@ static struct PyModuleDef moduledef = {
 "\n"                                                                       \
 "The geometric mean of [x1, x2, ..., xn] is (sum(xi**p)/n)**(1/p).\n"      \
 "If any value in x is negative, nan is returned.\n"
+
+#define PMEANW_DOCSTRING \
+"pmean(x, weights, p, /, ...)\n"                                           \
+"\n"                                                                       \
+"Weighted power mean (aka weighted generalized mean) of x.\n"              \
+"\n"
 
 PyMODINIT_FUNC PyInit__means(void)
 {
@@ -447,6 +764,14 @@ PyMODINIT_FUNC PyInit__means(void)
         return NULL;
     }
 
+    // Create the gmeanw ufunc.
+    if (ul_define_gufunc(module, "gmeanw", GMEANW_DOCSTRING, "(n),(n)->()",
+                         GMEANW_NTYPES,
+                         gmeanw_funcs, gmeanw_data, gmeanw_typecodes) == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
     // Create the hmean ufunc.
     if (ul_define_gufunc(module, "hmean", HMEAN_DOCSTRING, "(n)->()",
                          HMEAN_NTYPES,
@@ -455,10 +780,26 @@ PyMODINIT_FUNC PyInit__means(void)
         return NULL;
     }
 
+    // Create the hmeanw ufunc.
+    if (ul_define_gufunc(module, "hmeanw", HMEANW_DOCSTRING, "(n),(n)->()",
+                         HMEANW_NTYPES,
+                         hmeanw_funcs, hmeanw_data, hmeanw_typecodes) == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
     // Create the pmean ufunc.
     if (ul_define_gufunc(module, "pmean", PMEAN_DOCSTRING, "(n),()->()",
                          PMEAN_NTYPES,
                          pmean_funcs, pmean_data, pmean_typecodes) == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    // Create the pmeanw ufunc.
+    if (ul_define_gufunc(module, "pmeanw", PMEAN_DOCSTRING, "(n),(n),()->()",
+                         PMEANW_NTYPES,
+                         pmeanw_funcs, pmeanw_data, pmeanw_typecodes) == NULL) {
         Py_DECREF(module);
         return NULL;
     }

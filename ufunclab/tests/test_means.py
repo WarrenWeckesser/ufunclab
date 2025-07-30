@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose, assert_equal
-from ufunclab import gmean, hmean, pmean
+from ufunclab import gmean, gmeanw, hmean, hmeanw, pmean, pmeanw
 
 
 @pytest.mark.parametrize('func', [gmean, hmean])
@@ -56,6 +56,14 @@ def test_gmean_empty_array():
         gmean([])
 
 
+def test_gmeanw():
+    x = np.array([10, 100, 25, 18, 98])
+    w = np.array([1, 2, 3, 5, 8])
+    m = gmeanw(x, w)
+    # Reference value was computed with mpsci.stats.gmean.
+    assert_allclose(m, 44.93979774688232)
+
+
 @pytest.mark.parametrize('dt, rtol', [(np.float32, 1e-7), (np.float64, 1e-14)])
 def test_hmean_float(dt, rtol):
     x = np.array([1.0, 1.0, 4.0, 4.0, 4.0, 4.0], dtype=dt)
@@ -81,6 +89,14 @@ def test_hmean_with_zero():
 def test_hmean_empty_array():
     with pytest.raises(ValueError, match='length at least 1'):
         hmean([])
+
+
+def test_hmeanw():
+    x = np.array([10, 100, 25, 18, 98])
+    w = np.array([1, 2, 3, 5, 8])
+    m = hmeanw(x, w)
+    # Reference value was computed with mpsci.stats.hmean.
+    assert_allclose(m, 31.69781342210789)
 
 
 def test_pmean_basic():
@@ -152,3 +168,26 @@ def test_pmean_special_p_values():
 def test_pmean_small_p(x, p, ref):
     m = pmean(x, p)
     assert_allclose(m, ref, rtol=1e-14)
+
+
+# Reference values were computed with mpsci.stats.pmean.
+@pytest.mark.parametrize(
+    'p, ref',
+    [(-np.inf, 10.0),
+     (-5000.0, 10.00589061224293),
+     (-2.5, 22.55528922710353),
+     (-1.0, 31.69781342210789),
+     (-0.5, 37.49579199920095),
+     (-1e-8, 44.939797585833034),
+     (0.0, 44.93979774688232),
+     (3e-8, 44.939798230030185),
+     (0.75, 57.218721343892376),
+     (1.0, 61.0),
+     (2.5, 76.64524926400904),
+     (4000.0, 99.94373354054747),
+     (np.inf, 100)])
+def test_pmeanw(p, ref):
+    x = np.array([10, 100, 25, 18, 98])
+    w = np.array([1, 2, 3, 5, 8])
+    m = pmeanw(x, w, p)
+    assert_allclose(m, ref, rtol=1e-12)

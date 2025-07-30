@@ -1144,6 +1144,23 @@ array([[ 1,  2,  3,  4,  5],
 array([ 2.60517108,  7.87256685, 12.92252305])
 ```
 
+#### `gmeanw`
+
+`gmeanw` is a gufunc (signature `(n),(n)->()`) that computes the weighted
+[geometric mean](https://en.wikipedia.org/wiki/Geometric_mean).
+
+For example,
+
+```
+>>> import numpy as np
+>>> from ufunclab import gmean
+
+>>> x = np.array([1, 2, 3, 5, 8])
+>>> wts = np.array([5, 5, 0, 2, 1])
+>>> gmeanw(x, wts)
+np.float64(1.962379845929419)
+```
+
 #### `hmean`
 
 `hmean` is a gufunc (signature `(n)->()`) that computes the
@@ -1167,6 +1184,23 @@ array([[ 1,  2,  3,  4,  5],
 
 >>> hmean(y, axis=1)
 array([ 2.18978102,  7.74431469, 12.84486077])
+```
+
+#### `hmeanw`
+
+`hmeanw` is a gufunc (signature `(n),(n)->()`) that computes the weighted
+[harmonic mean](https://en.wikipedia.org/wiki/Harmonic_mean).
+
+For example,
+
+```
+>>> import numpy as np
+>>> from ufunclab import hmean
+
+>>> x = np.array([1, 2, 3, 5, 8])
+>>> wts = np.array([5, 5, 0, 2, 1])
+>>> hmeanw(x, wts)
+np.float64(1.6199376947040498)
 ```
 
 #### `pmean`
@@ -1217,6 +1251,23 @@ np.float64(4.861410804421904)
 >>> gmean(x)
 np.float64(4.861410804421904)
 
+```
+
+
+#### `pmeanw`
+
+`pmean` is a gufunc (signature `(n),(n),()->()`) that computes
+the weighted power mean (aka weighted
+[generalized mean](https://en.wikipedia.org/wiki/Generalized_mean)).
+
+```
+>>> import numpy as np
+>>> from ufunclab import pmeanw
+
+>>> x = np.array([1, 2, 3, 4, 5])
+>>> wts = np.array([5, 5, 0, 2, 1])
+>>> pmeanw(x, wts, 2.5)
+np.float64(2.6823179520718012)
 ```
 
 #### `meanvar`
