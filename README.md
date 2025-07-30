@@ -103,8 +103,11 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`peaktopeak`](#peaktopeak)                     | Alternative to `numpy.ptp`                                  |
 | [`all_same`](#all_same)                         | Check all values are the same                               |
 | [`gmean`](#gmean)                               | Geometric mean                                              |
+| [`gmeanw`](#gmeanw)                             | Weighted geometric mean                                     |
 | [`hmean`](#hmean)                               | Harmonic mean                                               |
+| [`hmeanw`](#hmeanw)                             | Weighted harmonic mean                                      |
 | [`pmean`](#pmean)                               | Power mean (aka generalized mean)                           |
+| [`pmeanw`](#pmeanw)                             | Weighted power mean                                         |
 | [`meanvar`](#meanvar)                           | Mean and variance                                           |
 | [`mad`](#mad)                                   | Mean absolute difference (MAD)                              |
 | [`rmad`](#rmad)                                 | Relative mean absolute difference (RMAD)                    |
