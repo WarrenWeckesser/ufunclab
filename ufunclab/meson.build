@@ -52,6 +52,7 @@ gufunc_cxx_src_dirs = [
     'convert_to_base',
     'corr',
     'cross',
+    'fillnan1d',
     'first',
     'hysteresis_relay',
     'mad',
@@ -200,7 +201,6 @@ py3.extension_module(
 #----------------------------------------------------------------------
 
 numpy_templated_c_gufunc_dirs = [
-    'fillnan1d',
     'linear_interp1d',
     'means',
     'peaktopeak',
@@ -209,11 +209,11 @@ numpy_templated_c_gufunc_dirs = [
 
 foreach src_dir : numpy_templated_c_gufunc_dirs
 
-    module_name = '_' + src_dir                       # e.g. '_fillnan1d'
-    output = src_dir + '_gufunc.c'                    # e.g. 'fillnan1d_gufunc.c'
-    src_filename = output + '.src'                    # e.g. 'fillnan1d_gufunc.c.src'
-    src_pth = join_paths('../src', src_dir)           # e.g. '../src/fillnan1d'
-    src_fullpath = join_paths(src_pth, src_filename)  # e.g. '../src/fillnan1d/fillnan1d_gufunc.c.src'
+    module_name = '_' + src_dir                       # e.g. '_means'
+    output = src_dir + '_gufunc.c'                    # e.g. 'means_gufunc.c'
+    src_filename = output + '.src'                    # e.g. 'means_gufunc.c.src'
+    src_pth = join_paths('../src', src_dir)           # e.g. '../src/means'
+    src_fullpath = join_paths(src_pth, src_filename)  # e.g. '../src/means/means_gufunc.c.src'
 
     mod_src = custom_target(
                   src_dir,
