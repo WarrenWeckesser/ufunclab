@@ -63,6 +63,7 @@ gufunc_cxx_src_dirs = [
     'percentileofscore',
     'sosfilter',
     'tri_area',
+    'unwrap',
     'vnorm',
     'wjaccard'
 ]
@@ -203,8 +204,7 @@ numpy_templated_c_gufunc_dirs = [
     'means',
     'peaktopeak',
     'searchsorted',
-    'softmax',
-    'unwrap'
+    'softmax'
 ]
 
 foreach src_dir : numpy_templated_c_gufunc_dirs
