@@ -133,6 +133,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`backlash_sum`](#backlash_sum)                 | Sum backlash operators (Prandtl-Ishlinskii)           |
 | [`hysteresis_relay`](#hysteresis_relay)         | Relay with hysteresis (Schmitt trigger)               |
 | [`softmax`](#softmax)                           | The softmax function                                  |
+| [`unwrap`](#unwrap)                             | "Unwrap" values from a periodic domain                |
 | [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
 | [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
 | [`sosfilter_ic_contig`](#sosfilter_ic_contig)   | SOS linear filter with contiguous array inputs        |
@@ -2015,6 +2016,23 @@ array([6.91439886e-13, 6.82560214e-08, 9.99999819e-01, 1.12535154e-07])
 >>> softmax(x, axis=-1)
 array([[6.91439886e-13, 6.82560214e-08, 9.99999819e-01, 1.12535154e-07],
        [9.85415469e-34, 9.10272579e-42, 1.00000000e+00, 1.85211677e-45]])
+```
+
+#### `unwrap`
+
+`unwrap(x, period)` is a gufunc with signature `(n),()->(n)`.
+It is like a pared down version of NumPy's `unwrap` function.
+It works with real floating point types only, and does not have the
+`discont` parameter of `numpy.unwrap`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import unwrap
+
+>>> x = np.array([1.0, 10.0, 1.5, 2.0, -5.0])
+>>> period = 4.0
+>>> unwrap(x, period)
+array([1. , 2. , 1.5, 2. , 3. ])
 ```
 
 #### `sosfilter`

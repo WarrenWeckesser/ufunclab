@@ -78,6 +78,7 @@ _name_to_module = {
     'tri_area': '._tri_area',
     'tri_area_indexed': '._tri_area',
     'softmax': '._softmax',
+    'unwrap': '._unwrap',
     'backlash': '._backlash',
     'backlash_sum': '._backlash',
     'fillnan1d': '._fillnan1d',

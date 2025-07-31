@@ -1,0 +1,199 @@
+//
+// unwrap_gufunc.c.src
+//
+// gufunc implementation of unwrap(x, period)
+//
+
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include <stdio.h>
+
+#define NPY_NO_DEPRECATED_API NPY_API_VERSION
+#include "numpy/ndarraytypes.h"
+#include "numpy/arrayscalars.h"
+#include "numpy/ufuncobject.h"
+
+#include "../src/util/ufunc_tools.h"
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc inner loops for floating point types.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/**begin repeat
+ * #typename      = float, double, longdouble   #
+ * #ctype         = float, double, long double  #
+ * #suffix        = f,           , l            #
+ */
+
+//
+// Compute the "unwrapped" value of x1 given x0 and period.
+//
+@ctype@ unwrap1_@typename@(@ctype@ x0, @ctype@ x1, @ctype@ period)
+{
+    @ctype@ delta = x1 - x0;
+    int q = (int)(delta/period);
+    @ctype@ rem = fmod@suffix@(delta, period);
+    if (rem < 0) {
+        rem += period;
+        q -= 1;
+    }
+    @ctype@ frac = fabs@suffix@(rem)/period;
+    if (frac >= 0.5) {
+        q += 1;
+    }
+    return x1 - q * period;
+}
+
+//
+// XXX: I have been assuming that period > 0.  I haven't checked if
+// anything goes wrong if the user provides period < 0.
+//
+static void unwrap_@typename@_loop(char **args, const npy_intp *dimensions,
+                                   const npy_intp* steps, void* data)
+{
+    // dimensions[0]: Number of input arrays
+    // dimensions[1]: Length of each array
+    // steps[0]:  x array step
+    // steps[1]:  period array step
+    // steps[2]:  output array step
+    // steps[3]:  inner x array step
+    // steps[4]:  inner output array step
+    char *px      = args[0];
+    char *pperiod = args[1];
+    char *pout    = args[2];
+    npy_intp nloops = dimensions[0];
+    npy_intp n      = dimensions[1];
+    npy_intp x_stride         = steps[0];
+    npy_intp period_stride    = steps[1];
+    npy_intp out_stride       = steps[2];
+    npy_intp x_inner_stride   = steps[3];
+    npy_intp out_inner_stride = steps[4];
+
+    if (n == 0) {
+        return;
+    }
+    for (npy_intp j = 0; j < nloops; ++j, px += x_stride,
+                                          pperiod += period_stride,
+                                          pout += out_stride) {
+        @ctype@ x0 = *(@ctype@ *) px;
+        @ctype@ period = *(@ctype@ *)pperiod;
+        *(@ctype@ *) pout = x0;
+        for (npy_intp k = 1; k < n; ++k) {
+            @ctype@ x1 = *((@ctype@ *) (px + k*x_inner_stride));
+            if (!isfinite(x1)) {
+                // inf or nan; output from here onwards is nan.
+                for (npy_intp k1 = k; k1 < n; ++k1) {
+                    *(@ctype@ *)(pout + k1*out_inner_stride) = NPY_NAN;
+                }
+                break;
+            }
+            @ctype@ x1prime = unwrap1_@typename@(x0, x1, period);
+            *(@ctype@ *)(pout + k*out_inner_stride) = x1prime;
+            x0 = x1prime;
+        }
+    }
+}
+
+/**end repeat**/
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ufunc configuration data.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// These are the input and return dtypes of unwrap.
+static char unwrap_typecodes[] = {
+    NPY_FLOAT, NPY_FLOAT, NPY_FLOAT,
+    NPY_DOUBLE, NPY_DOUBLE, NPY_DOUBLE,
+    NPY_LONGDOUBLE, NPY_LONGDOUBLE,NPY_LONGDOUBLE
+};
+
+static PyUFuncGenericFunction unwrap_funcs[] = {
+    (PyUFuncGenericFunction) &unwrap_float_loop,
+    (PyUFuncGenericFunction) &unwrap_double_loop,
+    (PyUFuncGenericFunction) &unwrap_longdouble_loop
+};
+
+#define UNWRAP_NTYPES (sizeof(unwrap_funcs)/sizeof(unwrap_funcs[0]))
+static void *unwrap_data[UNWRAP_NTYPES];
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Python extension module definitions.
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+static PyMethodDef UnwrapMethods[] = {
+        {NULL, NULL, 0, NULL}
+};
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    .m_name = "_unwrap",
+    .m_doc = "Module that defines the unwrap function.",
+    .m_size = -1,
+    .m_methods = UnwrapMethods
+};
+
+
+// TODO: Update the docstring...
+
+#define UNWRAP_DOCSTRING \
+"unwrap(x, period, /, ...)\n"                                                   \
+"\n"                                                                            \
+"Unwrap (aka lift) samples from a periodic domain to the real line.\n"          \
+"\n"                                                                            \
+"This is like a pared down version of NumPy's `unwrap` function.  This\n"       \
+"version works with floating point types only (single, double and long\n"       \
+"double precision). Also, unlike `numpy.unwrap`, this function does not have\n" \
+"have the `discont` parameter.\n"                                               \
+"\n"                                                                            \
+"Parameters\n"                                                                  \
+"----------\n"                                                                  \
+"x : array_like\n"                                                              \
+"    Input array\n"                                                             \
+"period : scalar\n"                                                             \
+"    Period of the periodic data.\n"                                            \
+"\n"                                                                            \
+"Returns\n"                                                                     \
+"-------\n"                                                                     \
+"out : ndarray\n"                                                               \
+"\n"                                                                            \
+"Examples\n"                                                                    \
+"--------\n"                                                                    \
+">>> import numpy as np\n"                                                      \
+">>> from ufunclab import unwrap\n"                                             \
+"\n"                                                                            \
+">>> x = np.array([1.0, 10.0, 1.5, 2.0, -5.0])\n"                               \
+">>> period = 4.0\n"                                                            \
+">>> unwrap(x, period)\n"                                                       \
+"array([1. , 2. , 1.5, 2. , 3. ])\n"                                            \
+"\n"
+
+PyMODINIT_FUNC PyInit__unwrap(void)
+{
+    PyObject *module;
+
+    module = PyModule_Create(&moduledef);
+    if (!module) {
+        return NULL;
+    }
+
+    import_array();
+    import_umath();
+
+    // Create the unwrap ufunc.
+    if (ul_define_gufunc(module, "unwrap", UNWRAP_DOCSTRING, "(n),()->(n)",
+                         UNWRAP_NTYPES,
+                         unwrap_funcs, unwrap_data, unwrap_typecodes) == NULL) {
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    return module;
+}
