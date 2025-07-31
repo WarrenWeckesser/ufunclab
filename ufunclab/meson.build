@@ -202,7 +202,8 @@ numpy_templated_c_gufunc_dirs = [
     'linear_interp1d',
     'means',
     'peaktopeak',
-    'searchsorted'
+    'searchsorted',
+    'softmax'
 ]
 
 foreach src_dir : numpy_templated_c_gufunc_dirs

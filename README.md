@@ -132,6 +132,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`backlash`](#backlash)                         | Backlash operator                                     |
 | [`backlash_sum`](#backlash_sum)                 | Sum backlash operators (Prandtl-Ishlinskii)           |
 | [`hysteresis_relay`](#hysteresis_relay)         | Relay with hysteresis (Schmitt trigger)               |
+| [`softmax`](#softmax)                           | The softmax function                                  |
 | [`sosfilter`](#sosfilter)                       | SOS (second order sections) linear filter             |
 | [`sosfilter_ic`](#sosfilter_ic)                 | SOS linear filter with initial condition              |
 | [`sosfilter_ic_contig`](#sosfilter_ic_contig)   | SOS linear filter with contiguous array inputs        |
@@ -1995,6 +1996,26 @@ The script `hysteresis_relay_demo.py` in the `examples` directory generates
 the plot
 
 ![hysteresis_replay plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/hysteresis_relay_demo.png)
+
+
+#### `softmax`
+
+`softmax(x)` is a gufunc with signature `(n)->(n)`.
+See https://en.wikipedia.org/wiki/Softmax_function for information about the
+softmax function.
+
+```
+>>> import numpy as np
+>>> from ufunclab import softmax
+
+>>> softmax([-10, 1.5, 18, 2])
+array([6.91439886e-13, 6.82560214e-08, 9.99999819e-01, 1.12535154e-07])
+
+>>> x = np.array([[-10, 1.5, 18, 2], [23, 4.5, 99.0, -4]])
+>>> softmax(x, axis=-1)
+array([[6.91439886e-13, 6.82560214e-08, 9.99999819e-01, 1.12535154e-07],
+       [9.85415469e-34, 9.10272579e-42, 1.00000000e+00, 1.85211677e-45]])
+```
 
 #### `sosfilter`
 

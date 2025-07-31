@@ -77,6 +77,7 @@ _name_to_module = {
     'vdot': '._vnorm',
     'tri_area': '._tri_area',
     'tri_area_indexed': '._tri_area',
+    'softmax': '._softmax',
     'backlash': '._backlash',
     'backlash_sum': '._backlash',
     'fillnan1d': '._fillnan1d',
