@@ -10,8 +10,6 @@
 //     pmeanw: weight power mean
 //
 
-
-
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
@@ -26,7 +24,6 @@
 #include "numpy/ufuncobject.h"
 
 #include "../src/util/ufunc_tools.h"
-
 
 
 //
@@ -115,7 +112,6 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
         *(@ctype_out@ *) out = gmean_@typename@_1d(in, dimensions[1], inner_step);
     }
 }
-
 
 @ctype_out@ gmeanw_@typename@_1d(char *arg0, char *arg1, const npy_intp n,
                                  const npy_intp step0, const npy_intp step1)
@@ -206,7 +202,6 @@ static void gmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
     }
 }
 
-
 static void hmean_@typename@_loop(char **args, const npy_intp *dimensions,
                                   const npy_intp* steps, void* data)
 {
@@ -239,7 +234,6 @@ static void hmean_@typename@_loop(char **args, const npy_intp *dimensions,
         *(@ctype_out@ *) out = dimensions[1] / sumrecip;
     }
 }
-
 
 @ctype_out@ hmeanw_@typename@_1d(char *in0, char *in1, const npy_intp n,
                                  const npy_intp step0, const npy_intp step1)
@@ -293,7 +287,6 @@ static void hmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
                                                     inner0_step, inner1_step);
     }
 }
-
 
 static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
                                   const npy_intp* steps, void* data)
@@ -426,7 +419,6 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
     }
 }
 
-
 static void pmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
                                    const npy_intp* steps, void* data)
 {
@@ -477,7 +469,8 @@ static void pmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
         // around this value was on the order of 1e-12.
         if (fabs@funcsuffix@(p) < 2e-6) {
             // In the limit p == 0, the power mean becomes the geometric mean.
-            @ctype_out@ gm = gmeanw_@typename@_1d(in0, in1, dimensions[1], inner0_step, inner1_step);
+            @ctype_out@ gm = gmeanw_@typename@_1d(in0, in1, dimensions[1],
+                                                  inner0_step, inner1_step);
             if (p != 0) {
                 npy_intp n = dimensions[1];
                 @ctype_out@ sumlnx = 0;
@@ -700,7 +693,7 @@ static struct PyModuleDef moduledef = {
 "If any value in x is negative, nan is returned.\n"
 
 #define GMEANW_DOCSTRING \
-"gmeanw(x, weights, /, ...)\n"                                                \
+"gmeanw(x, weights, /, ...)\n"                                          \
 "\n"                                                                    \
 "Weighted geometric mean of x.\n"                                       \
 "\n"
