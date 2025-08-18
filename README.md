@@ -763,7 +763,7 @@ The constants defined in `ufunclab.op` that are applicable to `first` are:
 | GT       | Greater than           |
 | GE       | Greater than or equal  |
 | LT       | Less than.             |
-| GE       | Less than or equal     |
+| LE       | Less than or equal     |
 
 *Examples*
 
