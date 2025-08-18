@@ -762,7 +762,7 @@ The constants defined in `ufunclab.op` that are applicable to `first` are:
 | NE       | Not equal              |
 | GT       | Greater than           |
 | GE       | Greater than or equal  |
-| LT       | Less than.             |
+| LT       | Less than              |
 | LE       | Less than or equal     |
 
 *Examples*
@@ -773,7 +773,7 @@ Find the first nonzero value in `a`:
 >>> import numpy as np
 >>> from ufunclab import first, op
 
->>> a = np.array([0, 0, 0, 0, 0, -0.5, 0, 1, 0.1])
+>>> a = np.array([0.0, 0.0, 0.0, 0.0, 0.0, -0.5, 0.0, 1.0, 0.1])
 >>> first(a, op.NE, 0.0, 0.0)
 -0.5
 ```
@@ -840,7 +840,7 @@ Find the index of the first occurrence of 0 in `x`:
 Find the index of the first nonzero value in `a`:
 
 ```
->>> a = np.array([0, 0, 0, 0, 0, -0.5, 0, 1, 0.1])
+>>> a = np.array([0.0, 0.0, 0.0, 0.0, 0.0, -0.5, 0.0, 1.0, 0.1])
 >>> argfirst(a, op.NE, 0.0)
 5
 ```
