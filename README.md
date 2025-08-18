@@ -754,6 +754,19 @@ value that matches a given comparison.  The function signature is
 value to be returned if no value in `x` satisfies the given relation with
 `target`.
 
+The constants defined in `ufunclab.op` that are applicable to `first` are:
+
+| Constant | Comparison operator    |
+|----------|------------------------|
+| EQ       | Equal                  |
+| NE       | Not equal              |
+| GT       | Greater than           |
+| GE       | Greater than or equal  |
+| LT       | Less than.             |
+| GE       | Less than or equal     |
+
+*Examples*
+
 Find the first nonzero value in `a`:
 
 ```
