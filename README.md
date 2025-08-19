@@ -2036,16 +2036,24 @@ array([[6.91439886e-13, 6.82560214e-08, 9.99999819e-01, 1.12535154e-07],
 `unwrap(x, period)` is a gufunc with signature `(n),()->(n)`.
 It is like a pared down version of NumPy's `unwrap` function.
 It works with real floating point types only, and does not have the
-`discont` parameter of `numpy.unwrap`.
+`discont` parameter of `numpy.unwrap`, nor the default value of `2*pi`
+for the period.
 
 ```
 >>> import numpy as np
 >>> from ufunclab import unwrap
 
->>> x = np.array([1.0, 10.0, 1.5, 2.0, -5.0])
+>>> x = np.array([1.0, 10.0, 1.5, 2.0, -5.25])
 >>> period = 4.0
 >>> unwrap(x, period)
-array([1. , 2. , 1.5, 2. , 3. ])
+array([1.  , 2.  , 1.5 , 2.  , 2.75])
+```
+
+The result is the same as that of `np.unwrap`:
+
+```
+>>> np.unwrap(x, period=period)
+array([1.  , 2.  , 1.5 , 2.  , 2.75])
 ```
 
 #### `sosfilter`
