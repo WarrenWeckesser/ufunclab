@@ -13,9 +13,10 @@ u = unwrap(y, 2.0)
 
 plt.figure(figsize=(6, 4))
 
-plt.plot(y, label='input (a signal wrapped to [-1, 1])')
-plt.plot(u, linewidth=2.5, alpha=0.5, label='unwrapped')
+plt.plot(y, label='y[i] (a signal wrapped to [-1, 1])')
+plt.plot(u, linewidth=2.5, alpha=0.5, label='unwrap(y, 2.0)')
 
+plt.xlabel('index i')
 plt.grid(alpha=0.6)
 plt.legend(framealpha=1, shadow=True)
 plt.title('unwrap demo')
