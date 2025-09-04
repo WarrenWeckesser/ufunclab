@@ -2056,6 +2056,11 @@ The result is the same as that of `np.unwrap`:
 array([1.  , 2.  , 1.5 , 2.  , 2.75])
 ```
 
+The script `unwrap_demo.py` in the `examples` directory generates
+the plot
+
+![unwrap plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/unwrap_demo.png)
+
 #### `sosfilter`
 
 `sosfilter(sos, x)` is a gufunc with signature `(m,6),(n)->(n)`.
