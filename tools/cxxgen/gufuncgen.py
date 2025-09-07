@@ -412,7 +412,8 @@ def gen(extmod, srcpath):
         nin = len(shapes_in)
         nout = len(shapes_out)
         if nin + nout != len(varnames):
-            raise ValueError('len(varnames) does not match the given signature')
+            raise ValueError('len(varnames) does not match the given signature:'
+                             f'{varnames=}, f{ufunc.signature=}')
         shapes = shapes_in + shapes_out
 
         loop_func_names = []
