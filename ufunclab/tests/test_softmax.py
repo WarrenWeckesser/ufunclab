@@ -22,14 +22,14 @@ def test_x_has_two_pos_inf(dtype):
 def test_x_has_one_pos_inf(dtype):
     x = np.array([1.0, -10.0, np.inf, 3.0, 999.0, -np.inf, -2322.5], dtype=dtype)
     y = softmax(x)
-    assert_array_equal(y, np.isposinf(x).astype(dtype))
+    assert_array_equal(y, np.isposinf(x).astype(dtype), strict=True)
 
 
 @pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
 def test_x_all_same(dtype):
     x = np.array([10, 10, 10, 10], dtype=dtype)
     y = softmax(x)
-    assert_array_equal(y, np.full_like(x, fill_value=1/len(x)))
+    assert_array_equal(y, np.full_like(x, fill_value=1/len(x)), strict=True)
 
 
 def test_basic():

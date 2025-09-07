@@ -15,4 +15,4 @@ def test_next_greater(func, to, dtype):
                  dtype=dtype)
     y = func(x)
     na = np.nextafter(x, dtype(to))
-    assert_array_equal(y, na)
+    assert_array_equal(y, na, strict=True)

@@ -10,7 +10,7 @@ def test_all_zeros(dt):
         pytest.skip('longdouble is double')
     x = np.zeros((5, 3, 4), dtype=dt)
     a = tri_area(x)
-    assert_array_equal(a, np.zeros(5))
+    assert_array_equal(a, np.zeros(5, dtype=dt), strict=True)
 
 
 @pytest.mark.parametrize('dt', [np.float32, np.float64, np.longdouble])
