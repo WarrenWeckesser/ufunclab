@@ -19,16 +19,7 @@ template<typename T>
 T unwrap1(T x0, T x1, T period)
 {
     T delta = x1 - x0;
-    int q = (int)(delta/period);
-    T rem = std::fmod(delta, period);
-    if (rem < 0) {
-        rem += period;
-        q -= 1;
-    }
-    T frac = std::fabs(rem)/period;
-    if (frac >= 0.5) {
-        q += 1;
-    }
+    int q = static_cast<int>(delta/period + std::copysign(0.5, delta));
     return x1 - q * period;
 }
 

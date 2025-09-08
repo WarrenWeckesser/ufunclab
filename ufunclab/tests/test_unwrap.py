@@ -5,11 +5,14 @@ from ufunclab import unwrap
 
 
 
-def test_basic():
-    x = [7.0, 0.25, 13.5]
-    period = 4.0
+@pytest.mark.parametrize(
+    'x, period, expected',
+    [([7.0, 0.25, 13.5], 4.0, [7.0, 8.25, 9.5]),
+     ([1.5, 1.5, 3.5, -8.25, 25.0, 2.25], 2.0, [1.5, 1.5, 1.5, 1.75, 1.0, 0.25])]
+)
+def test_basic(x, period, expected):
     y = unwrap(x, period)
-    assert_array_equal(y, np.array([7.0, 8.25, 9.5]))
+    assert_array_equal(y, np.array(expected))
 
 
 @pytest.mark.parametrize(
