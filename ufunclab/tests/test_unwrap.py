@@ -23,3 +23,10 @@ def test_against_numpy_unwrap(x, period):
     xr = x[::-1]
     yr = unwrap(xr, period)
     assert_array_equal(yr, np.unwrap(xr, period=period))
+
+
+@pytest.mark.parametrize('val', [np.nan, np.inf])
+def test_nan_or_inf(val):
+    x = np.array([0.75, -0.125, 0.0, val, 0.25, 0.55])
+    y = unwrap(x, 1.0)
+    assert_array_equal(y, np.array([0.75, 0.875, 1.0, np.nan, np.nan, np.nan]))

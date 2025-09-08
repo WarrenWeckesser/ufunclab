@@ -55,7 +55,7 @@ unwrap_core(
         if (!isfinite(x1)) {
             // inf or nan; output from here onwards is nan.
             for (npy_intp k1 = k; k1 < n; ++k1) {
-                set(p_out, out_stride, k, static_cast<T>(NPY_NAN));
+                set(p_out, out_stride, k1, static_cast<T>(NPY_NAN));
             }
             break;
         }
