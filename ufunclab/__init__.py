@@ -28,6 +28,7 @@ _name_to_module = {
     'nextn_greater': '._wrapped',
     'nextn_less' : '._wrapped',
     'one_hot': '._wrapped',
+    'hypot3': '._hypot3',
     'logfactorial': '._logfact',
     'loggamma1p': '._loggamma1p',
     'issnan': '._issnan',

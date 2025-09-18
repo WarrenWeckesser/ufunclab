@@ -108,6 +108,7 @@ ufunc_cxx_src_dirs_simple = [
     'abs_squared',
     'deadzone',
     'expint1',
+    'hypot3',
     'logistic',
     'nan_to_num',
     'next',
