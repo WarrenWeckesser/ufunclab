@@ -12,8 +12,10 @@ def test_hypot3_basic(x, y, z):
     assert_allclose(h, ref, rtol=5e-15)
 
 
-def test_hypot3_inf():
-    assert_equal(hypot3(1.0, np.inf, 99.0), np.inf)
+@pytest.mark.parametrize('x, y, z', [(-2.5, np.inf, 99.0),
+                                     (np.nan, 5.5, np.inf)])
+def test_hypot3_inf(x, y, z):
+    assert_equal(hypot3(x, y, z), np.inf)
 
 
 def test_hypot3_nan_input():
