@@ -52,6 +52,7 @@ are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, `issnan`, and
 | [`next_greater`](#next_greater)               | Equivalent to `np.nextafter(x, inf)`                          |
 | [`abs_squared`](#abs_squared)                 | Squared absolute value                                        |
 | [`cabssq`](#cabssq)                           | Squared absolute value for complex input only                 |
+| [`hypot3`](#hypot3)                           | Three argument hypotenuse                                     |
 | [`deadzone`](#deadzone)                       | Deadzone function                                             |
 | [`step`](#step)                               | Step function                                                 |
 | [`linearstep`](#linearstep)                   | Piecewise linear step function                                |
@@ -293,6 +294,29 @@ implemented "by hand", with no C++ or NumPy templating.  `cabssq` is generally
 faster than `abs_squared`, because it avoids some of the overhead that occurs
 in the code generated in the implementation of `abs_squared`, and it allows
 the compiler to optimize the code more effectively.
+
+#### `hypot3`
+
+`hypot3(x, y, z)` is the three argument hypotenuse.  It computes `sqrt(x*x + y*y + z*z)`.
+If any argument is infinite, the function returns infinity.
+
+```
+>>> import numpy as np
+>>> from ufunclab import hypot3
+
+>>> hypot3(1.0, 2.0, 3.0)
+np.float64(3.741657386773941)
+
+>>> x = 2.0
+>>> y = np.array([-1.0, 4.0])
+>>> z = np.array([[2.0], [-10.0]])
+>>> hypot3(x, y, z)
+array([[ 3.        ,  4.89897949],
+       [10.24695077, 10.95445115]])
+
+>>> hypot3(1.0, np.inf, 99.0)
+np.float64(inf)
+```
 
 #### `deadzone`
 
