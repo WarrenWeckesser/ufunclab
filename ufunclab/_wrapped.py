@@ -36,6 +36,14 @@ def _shape_insert_axis(shape, axis, n):
     return shape[:axis] + (n,) + shape[axis:]
 
 
+def bad_nonneg_integer_error(name, value):
+    return ValueError(f"{name} must be a nonnegative integer; got {value!r}")
+
+
+def bad_integer_error(name, value):
+    return ValueError(f"{name} must be an integer; got {value!r}")
+
+
 def bincount(x, m=None, weights=None, *, out=None, axis=-1):
     """
     Count the number of occurrences of the positive integers in the 1-d
@@ -157,10 +165,10 @@ def bincount(x, m=None, weights=None, *, out=None, axis=-1):
     else:
         try:
             m = operator.index(m)
-        except TypeError:
-            raise ValueError(f'm must be a nonnegative integer; got {m!r}')
+        except TypeError as exc:
+            raise bad_nonneg_integer_error('m', m) from exc
         if m < 0:
-            raise ValueError(f'm must be a nonnegative integer; got {m!r}')
+            raise bad_nonneg_integer_error('m', m)
 
     if weights is not None:
         weights = np.asarray(weights)
@@ -247,8 +255,8 @@ def convert_to_base(k, base, ndigits, *, out=None, axis=-1):
     base = np.asarray(base)
     try:
         ndigits = operator.index(ndigits)
-    except TypeError:
-        raise ValueError(f'ndigits must be an integer; got {ndigits!r}')
+    except TypeError as exc:
+        raise bad_integer_error('ndigits', ndigits) from exc
     param_bcast_shape = np.broadcast_shapes(k.shape, base.shape)
     adjusted_axis = axis
     if adjusted_axis < 0:
@@ -282,8 +290,8 @@ def nextn_greater(x, n, *, out=None, axis=-1):
                          'np.longdouble.')
     try:
         n = operator.index(n)
-    except TypeError:
-        raise ValueError(f'n must be an integer; got {n!r}')
+    except TypeError as exc:
+        raise bad_integer_error('n', n) from exc
     x_shape = x.shape
     adjusted_axis = axis
     if adjusted_axis < 0:
@@ -317,8 +325,8 @@ def nextn_less(x, n, *, out=None, axis=-1):
                          'np.float64 or np.longdouble.')
     try:
         n = operator.index(n)
-    except TypeError:
-        raise ValueError(f'n must be an integer; got {n!r}')
+    except TypeError as exc:
+        raise bad_integer_error('n', n) from exc
     x_shape = x.shape
     adjusted_axis = axis
     if adjusted_axis < 0:
@@ -348,8 +356,8 @@ def one_hot(k, n, *, out=None, axis=-1):
         raise ValueError('k must be an integer scalar or array.')
     try:
         n = operator.index(n)
-    except TypeError:
-        raise ValueError(f'n must be an integer; got {n!r}')
+    except TypeError as exc:
+        raise bad_integer_error('n', n) from exc
     k_shape = k.shape
     adjusted_axis = axis
     if adjusted_axis < 0:
