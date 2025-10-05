@@ -113,7 +113,7 @@ def __getattr__(name):
     try:
         module_name = _name_to_module[name]
     except Exception:
-        raise AttributeError
+        raise AttributeError(f"module 'ufunclab' has no attribute {name!r}") from None
     module = _imp.import_module(module_name, __name__)
     return getattr(module, name)
 
