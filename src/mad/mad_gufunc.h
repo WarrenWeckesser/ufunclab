@@ -9,6 +9,7 @@
 #include <cfenv>
 #endif
 #include <cstdlib>
+#include <cmath>
 #include <limits>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
