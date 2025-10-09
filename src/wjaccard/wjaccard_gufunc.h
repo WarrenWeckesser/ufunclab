@@ -5,6 +5,7 @@
 #include "Python.h"
 
 #include <cmath>
+#include <limits>
 #include <algorithm>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
@@ -33,7 +34,7 @@ static void wjaccard_core(
     // dereference p_x and p_y without first checking that n > 0.
     if constexpr (std::is_floating_point_v<T>) {
         if (std::isnan(*p_x) || std::isnan(*p_y)) {
-            *p_out = NPY_NAN;
+            *p_out = std::numeric_limits<T>::quiet_NaN();
             return;
         }
     }
@@ -44,7 +45,7 @@ static void wjaccard_core(
         T yk = get(p_y, y_stride, k);
         if constexpr (std::is_floating_point_v<T>) {
             if (std::isnan(xk) || std::isnan(yk)) {
-                *p_out = NPY_NAN;
+                *p_out = std::numeric_limits<T>::quiet_NaN();
                 return;
             }
         }
@@ -53,10 +54,10 @@ static void wjaccard_core(
     }
     if (denom == 0) {
         if (numer == 0) {
-            *p_out = NPY_NAN;
+            *p_out = std::numeric_limits<T>::quiet_NaN();
         }
         else {
-            *p_out = -INFINITY;
+            *p_out = -std::numeric_limits<T>::infinity();
         }
     }
     else {

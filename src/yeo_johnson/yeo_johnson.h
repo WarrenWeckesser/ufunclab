@@ -2,6 +2,7 @@
 #define YEO_JOHNSON_H
 
 #include <cmath>
+#include <limits>
 
 template<typename T>
 T yeo_johnson(T x, T lmbda)
@@ -33,7 +34,8 @@ T inv_yeo_johnson(T x, T lmbda)
         }
         else {
             if (lmbda < 0 && x >= -1/lmbda) {
-                return x > -1/lmbda ? NAN : INFINITY;
+                return x > -1/lmbda ? std::numeric_limits<T>::quiet_NaN()
+                                    : std::numeric_limits<T>::infinity();
             }
             else {
                 return std::expm1(std::log1p(lmbda*x)/lmbda);
@@ -47,7 +49,8 @@ T inv_yeo_johnson(T x, T lmbda)
         }
         else {
             if (lmbda > 2 && x <= 1/(2 - lmbda)) {
-                return x < 1/(2 - lmbda) ? NAN : -INFINITY;
+                return x < 1/(2 - lmbda) ? std::numeric_limits<T>::quiet_NaN()
+                                         : -std::numeric_limits<T>::infinity();
             }
             else {
                 return -std::expm1(std::log1p(-(2 - lmbda)*x)/(2 - lmbda));

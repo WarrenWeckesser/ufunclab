@@ -2,6 +2,7 @@
 #define STEP_H
 
 #include <cmath>
+#include <limits>
 
 
 namespace StepFunctions {
@@ -24,7 +25,7 @@ template<typename T>
 T linearstep(T x, T a, T b, T fa, T fb)
 {
     if (a > b) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
     if (x <= a) {
         return fa;
@@ -51,7 +52,7 @@ template<typename T>
 T smoothstep3(T x, T a, T b, T fa, T fb)
 {
     if (a > b) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
     if (x <= a) {
         return fa;
@@ -72,7 +73,7 @@ T invsmoothstep3(T y, T a, T b, T fa, T fb)
     T upper, lower;
 
     if (fa == fb) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
     if (y == fa) {
         return a;
@@ -89,7 +90,7 @@ T invsmoothstep3(T y, T a, T b, T fa, T fb)
         lower = fb;
     }
     if ((y > upper) || (y < lower)) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
     // See, for example,
     //     https://en.wikipedia.org/wiki/Smoothstep#Inverse_Smoothstep
@@ -103,7 +104,7 @@ template<typename T>
 T smoothstep5(T x, T a, T b, T fa, T fb)
 {
     if (a > b) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
     if (x <= a) {
         return fa;

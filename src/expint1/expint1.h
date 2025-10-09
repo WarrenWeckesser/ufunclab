@@ -2,6 +2,7 @@
 #define EXPINT1_H
 
 #include <cmath>
+#include <limits>
 
 #define EULER 0.577215664901532860606512090082402431042159L
 
@@ -72,10 +73,10 @@ template<typename T>
 T expint1(T x)
 {
     if (x < 0.0) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
     if (x == 0) {
-        return INFINITY;
+        return std::numeric_limits<T>::infinity();
     }
     if (x <= 1.0) {
         return expint1_01(x);
@@ -92,10 +93,10 @@ template<typename T>
 T logexpint1(T x)
 {
     if (x < 0) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
     if (x == 0) {
-        return INFINITY;
+        return std::numeric_limits<T>::infinity();
     }
     if (x <= 1.0) {
         // For small x, the naive implementation is sufficiently accurate.

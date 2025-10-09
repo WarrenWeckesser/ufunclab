@@ -6,6 +6,7 @@
 #include "Python.h"
 
 #include <cmath>
+#include <limits>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -26,7 +27,7 @@ nextn_greater_core_calc(
     npy_intp out_stride
 )
 {
-    T to = INFINITY;
+    T to = std::numeric_limits<T>::infinity();
     T x = *p_x;
     for (npy_intp i = 0; i < n; ++i) {
         x = std::nextafter(x, to);
@@ -47,7 +48,7 @@ nextn_less_core_calc(
     npy_intp out_stride
 )
 {
-    T to = -INFINITY;
+    T to = -std::numeric_limits<T>::infinity();
     T x = *p_x;
     for (npy_intp i = 0; i < n; ++i) {
         x = std::nextafter(x, to);

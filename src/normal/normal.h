@@ -2,6 +2,7 @@
 #define NORMAL_H
 
 #include <cmath>
+#include <limits>
 #include "erfcx_funcs.h"
 
 #define RECIP_SQRT2 0.7071067811865475244008443621048490393L
@@ -11,7 +12,7 @@ template<typename T>
 T normal_cdf(T x)
 {
     if (std::isnan(x)) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     }
 
     T x2 = x * RECIP_SQRT2;

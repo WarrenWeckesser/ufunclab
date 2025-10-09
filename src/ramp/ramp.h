@@ -2,7 +2,7 @@
 #define RAMP_H
 
 #include <cmath>
-
+#include <limits>
 
 //
 // The "standard" hyperbolic ramp:
@@ -62,7 +62,7 @@ T hyperbolic_ramp(T x, T a)
     if (a == 0) {
         return (x < 0) ? 0.0 : x;
     } else if (a < 0) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     } else {
         return a*std_hyperbolic_ramp(x/a);
     }
@@ -97,7 +97,7 @@ T exponential_ramp(T x, T a)
     if (a == 0) {
         return (x < 0) ? 0.0 : x;
     } else if (a < 0) {
-        return NAN;
+        return std::numeric_limits<T>::quiet_NaN();
     } else {
         return a*std_exponential_ramp(x/a);
     }

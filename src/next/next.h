@@ -2,6 +2,7 @@
 #define NEXT_H
 
 #include <cmath>
+#include <limits>
 
 
 namespace NextFunctions {
@@ -9,14 +10,14 @@ namespace NextFunctions {
 template<typename T>
 T next_greater(T x)
 {
-    T to = INFINITY;
+    T to = std::numeric_limits<T>::infinity();
     return std::nextafter(x, to);
 }
 
 template<typename T>
 T next_less(T x)
 {
-    T to = -INFINITY;
+    T to = -std::numeric_limits<T>::infinity();
     return std::nextafter(x, to);
 }
 

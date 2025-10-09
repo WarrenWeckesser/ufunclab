@@ -9,6 +9,7 @@
 #include <cfenv>
 #endif
 #include <cstdlib>
+#include <limits>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -120,14 +121,14 @@ static void gini_core(
     T denom = (*p_unbiased) ? (n - 1)*total : n*total;
 
     if (sum == 0 && denom == 0) {
-        *p_out = NPY_NAN;
+        *p_out = std::numeric_limits<T>::quiet_NaN();
 #ifdef __clang__
         feclearexcept(FE_INVALID);
 #endif
     }
     else {
         if (denom == 0) {
-            *p_out = INFINITY;
+            *p_out = std::numeric_limits<T>::infinity();
         }
         else {
             *p_out = sum / denom;
@@ -151,7 +152,7 @@ static void rmad_core(
 {
     // RMAD is twice the Gini index.
     gini_core(n, p_x, x_stride, p_unbiased, p_out);
-    if (!isnan(*p_out)) {
+    if (!std::isnan(*p_out)) {
         *p_out *= 2;
     }
 }
