@@ -94,7 +94,7 @@ T invsmoothstep3(T y, T a, T b, T fa, T fb)
     // See, for example,
     //     https://en.wikipedia.org/wiki/Smoothstep#Inverse_Smoothstep
     T t = (y - fa) / (fb - fa);
-    T s = 0.5 - sin(asin(1 - 2 * t) / 3);
+    T s = 0.5 - std::sin(std::asin(1 - 2 * t) / 3);
     return a + (b - a)*s;
 }
 

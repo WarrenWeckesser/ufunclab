@@ -6,7 +6,7 @@
 template<typename Real>
 Real semivar_exponential(Real h, Real nugget, Real sill, Real range)
 {
-    return nugget + (sill - nugget) * (1 - exp(-3*h / range));
+    return nugget + (sill - nugget) * (1 - std::exp(-3*h / range));
 }
 
 template<typename Real>

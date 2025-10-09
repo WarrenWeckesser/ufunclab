@@ -43,7 +43,7 @@ unwrap_core(
     p_out[0] = x0;
     for (npy_intp k = 1; k < n; ++k) {
         T x1 = get(p_x, x_stride, k);
-        if (!isfinite(x1)) {
+        if (!std::isfinite(x1)) {
             // inf or nan; output from here onwards is nan.
             for (npy_intp k1 = k; k1 < n; ++k1) {
                 set(p_out, out_stride, k1, static_cast<T>(NPY_NAN));

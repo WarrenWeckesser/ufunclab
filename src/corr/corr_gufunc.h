@@ -43,9 +43,9 @@ static U
 strided_delta_maxabs(npy_intp n, T *p_x, npy_intp x_stride, U xmean)
 {
     // This code assumes n > 0.
-    U maxabs = fabs(*p_x - xmean);
+    U maxabs = std::fabs(*p_x - xmean);
     for (npy_intp k = 1; k < n; ++k) {
-        U absxk = fabs(get(p_x, x_stride, k) - xmean);
+        U absxk = std::fabs(get(p_x, x_stride, k) - xmean);
         if (absxk > maxabs) {
             maxabs = absxk;
         }
