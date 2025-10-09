@@ -117,7 +117,7 @@ T rms_core_contig(npy_intp n, T *p_x)
         T x = p_x[k];
         sum += x*x;
     }
-    return sqrt(sum/n);
+    return std::sqrt(sum/n);
 }
 
 //
@@ -144,7 +144,7 @@ static void rms_core_calc(
         T xk = get(p_x, x_stride, k);
         sum += xk*xk;
     }
-    p_out[0] = sqrt(sum/n);
+    p_out[0] = std::sqrt(sum/n);
 }
 
 
@@ -157,7 +157,7 @@ T crms_core_contig(npy_intp n, T *p_z)
         T y = p_z[2*k+1];
         sum += x*x + y*y;
     }
-    return sqrt(sum/n);
+    return std::sqrt(sum/n);
 }
 
 //
@@ -187,7 +187,7 @@ static void crms_core_calc(
         U y = (reinterpret_cast<U *>(&zk))[1];
         sum += x*x + y*y;
     }
-    p_out[0] = sqrt(sum/n);
+    p_out[0] = std::sqrt(sum/n);
 }
 
 //

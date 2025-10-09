@@ -23,7 +23,7 @@ static T norm_diff(npy_intp n, T *p_p, const npy_intp p_strides[2], npy_intp i1,
         T dx = x2 - x1;
         sumsq += dx*dx;
     }
-    return sqrt(sumsq);
+    return std::sqrt(sumsq);
 }
 
 //
@@ -73,7 +73,7 @@ tri_area_common_calc(
     T f2 = (c - (a - b));
     T f3 = (c + (a - b));
     T f4 = (a + (b - c));
-    *p_out = sqrt(f1*f2*f3*f4)/4;
+    *p_out = std::sqrt(f1*f2*f3*f4)/4;
 }
 
 //
