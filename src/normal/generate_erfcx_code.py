@@ -136,7 +136,7 @@ erfcx({type_str} x)
     else {{
        // x <= 0
        if (x < {lower_bound}{sfx}) {{
-           return INFINITY;
+           return std::numeric_limits<{type_str}>::infinity();
        }} else {{
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
            return 2.0{sfx}*std::exp(x*x) - erfcx_y100(400.0{sfx}/(4.0{sfx} - x));
@@ -171,6 +171,7 @@ _preamble = """
 //
 
 #include <cmath>
+#include <limits>
 """
 
 if __name__ == "__main__":

@@ -14,6 +14,7 @@
 //
 
 #include <cmath>
+#include <limits>
 
 
 static float
@@ -648,7 +649,7 @@ erfcx(float x)
     else {
        // x <= 0
        if (x < -9.382413f) {
-           return INFINITY;
+           return std::numeric_limits<float>::infinity();
        } else {
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
            return 2.0f*std::exp(x*x) - erfcx_y100(400.0f/(4.0f - x));
@@ -1590,7 +1591,7 @@ erfcx(double x)
     else {
        // x <= 0
        if (x < -26.628735713751485) {
-           return INFINITY;
+           return std::numeric_limits<double>::infinity();
        } else {
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
            return 2.0*std::exp(x*x) - erfcx_y100(400.0/(4.0 - x));
@@ -2632,7 +2633,7 @@ erfcx(long double x)
     else {
        // x <= 0
        if (x < -106.56373801210984173L) {
-           return INFINITY;
+           return std::numeric_limits<long double>::infinity();
        } else {
            // Use the identity erfcx(x) = 2*exp(x**2) - erfcx(-x)
            return 2.0L*std::exp(x*x) - erfcx_y100(400.0L/(4.0L - x));
