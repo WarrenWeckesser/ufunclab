@@ -1,5 +1,5 @@
-#ifndef UNWRAP_GUFUNC_H
-#define UNWRAP_GUFUNC_H
+#ifndef UFUNCLAB_UNWRAP_GUFUNC_H
+#define UFUNCLAB_UNWRAP_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -56,4 +56,4 @@ unwrap_core(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_UNWRAP_GUFUNC_H

@@ -1,5 +1,5 @@
-#ifndef DEADZONE_H
-#define DEADZONE_H
+#ifndef UFUNCLAB_DEADZONE_H
+#define UFUNCLAB_DEADZONE_H
 
 template<typename T>
 T deadzone(T x, T low, T high)
@@ -15,4 +15,4 @@ T deadzone(T x, T low, T high)
     }
 }
 
-#endif
+#endif  // UFUNCLAB_DEADZONE_H

@@ -1,5 +1,5 @@
-#ifndef WJACCARD_GUFUNC_H
-#define WJACCARD_GUFUNC_H
+#ifndef UFUNCLAB_WJACCARD_GUFUNC_H
+#define UFUNCLAB_WJACCARD_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -65,4 +65,4 @@ static void wjaccard_core(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_WJACCARD_GUFUNC_H

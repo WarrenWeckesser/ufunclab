@@ -1,5 +1,5 @@
-#ifndef MEANVAR_GUFUNC_H
-#define MEANVAR_GUFUNC_H
+#ifndef UFUNCLAB_MEANVAR_GUFUNC_H
+#define UFUNCLAB_MEANVAR_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -47,4 +47,4 @@ static void meanvar_core(
     set(p_out, out_stride, 1, var);
 }
 
-#endif
+#endif  // UFUNCLAB_MEANVAR_GUFUNC_H

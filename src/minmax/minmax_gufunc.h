@@ -1,5 +1,5 @@
-#ifndef MINMAX_GUFUNC_H
-#define MINMAX_GUFUNC_H
+#ifndef UFUNCLAB_MINMAX_GUFUNC_H
+#define UFUNCLAB_MINMAX_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -338,4 +338,4 @@ static void max_argmax_object_core(
     *p_out2 = xmax_index;
 }
 
-#endif
+#endif  // UFUNCLAB_MINMAX_GUFUNC_H

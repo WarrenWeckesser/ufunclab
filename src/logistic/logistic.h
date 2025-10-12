@@ -1,5 +1,5 @@
-#ifndef LOGISTIC_H
-#define LOGISTIC_H
+#ifndef UFUNCLAB_LOGISTIC_H
+#define UFUNCLAB_LOGISTIC_H
 
 #include <cmath>
 
@@ -36,4 +36,4 @@ T swish(T x, T beta)
     return x * logistic(beta * x);
 }
 
-#endif
+#endif  // UFUNCLAB_LOGISTIC_H

@@ -1,5 +1,5 @@
-#ifndef ALL_SAME_GUFUNC_H
-#define ALL_SAME_GUFUNC_H
+#ifndef UFUNCLAB_ALL_SAME_GUFUNC_H
+#define UFUNCLAB_ALL_SAME_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -56,4 +56,4 @@ static void all_same_core_object(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_ALL_SAME_GUFUNC_H

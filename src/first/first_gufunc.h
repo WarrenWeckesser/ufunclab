@@ -1,6 +1,5 @@
-
-#ifndef FIRST_GUFUNC_H
-#define FIRST_GUFUNC_H
+#ifndef UFUNCLAB_FIRST_GUFUNC_H
+#define UFUNCLAB_FIRST_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -298,4 +297,4 @@ int add_comparison_constants(PyObject *module)
     return 0;
 }
 
-#endif
+#endif  // UFUNCLAB_FIRST_GUFUNC_H

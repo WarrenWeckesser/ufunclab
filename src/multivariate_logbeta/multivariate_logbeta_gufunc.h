@@ -1,5 +1,5 @@
-#ifndef MULTIVARIATE_LOGBETA_GUFUNC_H
-#define MULTIVARIATE_LOGBETA_GUFUNC_H
+#ifndef UFUNCLAB_MULTIVARIATE_LOGBETA_GUFUNC_H
+#define UFUNCLAB_MULTIVARIATE_LOGBETA_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -58,4 +58,4 @@ static void multivariate_logbeta_core(
     *p_out = log_sum;
 }
 
-#endif
+#endif  // UFUNCLAB_MULTIVARIATE_LOGBETA_GUFUNC_H

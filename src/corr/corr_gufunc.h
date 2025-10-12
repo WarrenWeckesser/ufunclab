@@ -1,5 +1,5 @@
-#ifndef CORR_GUFUNC_H
-#define CORR_GUFUNC_H
+#ifndef UFUNCLAB_CORR_GUFUNC_H
+#define UFUNCLAB_CORR_GUFUNC_H
 
 #include <cmath>
 
@@ -204,4 +204,4 @@ static void pearson_corr_core(
     *p_out = r;
 }
 
-#endif
+#endif  // UFUNCLAB_CORR_GUFUNC_H

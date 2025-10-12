@@ -1,5 +1,5 @@
-#ifndef STEP_H
-#define STEP_H
+#ifndef UFUNCLAB_STEP_H
+#define UFUNCLAB_STEP_H
 
 #include <cmath>
 #include <limits>
@@ -121,4 +121,4 @@ T smoothstep5(T x, T a, T b, T fa, T fb)
 
 }  // namespace StepFunctions
 
-#endif
+#endif  // UFUNCLAB_STEP_H

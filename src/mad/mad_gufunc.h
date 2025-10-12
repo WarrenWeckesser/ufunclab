@@ -1,6 +1,6 @@
 
-#ifndef MAD_GUFUNC_H
-#define MAD_GUFUNC_H
+#ifndef UFUNCLAB_MAD_GUFUNC_H
+#define UFUNCLAB_MAD_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -158,4 +158,4 @@ static void rmad_core(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_MAD_GUFUNC_H

@@ -1,5 +1,5 @@
-#ifndef NAN_TO_NUM_H
-#define NAN_TO_NUM_H
+#ifndef UFUNCLAB_NAN_TO_NUM_H
+#define UFUNCLAB_NAN_TO_NUM_H
 
 #include <cmath>
 
@@ -9,4 +9,4 @@ inline T nan_to_num(T x, T replacement)
     return std::isnan(x) ? replacement : x;
 }
 
-#endif
+#endif  // UFUNCLAB_NAN_TO_NUM_H

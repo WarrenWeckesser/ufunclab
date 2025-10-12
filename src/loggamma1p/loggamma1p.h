@@ -1,6 +1,6 @@
-#ifndef LOGGAMMA1P_H
-#define LOGGAMMA1P_H
+#ifndef UFUNCLAB_LOGGAMMA1P_H
+#define UFUNCLAB_LOGGAMMA1P_H
 
 extern double loggamma1p(double x);
 
-#endif
+#endif  // UFUNCLAB_LOGGAMMA1P_H

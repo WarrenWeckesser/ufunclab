@@ -1,5 +1,5 @@
-#ifndef TRAPEZOID_PULSE_H
-#define TRAPEZOID_PULSE_H
+#ifndef UFUNCLAB_TRAPEZOID_PULSE_H
+#define UFUNCLAB_TRAPEZOID_PULSE_H
 
 #include <cmath>
 #include <limits>
@@ -28,4 +28,4 @@ T trapezoid_pulse(T x, T a, T b, T c, T d, T amp)
     return result;
 }
 
-#endif
+#endif  // UFUNCLAB_TRAPEZOID_PULSE_H

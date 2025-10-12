@@ -1,6 +1,6 @@
 
-#ifndef ONE_HOT_GUFUNC_H
-#define ONE_HOT_GUFUNC_H
+#ifndef UFUNCLAB_ONE_HOT_GUFUNC_H
+#define UFUNCLAB_ONE_HOT_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -39,4 +39,4 @@ one_hot_core_calc(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_ONE_HOT_GUFUNC_H

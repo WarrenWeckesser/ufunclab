@@ -1,5 +1,5 @@
-#ifndef POW1PM1_H
-#define POW1PM1_H
+#ifndef UFUNCLAB_POW1PM1_H
+#define UFUNCLAB_POW1PM1_H
 
 #include <cmath>
 
@@ -17,4 +17,4 @@ T pow1pm1(T x, T y)
     return std::expm1(y * std::log1p(x));
 }
 
-#endif
+#endif  // UFUNCLAB_POW1PM1_H

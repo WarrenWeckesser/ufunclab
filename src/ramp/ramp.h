@@ -1,5 +1,5 @@
-#ifndef RAMP_H
-#define RAMP_H
+#ifndef UFUNCLAB_RAMP_H
+#define UFUNCLAB_RAMP_H
 
 #include <cmath>
 #include <limits>
@@ -103,4 +103,4 @@ T exponential_ramp(T x, T a)
     }
 }
 
-#endif
+#endif  // UFUNCLAB_RAMP_H

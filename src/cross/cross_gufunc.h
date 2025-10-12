@@ -1,6 +1,6 @@
 
-#ifndef CROSS_GUFUNC_H
-#define CROSS_GUFUNC_H
+#ifndef UFUNCLAB_CROSS_GUFUNC_H
+#define UFUNCLAB_CROSS_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -159,4 +159,4 @@ cross2_core_calc_object(
     p_out[0] = out;
 }
 
-#endif
+#endif  // UFUNCLAB_CROSS_GUFUNC_H

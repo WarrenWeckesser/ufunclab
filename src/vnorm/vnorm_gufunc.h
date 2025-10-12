@@ -1,6 +1,6 @@
 
-#ifndef VNORM_GUFUNC_H
-#define VNORM_GUFUNC_H
+#ifndef UFUNCLAB_VNORM_GUFUNC_H
+#define UFUNCLAB_VNORM_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -222,4 +222,4 @@ static void vdot_core_calc(
     p_out[0] = sum;
 }
 
-#endif
+#endif  // UFUNCLAB_VNORM_GUFUNC_H

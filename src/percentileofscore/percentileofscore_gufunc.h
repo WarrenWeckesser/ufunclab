@@ -1,6 +1,6 @@
 
-#ifndef PERCENTILEOFSCORE_GUFUNC_H
-#define PERCENTILEOFSCORE_GUFUNC_H
+#ifndef UFUNCLAB_PERCENTILEOFSCORE_GUFUNC_H
+#define UFUNCLAB_PERCENTILEOFSCORE_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -107,4 +107,4 @@ int add_percentileofscore_kind_constants(PyObject *module)
     return 0;
 }
 
-#endif
+#endif  // UFUNCLAB_PERCENTILEOFSCORE_GUFUNC_H

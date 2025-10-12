@@ -1,5 +1,5 @@
-#ifndef HYPOT3_H
-#define HYPOT3_H
+#ifndef UFUNCLAB_HYPOT3_H
+#define UFUNCLAB_HYPOT3_H
 
 #include <cmath>
 #include <limits>
@@ -22,4 +22,4 @@ T hypot3(T x, T y, T z)
     return std::hypot(x, y, z);
 }
 
-#endif
+#endif  // UFUNCLAB_HYPOT3_H

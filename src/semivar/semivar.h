@@ -1,5 +1,5 @@
-#ifndef SEMIVAR_H
-#define SEMIVAR_H
+#ifndef UFUNCLAB_SEMIVAR_H
+#define UFUNCLAB_SEMIVAR_H
 
 #include <cmath>
 
@@ -54,4 +54,4 @@ Real semivar_parabolic(Real h, Real nugget, Real sill, Real range)
     return v;
 }
 
-#endif
+#endif  // UFUNCLAB_SEMIVAR_H

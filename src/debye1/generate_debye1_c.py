@@ -126,9 +126,9 @@ if __name__ == "__main__":
     print(f'Generating {fnamebase}.h')
     with open(fnamebase + '.h', 'w') as f:
         print(_preamble, file=f)
-        print('#ifndef DEBYE1_GENERATED_H', file=f)
-        print('#define DEBYE1_GENERATED_H', file=f)
+        print('#ifndef UFUNCLAB_DEBYE1_GENERATED_H', file=f)
+        print('#define UFUNCLAB_DEBYE1_GENERATED_H', file=f)
         print(file=f)
         print('double debye1(const double);', file=f)
         print(file=f)
-        print('#endif', file=f)
+        print('#endif  // UFUNCLAB_DEBYE1_GENERATED_H', file=f)

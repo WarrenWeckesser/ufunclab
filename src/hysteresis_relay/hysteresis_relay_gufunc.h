@@ -1,5 +1,5 @@
-#ifndef HYSTERESIS_RELAY_GUFUNC_H
-#define HYSTERESIS_RELAY_GUFUNC_H
+#ifndef UFUNCLAB_HYSTERESIS_RELAY_GUFUNC_H
+#define UFUNCLAB_HYSTERESIS_RELAY_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -50,4 +50,4 @@ hysteresis_relay_core(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_HYSTERESIS_RELAY_GUFUNC_H

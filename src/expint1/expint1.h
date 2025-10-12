@@ -1,5 +1,5 @@
-#ifndef EXPINT1_H
-#define EXPINT1_H
+#ifndef UFUNCLAB_EXPINT1_H
+#define UFUNCLAB_EXPINT1_H
 
 #include <cmath>
 #include <limits>
@@ -113,4 +113,4 @@ T logexpint1(T x)
     return -x - std::log(x) + std::log1p(s);
 }
 
-#endif
+#endif  // UFUNCLAB_EXPINT1_H

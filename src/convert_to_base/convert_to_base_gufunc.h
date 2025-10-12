@@ -1,5 +1,5 @@
-#ifndef CONVERT_TO_BASE_GUFUNC_H
-#define CONVERT_TO_BASE_GUFUNC_H
+#ifndef UFUNCLAB_CONVERT_TO_BASE_GUFUNC_H
+#define UFUNCLAB_CONVERT_TO_BASE_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -26,4 +26,4 @@ static void convert_to_base_core_calc(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_CONVERT_TO_BASE_GUFUNC_H

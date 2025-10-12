@@ -1,5 +1,5 @@
-#ifndef NEXT_H
-#define NEXT_H
+#ifndef UFUNCLAB_NEXT_H
+#define UFUNCLAB_NEXT_H
 
 #include <cmath>
 #include <limits>
@@ -23,4 +23,4 @@ T next_less(T x)
 
 }  // namespace NextFunctions
 
-#endif
+#endif  // UFUNCLAB_NEXT_H

@@ -1,5 +1,5 @@
-#ifndef SOSFILTER_GUFUNC_H
-#define SOSFILTER_GUFUNC_H
+#ifndef UFUNCLAB_SOSFILTER_GUFUNC_H
+#define UFUNCLAB_SOSFILTER_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -161,4 +161,4 @@ static void sosfilter_core(
     free(zi);
 }
 
-#endif
+#endif  // UFUNCLAB_SOSFILTER_GUFUNC_H

@@ -1,6 +1,6 @@
 
-#ifndef TRI_AREA_GUFUNC_H
-#define TRI_AREA_GUFUNC_H
+#ifndef UFUNCLAB_TRI_AREA_GUFUNC_H
+#define UFUNCLAB_TRI_AREA_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -135,4 +135,4 @@ static void tri_area_indexed_core_calc(
     tri_area_common_calc(n, p_p, p_strides, i0, i1, i2, p_out);
 }
 
-#endif
+#endif  // UFUNCLAB_TRI_AREA_GUFUNC_H

@@ -1,5 +1,5 @@
-#ifndef NORMAL_H
-#define NORMAL_H
+#ifndef UFUNCLAB_NORMAL_H
+#define UFUNCLAB_NORMAL_H
 
 #include <cmath>
 #include <limits>
@@ -84,4 +84,4 @@ T normal_logsf(T x)
     return normal_logcdf(-x);
 }
 
-#endif
+#endif  // UFUNCLAB_NORMAL_H

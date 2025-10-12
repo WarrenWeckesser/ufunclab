@@ -1,5 +1,5 @@
-#ifndef YEO_JOHNSON_H
-#define YEO_JOHNSON_H
+#ifndef UFUNCLAB_YEO_JOHNSON_H
+#define UFUNCLAB_YEO_JOHNSON_H
 
 #include <cmath>
 #include <limits>
@@ -59,4 +59,4 @@ T inv_yeo_johnson(T x, T lmbda)
     }
 }
 
-#endif
+#endif  // UFUNCLAB_YEO_JOHNSON_H

@@ -1,5 +1,5 @@
-#ifndef BACKLASH_GUFUNC_H
-#define BACKLASH_GUFUNC_H
+#ifndef UFUNCLAB_BACKLASH_GUFUNC_H
+#define UFUNCLAB_BACKLASH_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -89,4 +89,4 @@ backlash_sum_core(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_BACKLASH_GUFUNC_H

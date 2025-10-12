@@ -1,6 +1,6 @@
 
-#ifndef BINCOUNT_GUFUNC_H
-#define BINCOUNT_GUFUNC_H
+#ifndef UFUNCLAB_BINCOUNT_GUFUNC_H
+#define UFUNCLAB_BINCOUNT_GUFUNC_H
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -138,4 +138,4 @@ bincountw_complex_core_calc(
     }
 }
 
-#endif
+#endif  // UFUNCLAB_BINCOUNT_GUFUNC_H
