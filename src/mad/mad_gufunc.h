@@ -13,6 +13,7 @@
 #include <cmath>
 #include <limits>
 #include <new>      // for std::bad_alloc
+#include <vector>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
