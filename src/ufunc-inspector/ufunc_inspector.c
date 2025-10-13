@@ -96,7 +96,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
         printf("...core_num_dim_ix  (number of distinct names in sig) = %d\n", ufunc->core_num_dim_ix);
         printf("...core_dim_sizes                  (-1 if not frozen) = [");
         for (int i = 0; i < ufunc->core_num_dim_ix; ++i) {
-            printf("%ld", ufunc->core_dim_sizes[i]);
+            printf("%lld", (long long int) ufunc->core_dim_sizes[i]);
             if (i == ufunc->core_num_dim_ix-1) {
                 printf("]\n");
             }
