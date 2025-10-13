@@ -26,7 +26,7 @@ static int unnormalized_mad(npy_intp n, T *p_x, npy_intp x_stride, T& sum, T& to
     std::vector<T> tmp;
     try {
         tmp.resize(n);
-    } catch (std::bad_alloc) {
+    } catch (const std::bad_alloc& e) {
         NPY_ALLOW_C_API_DEF
         NPY_ALLOW_C_API
             PyErr_Format(PyExc_MemoryError,
@@ -48,7 +48,7 @@ static int unnormalized_mad(npy_intp n, T *p_x, npy_intp x_stride, T& sum, T& to
 
     try {
         std::sort(tmp.begin(), tmp.end());
-    } catch (std::bad_alloc) {
+    } catch (const std::bad_alloc& e) {
         NPY_ALLOW_C_API_DEF
         NPY_ALLOW_C_API
             PyErr_Format(PyExc_MemoryError,
