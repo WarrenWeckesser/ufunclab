@@ -23,7 +23,7 @@ softmax_core(
 {
     // Get the maximum, and count positive infs.
     npy_intp nposinf = 0;
-    npy_intp posinf_index;
+    npy_intp posinf_index = 0;  // Initialize to appease compiler.
     bool has_nan = false;
     T xmax;
     for (npy_intp k = 0; k < n; ++k) {

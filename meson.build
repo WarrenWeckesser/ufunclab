@@ -6,6 +6,7 @@ project(
   default_options: [
     'c_std=c99',
     'cpp_std=c++17',
+    'werror=true',
   ],
 )
 

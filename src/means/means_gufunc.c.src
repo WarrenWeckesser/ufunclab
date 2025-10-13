@@ -45,7 +45,7 @@
     bool has_inf = false;
     bool all_same = true;
 
-    @ctype_in@ prev;
+    @ctype_in@ prev = 0;  // Initialize to appease compiler.
     @ctype_out@ sumlog = 0;
     for (npy_intp k = 0; k < n; ++k, arg += step) {
         @ctype_in@ x = *(@ctype_in@ *)arg;
@@ -122,7 +122,7 @@ static void gmean_@typename@_loop(char **args, const npy_intp *dimensions,
     bool has_inf = false;
     bool all_same = true;
 
-    @ctype_in@ prevx;
+    @ctype_in@ prevx = 0;  // Initialize to appease compiler.
     @ctype_out@ sumlog = 0;
     @ctype_out@ sumw = 0;
     for (npy_intp k = 0; k < n; ++k, arg0 += step0, arg1 += step1) {
@@ -317,8 +317,8 @@ static void pmean_@typename@_loop(char **args, const npy_intp *dimensions,
         bool has_inf = false;
 
         char *inner = in0;
-        @ctype_in@ xmax;
-        @ctype_in@ xmin;
+        @ctype_in@ xmax = 0;  // Initialize to appease compiler.
+        @ctype_in@ xmin = 0;  // Initialize to appease compiler.
         @ctype_out@ p = *(@ctype_in@ *)in1;
         if (isnan(p)) {
             *(@ctype_out@ *) out = NPY_NAN;
@@ -453,8 +453,8 @@ static void pmeanw_@typename@_loop(char **args, const npy_intp *dimensions,
 
         char *inner0 = in0;
         char *inner1 = in1;
-        @ctype_in@ xmax;
-        @ctype_in@ xmin;
+        @ctype_in@ xmax = 0;  // Initialize to appease compiler.
+        @ctype_in@ xmin = 0;  // Initialize to appease compiler.
         @ctype_out@ p = *(@ctype_in@ *)in2;
         if (isnan(p)) {
             *(@ctype_out@ *) out = NPY_NAN;
