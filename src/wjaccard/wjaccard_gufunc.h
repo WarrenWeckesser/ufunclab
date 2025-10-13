@@ -45,7 +45,7 @@ static void wjaccard_core(
         T yk = get(p_y, y_stride, k);
         if constexpr (std::is_floating_point_v<T>) {
             if (std::isnan(xk) || std::isnan(yk)) {
-                *p_out = std::numeric_limits<T>::quiet_NaN();
+                *p_out = std::numeric_limits<U>::quiet_NaN();
                 return;
             }
         }
@@ -54,14 +54,14 @@ static void wjaccard_core(
     }
     if (denom == 0) {
         if (numer == 0) {
-            *p_out = std::numeric_limits<T>::quiet_NaN();
+            *p_out = std::numeric_limits<U>::quiet_NaN();
         }
         else {
-            *p_out = -std::numeric_limits<T>::infinity();
+            *p_out = -std::numeric_limits<U>::infinity();
         }
     }
     else {
-        *p_out = (U) numer / denom;
+        *p_out = static_cast<U>(numer) / denom;
     }
 }
 

@@ -1,7 +1,7 @@
 
 import pytest
 import numpy as np
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_equal
 from ufunclab import wjaccard
 
 
@@ -27,3 +27,17 @@ def test_wjaccard_float32_with_nan():
     y = np.array([2.0, 0.5, 2.5, 0.5, 2.0], dtype=np.float32)
     w = wjaccard(x, y)
     assert np.isnan(w)
+
+
+def test_wjaccard_all_zeros():
+    x = np.zeros(5)
+    y = np.zeros(5)
+    w = wjaccard(x, y)
+    assert np.isnan(w)
+
+
+def test_wjaccard_inf_result():
+    x = np.full(4, fill_value=-1.0)
+    y = np.zeros(4)
+    w = wjaccard(x, y)
+    assert_equal(w, -np.inf)
