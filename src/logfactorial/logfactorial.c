@@ -154,5 +154,6 @@ double logfactorial(int64_t k)
      *  was within 2 ULP of the best 64 bit floating point value for
      *  k up to 10000000.)
      */
-    return (k + 0.5)*log(k) - k + (halfln2pi + (1.0/k)*(1/12.0 - 1/(360.0*k*k)));
+    double kf = (double) k;
+    return (kf + 0.5)*log(kf) - kf + (halfln2pi + (1.0/kf)*(1/12.0 - 1/(360.0*kf*kf)));
 }
