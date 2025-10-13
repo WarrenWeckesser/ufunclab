@@ -19,6 +19,18 @@ def test_basic_mad(unbiased, expected):
     assert_equal(mad(x, unbiased), expected)
 
 
+@pytest.mark.parametrize('unbiased', [False, True])
+def test_basic_mad_bigger(unbiased):
+    x = [1, 3, 6, 10, 11, 12, 12, 13, 13, 15, 12, 4, 4, 4, 5, 5]
+    s = np.abs(np.subtract.outer(x, x)).sum()
+    n = len(x)
+    if unbiased:
+        expected = s / (n*(n - 1))
+    else:
+        expected = s / n**2
+    assert_allclose(mad(x, unbiased), expected, rtol=1e-15)
+
+
 @pytest.mark.parametrize('unbiased, expected', [(False, 0.5), (True, 2/3)])
 def test_basic_rmad(unbiased, expected):
     x = [1, 2, 3, 4]

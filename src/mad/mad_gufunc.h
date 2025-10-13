@@ -5,12 +5,14 @@
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
+#include <algorithm>
 #ifdef __clang__
 #include <cfenv>
 #endif
 #include <cstdlib>
 #include <cmath>
 #include <limits>
+#include <new>      // for std::bad_alloc
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -19,41 +21,24 @@
 
 
 template<typename T>
-static int cmp(const void *px, const void *py) {
-    T x = *(T *)px;
-    T y = *(T *)py;
-    if (x < y) {
-        return -1;
-    }
-    else if (x > y) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-
-
-template<typename T>
 static int unnormalized_mad(npy_intp n, T *p_x, npy_intp x_stride, T& sum, T& total)
 {
-    // XXX Use a C++ array?  Something else more C++ish?
-    // XXX Use PyArray_malloc?
-    T *tmp = (T *) malloc(n * sizeof(T));
-    if (tmp == NULL) {
+    std::vector<T> tmp;
+    try {
+        tmp.resize(n);
+    } catch (std::bad_alloc) {
         NPY_ALLOW_C_API_DEF
         NPY_ALLOW_C_API
             PyErr_Format(PyExc_MemoryError,
-                "Unable to allocate %ld bytes (%ld items, each with size %ld) "
-                "for intermediate calculation",
-                n * sizeof(T), n, sizeof(T));
+                "Unable to allocate internal array with length %ld "
+                "for intermediate calculation", n);
         NPY_DISABLE_C_API
         return -1;
     }
 
     // Copy x into tmp.
     if (x_stride == sizeof(T)) {
-        memcpy(tmp, p_x, n*sizeof(T));
+        memcpy(tmp.data(), p_x, n*sizeof(T));
     }
     else {
         for (npy_intp k = 0; k < n; ++k) {
@@ -61,7 +46,17 @@ static int unnormalized_mad(npy_intp n, T *p_x, npy_intp x_stride, T& sum, T& to
         }
     }
 
-    qsort(tmp, n, sizeof(T), cmp<T>);
+    try {
+        std::sort(tmp.begin(), tmp.end());
+    } catch (std::bad_alloc) {
+        NPY_ALLOW_C_API_DEF
+        NPY_ALLOW_C_API
+            PyErr_Format(PyExc_MemoryError,
+                         "Internal memory allocation failure during attempt "
+                         "to sort the data");
+        NPY_DISABLE_C_API
+        return -1;
+    }
 
     sum = 0;
     total = tmp[0];
@@ -69,7 +64,6 @@ static int unnormalized_mad(npy_intp n, T *p_x, npy_intp x_stride, T& sum, T& to
         sum += k*tmp[k] - total;
         total += tmp[k];
     }
-    free(tmp);
     return 0;
 }
 
