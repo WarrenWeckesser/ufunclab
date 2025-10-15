@@ -10,6 +10,9 @@ and gufuncs are given [below](#resources).
 Building and installing
 -----------------------
 
+`ufunclab` requires NumPy version 2.1.0 or newer, and therefore requires
+Python 3.10 or newer.
+
 `ufunclab` uses `meson-python` as its build system.  Currently no
 pre-built wheels are provided, so to install it, you will have to check
 out the git repository, and in the top-level directory, run
@@ -27,7 +30,7 @@ compiler are required.
 The unit tests require [pytest](https://docs.pytest.org/).
 
 The test suite is run as a GitHub actions workflow with Python versions
-3.9 to 3.13 and with several recent releases of NumPy.
+3.10 to 3.13 and with several recent releases of NumPy.
 
 
 What's in ufunclab?
