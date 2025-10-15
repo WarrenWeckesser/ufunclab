@@ -152,6 +152,7 @@ _include = """
 #include <assert.h>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
+#define NPY_TARGET_VERSION NPY_2_1_API_VERSION
 #include "numpy/ndarraytypes.h"
 #include "numpy/arrayscalars.h"
 #include "numpy/ufuncobject.h"
@@ -309,20 +310,6 @@ def generate_concrete_loop(name, corename, varnames,
     if len(dim_asserts) > 0:
         text.append('')
         text.append('\n'.join(dim_asserts))
-
-    if nonzero_coredims is not None:
-        for nonzero_coredim in nonzero_coredims:
-            k = core_dims.index(nonzero_coredim)
-            code = f"""
-    if ({nonzero_coredim} == 0) {{
-        NPY_ALLOW_C_API_DEF
-        NPY_ALLOW_C_API
-        PyErr_SetString(PyExc_ValueError,
-                        "{name} core dimension {nonzero_coredim} must be at least 1.");
-        NPY_DISABLE_C_API
-        return;
-    }}"""
-            text.append(code)
 
     text.append('')
     text.append('    for (int j = 0; j < nloops; ++j, ')
@@ -511,6 +498,27 @@ def gen(extmod, srcpath):
         text.append(f'static void *{ufunc.name}_data[{len(loop_func_names)}];')
         text.append('')
 
+        if ufunc.nonzero_coredims is not None:
+            text.append('//')
+            text.append(f'// Function that checks for nonzero core dimensions for {ufunc.name}')
+            text.append('//')
+            text.append('extern "C" {')
+            text.append('static int')
+            text.append(f'{ufunc.name}_process_core_dims(PyUFuncObject *ufunc, npy_intp *core_dim_sizes)')
+            text.append('{')
+            for coredim_name in ufunc.nonzero_coredims:
+                idx = core_dims.index(coredim_name)
+                text.append(f'    const npy_intp {coredim_name} = core_dim_sizes[{idx}];')
+                text.append(f'    if ({coredim_name} == 0) {{')
+                text.append('        PyErr_SetString(PyExc_ValueError,')
+                text.append(f'                        "{ufunc.name} core dimension {coredim_name} must be at least 1.");')
+                text.append('        return -1;')
+                text.append('    }')
+            text.append('    return 0;')
+            text.append('}')
+            text.append('} // extern "C"')
+            text.append('')
+
     c_module_docstring_def = create_c_docstring_def("MODULE", extmod.docstring)
     text.append(c_module_docstring_def)
     text.append('')
@@ -559,8 +567,12 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
     if (gufunc == NULL) {{
         Py_DECREF(module);
         return NULL;
-    }}
-""")
+    }}""")
+        if ufunc.nonzero_coredims is not None:
+            # Assign the core dims process function to the gufunc object.
+            text.append("    gufunc->process_core_dims_func = "
+                        f"&{ufunc.name}_process_core_dims;\n")
+
     if extmod.extra_module_funcs is not None:
         for funcname in extmod.extra_module_funcs:
             text.append(f"""

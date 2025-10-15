@@ -61,3 +61,15 @@ def test_max_argmax_basic(x, expected):
     m, argm = max_argmax(x)
     assert_equal(m, expected[0])
     assert_equal(argm, expected[1])
+
+
+def test_minmax_length_zero_1d():
+    x = np.array([])
+    with pytest.raises(ValueError, match="n must be at least 1"):
+        minmax(x)
+
+
+def test_minmax_length_zero_2d():
+    x = np.array([[], []])
+    with pytest.raises(ValueError, match="n must be at least 1"):
+        minmax(x, axes=[(1,), (0,)])
