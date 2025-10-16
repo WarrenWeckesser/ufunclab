@@ -92,6 +92,6 @@ vdot = UFunc(
 
 extmod = UFuncExtMod(
     module='_vnorm',
-    docstring="This extension module defines the gufuncs 'vnorm' and 'vdot'.",
+    docstring="This extension module defines the gufuncs 'vnorm', 'vdot' and 'rms'.",
     ufuncs=[vnorm, rms, vdot],
 )
