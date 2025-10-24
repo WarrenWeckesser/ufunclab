@@ -61,6 +61,7 @@ gufunc_cxx_src_dirs = [
     'multivariate_logbeta',
     'nextn',
     'one_hot',
+    'ordered',
     'percentileofscore',
     'softmax',
     'sosfilter',

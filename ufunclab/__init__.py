@@ -51,6 +51,7 @@ _name_to_module = {
     'inv_yeo_johnson': '._yeo_johnson',
     'cross3': '._cross',
     'cross2': '._cross',
+    'ordered': '._ordered',
     'searchsortedl': '._searchsorted',
     'searchsortedr': '._searchsorted',
     'peaktopeak': '._peaktopeak',

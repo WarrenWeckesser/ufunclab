@@ -104,6 +104,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`max_argmax`](#max_argmax)                     | Maximum value and its index                                 |
 | [`searchsortedl`](#searchsortedl)               | Find position for given element in sorted seq.              |
 | [`searchsortedr`](#searchsortedr)               | Find position for given element in sorted seq.              |
+| [`ordered`](#ordered)                           | Check that a 1-d array is ordered.                          |
 | [`peaktopeak`](#peaktopeak)                     | Alternative to `numpy.ptp`                                  |
 | [`all_same`](#all_same)                         | Check all values are the same                               |
 | [`gmean`](#gmean)                               | Geometric mean                                              |
@@ -1084,6 +1085,41 @@ array([[3, 6],
        [5, 6]])
 ```
 
+#### `ordered`
+
+`ordered(x, op, ...)` is a gufunc with signature `(n),()->()` that returns a
+boolean value.  It returns True if the 1-d array has the order determined by `op`. 
+`op` accepts the same valuesas `first`.
+
+```
+>>> import numpy as np
+>>> from ufunclab import ordered, op
+
+>>> x = np.array([1, 3, 3.5, 3.5, 10, 11, 11])
+>>> ordered(x, op.LT)
+np.False_
+
+>>> ordered(x, op.LE)
+np.True_
+
+>>> ordered(x, [op.LT, op.LE, op.EQ, op.GE, op.GT])
+array([False,  True, False, False, False])
+
+>>> a = np.array([[3, 4, 10, 12],
+...               [1, 1, 13, 15]])
+>>> ordered(a, op.LT)
+array([ True, False])
+
+ordered(a, op.LE)
+array([ True,  True])
+
+`ordered` accepts object arrays.
+
+>>> from fractions import Fraction
+>>> y = np.array([10, Fraction(355, 113), Fraction(5, 2), Fraction(1, 3)])
+>>> ordered(y, op.GT)
+np.True_
+```
 
 #### `peaktopeak`
 
