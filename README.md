@@ -1656,7 +1656,9 @@ array([ 3.,  5., 15.])
 #### `pearson_corr`
 
 `pearson_corr(x, y)` computes Pearson's product-moment correlation coefficient.
-It is a gufunc with shape signature `(n),(n)->()`.
+It is a gufunc with shape signature `(n),(n)->()`.  The function implements the
+gufunc method `process_core_dims_func()`, which ensures that `n` is at least 2.
+An exception is raised if `n` is less than 2.
 
 ```
 >>> import numpy as np
