@@ -43,7 +43,16 @@ class UFunc:
 
     # List of core dimension names (i.e. names that appear in the
     # shape signature) that must have a length of at least 1.
+    # `process_core_dims_func` and `nonzero_coredims` may not both
+    # be given.
     nonzero_coredims: List[str] = None
+
+    # Optional name of the C function in the header file that
+    # defines the process_core_dims_func for the gufunc.
+    # Be sure to qualify the function as 'extern "C"'.
+    # `process_core_dims_func` and `nonzero_coredims` may not both
+    # be given.
+    process_core_dims_func: str = None
 
 
 @dataclass

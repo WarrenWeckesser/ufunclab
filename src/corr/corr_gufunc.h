@@ -204,4 +204,21 @@ static void pearson_corr_core(
     *p_out = r;
 }
 
+extern "C" {
+
+static int
+process_core_dims(PyUFuncObject *ufunc,
+                  npy_intp *core_dim_sizes)
+{
+    npy_intp n = core_dim_sizes[0];
+    if (n < 2) {
+        PyErr_SetString(PyExc_ValueError,
+                        "pearson_corr requires the array length to be at least 2.");
+        return -1;
+    }
+    return 0;
+}
+
+}  // extern "C"
+
 #endif  // UFUNCLAB_CORR_GUFUNC_H

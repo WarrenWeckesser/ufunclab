@@ -56,3 +56,8 @@ def test_extremely_large_input_values():
     # The expected values were computed using mpmath with 80 digits
     # of precision.
     assert_allclose(r, 0.351312332103289, 5e-15)
+
+
+def test_array_length_1():
+    with pytest.raises(ValueError, match="requires the array length to be at least 2"):
+        pearson_corr([1.5], [7.0])

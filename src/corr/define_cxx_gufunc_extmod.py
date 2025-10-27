@@ -67,9 +67,7 @@ pearson_corr_ufunc = UFunc(
     docstring=PEARSON_CORR_DOCSTRING,
     signature='(n),(n)->()',
     sources=[pearson_corr_int_src, pearson_corr_src],
-    # n must be at least 2 for the correlation coefficent to be meaningful,
-    # but currently the only code-generation option is for n > 0.
-    nonzero_coredims=['n'],
+    process_core_dims_func="process_core_dims",
 )
 
 extmod = UFuncExtMod(

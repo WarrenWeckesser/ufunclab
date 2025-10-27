@@ -273,7 +273,7 @@ def concrete_loop_function_name(corename, typecodes):
 
 def generate_concrete_loop(name, corename, varnames,
                            template_typecodes, var_types,
-                           core_dims, nonzero_coredims, shapes):
+                           core_dims, shapes):
     loop_func_name = concrete_loop_function_name(corename, template_typecodes)
     text = []
     text.append('')
@@ -391,6 +391,10 @@ def gen(extmod, srcpath):
     text.append(_include)
     ufunc_nloops = []
     for ufunc in extmod.ufuncs:
+        if (ufunc.nonzero_coredims is not None and
+                ufunc.process_core_dims_func is not None):
+            raise ValueError(f'ufunc {ufunc.name}: cannot set both nonzero_coredims '
+                             'and process_core_dims_func.')
         varnames = get_varnames_from_docstring_and_sig(ufunc.docstring,
                                                        ufunc.signature)
         c_docstring_def = create_c_docstring_def(ufunc.name, ufunc.docstring)
@@ -444,7 +448,6 @@ def gen(extmod, srcpath):
                                                         corename, varnames,
                                                         [], var_types,
                                                         core_dims,
-                                                        ufunc.nonzero_coredims,
                                                         shapes)
                 loop_func_names.append(loopname)
                 text.append(code)
@@ -455,7 +458,6 @@ def gen(extmod, srcpath):
                                                             template_typecodes,
                                                             var_types,
                                                             core_dims,
-                                                            ufunc.nonzero_coredims,
                                                             shapes)
                     loop_func_names.append(loopname)
                     text.append(code)
@@ -572,6 +574,10 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
             # Assign the core dims process function to the gufunc object.
             text.append("    gufunc->process_core_dims_func = "
                         f"&{ufunc.name}_process_core_dims;\n")
+        elif ufunc.process_core_dims_func is not None:
+            # Assign the core dims process function to the gufunc object.
+            text.append("    gufunc->process_core_dims_func = "
+                        f"&{ufunc.process_core_dims_func};\n")
 
     if extmod.extra_module_funcs is not None:
         for funcname in extmod.extra_module_funcs:
