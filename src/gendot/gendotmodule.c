@@ -395,8 +395,9 @@ PyInit__gendot(void)
         return NULL;
     }
 
-    // Required to access the NumPy C API.
-    import_array();
+    if (PyArray_ImportNumPyAPI() < 0) {
+        return NULL;
+    }
     import_ufunc();
 
     return module;

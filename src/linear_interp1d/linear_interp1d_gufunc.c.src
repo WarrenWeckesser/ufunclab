@@ -232,7 +232,9 @@ PyMODINIT_FUNC PyInit__linear_interp1d(void)
         return NULL;
     }
 
-    import_array();
+    if (PyArray_ImportNumPyAPI() < 0) {
+        return NULL;
+    }
     import_umath();
 
     // Create the linear_interp1d ufunc.

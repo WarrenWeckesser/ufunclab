@@ -49,7 +49,9 @@ PyMODINIT_FUNC PyInit_{modulename}(void)
     int nout = 1;
     int status;
 
-    import_array();
+    if (PyArray_ImportNumPyAPI() < 0) {{
+        return NULL;
+    }}
     import_umath();
 
     module = PyModule_Create(&moduledef);

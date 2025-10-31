@@ -515,7 +515,9 @@ PyMODINIT_FUNC PyInit__log1p(void)
         return NULL;
     }
 
-    import_array();
+    if (PyArray_ImportNumPyAPI() < 0) {
+        return NULL;
+    }
     import_umath();
 
     // Create the log1p_theorem4 ufunc object.

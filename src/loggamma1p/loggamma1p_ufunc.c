@@ -108,7 +108,9 @@ PyMODINIT_FUNC PyInit__loggamma1p(void)
         return NULL;
     }
 
-    import_array();
+    if (PyArray_ImportNumPyAPI() < 0) {
+        return NULL;
+    }
     import_umath();
 
     // Create the loggamma1p ufunc object.

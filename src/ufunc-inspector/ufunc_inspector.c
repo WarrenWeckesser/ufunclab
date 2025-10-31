@@ -339,7 +339,9 @@ PyMODINIT_FUNC PyInit__ufunc_inspector(void)
 {
     PyObject *m;
 
-    import_array();
+    if (PyArray_ImportNumPyAPI() < 0) {
+        return NULL;
+    }
     import_umath();
 
     m = PyModule_Create(&moduledef);

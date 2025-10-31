@@ -545,13 +545,16 @@ PyMODINIT_FUNC PyInit_{extmod.module}(void)
     PyObject *module;
     PyUFuncObject *gufunc;
 
+    if (PyArray_ImportNumPyAPI() < 0) {{
+        return NULL;
+    }}
+    import_umath();
+
     module = PyModule_Create(&moduledef);
     if (!module) {{
         return NULL;
     }}
 
-    import_array();
-    import_umath();
 """)
 
     for nloops, ufunc in zip(ufunc_nloops, extmod.ufuncs):
