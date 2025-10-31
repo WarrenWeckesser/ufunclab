@@ -2096,6 +2096,23 @@ array([[6.91439886e-13, 6.82560214e-08, 9.99999819e-01, 1.12535154e-07],
        [9.85415469e-34, 9.10272579e-42, 1.00000000e+00, 1.85211677e-45]])
 ```
 
+`softmax` adopts the convention that if `inf` occurs once in the input,
+the output is 1 at the position and 0 elsewhere.
+
+```
+>>> a = np.array([1.0, 3.0, -0.5, np.inf, 10.0])
+>>> softmax(a)
+array([0., 0., 0., 1., 0.])
+```
+
+If `inf` occurs more than once, the output is all `nan`.
+
+```
+>>> b = np.array([1.0, np.inf, -0.5, np.inf, 10.0])
+>>> softmax(b)
+array([nan, nan, nan, nan, nan])
+```
+
 #### `unwrap`
 
 `unwrap(x, period)` is a gufunc with signature `(n),()->(n)`.
