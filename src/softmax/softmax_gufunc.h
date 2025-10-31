@@ -5,6 +5,7 @@
 #include "Python.h"
 
 #include <cmath>
+#include <limits>
 
 #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 #include "numpy/ndarraytypes.h"
@@ -40,9 +41,9 @@ softmax_core(
             xmax = x;
         }
     }
-    if (has_nan || nposinf > 1) {
-        // x contains nan, or there is more than one positive inf, so set the
-        // result to all nan.
+    if (has_nan || nposinf > 1 || xmax == -std::numeric_limits<T>::infinity()) {
+        // x contains nan, or there is more than one positive inf, or all the values
+        // are -inf, so set the result to all nan.
         for (npy_intp k = 0; k < n; ++k) {
             set(p_out, out_stride, k, static_cast<T>(NPY_NAN));
         }

@@ -32,6 +32,13 @@ def test_x_all_same(dtype):
     assert_array_equal(y, np.full_like(x, fill_value=1/len(x)), strict=True)
 
 
+@pytest.mark.parametrize('dtype', [np.float32, np.float64, np.longdouble])
+def test_x_all_neg_inf(dtype):
+    x = np.array([-np.inf, -np.inf, -np.inf], dtype=dtype)
+    y = softmax(x)
+    assert np.all(np.isnan(y))
+
+
 def test_basic():
     x = [-3, -2, 1.5, 16, 8, 3, 4]
     y = softmax(x)
