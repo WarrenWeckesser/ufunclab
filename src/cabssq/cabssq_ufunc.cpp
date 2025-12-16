@@ -82,12 +82,26 @@ static PyMethodDef CAbsSqMethods[] = {
         {NULL, NULL, 0, NULL}
 };
 
+/*
 static struct PyModuleDef moduledef = {
     .m_base = PyModuleDef_HEAD_INIT,
     .m_name = "_cabssq",
     .m_doc = "Module that defines the cabssq function.",
     .m_size = -1,
     .m_methods = CAbsSqMethods
+};
+*/
+
+static PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,                      // m_base
+    "_cabssq",                                  // m_name
+    "Module that defines the cabssq function.", // m_doc
+    -1,                                         // m_size
+    CAbsSqMethods,                              // m_methods
+    NULL,                                       // m_slots
+    NULL,                                       // m_traverse
+    NULL,                                       // m_clear
+    NULL,                                       // m_free
 };
 
 
