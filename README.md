@@ -30,7 +30,7 @@ compiler are required.
 The unit tests require [pytest](https://docs.pytest.org/).
 
 The test suite is run as a GitHub actions workflow with Python versions
-3.10 to 3.13 and with several recent releases of NumPy.
+3.10 to 3.14 and with several recent releases of NumPy.
 
 
 What's in ufunclab?
