@@ -318,8 +318,8 @@ endforeach
 #----------------------------------------------------------------------
 
 modules = [
-    ['_cabssq',
-        ['../src/cabssq/cabssq_ufunc.cpp']]
+    ['_abssq',
+        ['../src/abssq/abssq_ufunc.cpp']]
 ]
 
 foreach mod : modules

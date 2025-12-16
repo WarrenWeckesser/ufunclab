@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_equal
-from ufunclab import abs_squared, cabssq
+from ufunclab import abs_squared, abssq
 
 
 @pytest.mark.parametrize('dtype',
@@ -16,7 +16,7 @@ def test_basic_real(dtype):
     assert_equal(y, expected)
 
 
-@pytest.mark.parametrize('func', [abs_squared, cabssq])
+@pytest.mark.parametrize('func', [abs_squared, abssq])
 @pytest.mark.parametrize('dtype',
                          [np.complex64, np.complex128, np.clongdouble])
 def test_basic_complex(func, dtype):

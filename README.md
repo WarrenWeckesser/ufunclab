@@ -43,7 +43,7 @@ calculation as a templated C++ function, and using some Python code to
 automate the generation of all the necessary boilerplate and wrappers
 that implement a ufunc around the core calculation.  The exceptions
 are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, and `issnan`, which
-are written in C, and `cabssq`, which is implemented in C++;  these ufuncs
+are written in C, and `abssq`, which is implemented in C++;  these ufuncs
 are written "by hand", with all boilerplate code written in the source file.
 
 | Function                                      | Description                                                   |
@@ -54,7 +54,7 @@ are written "by hand", with all boilerplate code written in the source file.
 | [`next_less`](#next_less)                     | Equivalent to `np.nextafter(x, -inf)`                         |
 | [`next_greater`](#next_greater)               | Equivalent to `np.nextafter(x, inf)`                          |
 | [`abs_squared`](#abs_squared)                 | Squared absolute value                                        |
-| [`cabssq`](#cabssq)                           | Squared absolute value for complex input only                 |
+| [`abssq`](#abssq)                             | Squared absolute value for inexact input only                 |
 | [`hypot3`](#hypot3)                           | Three argument hypotenuse                                     |
 | [`deadzone`](#deadzone)                       | Deadzone function                                             |
 | [`step`](#step)                               | Step function                                                 |
@@ -289,12 +289,12 @@ array([  2.25,   9.  ,  81.  , 100.  ], dtype=float32)
 array([ 25. ,   1. ,   1. , 169. ,   2.5])
 ```
 
-#### `cabssq`
+#### `abssq`
 
-`cabssq(z)` computes the squared absolute value of `z` for complex input only.
+`abssq(z)` computes the squared absolute value of `z` for inexact input only.
 This is the same calculation as `abs_squared`, but the implementation is
-different.  `cabssq` is implemented in C++ with the inner loop functions
-implemented "by hand", with no NumPy templating.  `cabssq` is generally
+different.  `abssq` is implemented in C++ with the inner loop functions
+implemented "by hand", with no NumPy templating.  `abssq` is generally
 faster than `abs_squared`, because it avoids some of the overhead that occurs
 in the code generated in the implementation of `abs_squared`, and it allows
 the compiler to optimize the code more effectively.

@@ -33,7 +33,7 @@ _name_to_module = {
     'loggamma1p': '._loggamma1p',
     'issnan': '._issnan',
     'abs_squared': '._abs_squared',
-    'cabssq': '._cabssq',
+    'abssq': '._abssq',
     'log1p_theorem4': '._log1p',
     'log1p_doubledouble': '._log1p',
     'debye1': '._debye1',
