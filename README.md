@@ -293,8 +293,8 @@ array([ 25. ,   1. ,   1. , 169. ,   2.5])
 
 `cabssq(z)` computes the squared absolute value of `z` for complex input only.
 This is the same calculation as `abs_squared`, but the implementation is
-different.  `cabssq` is implemented in C with the inner loop functions
-implemented "by hand", with no C++ or NumPy templating.  `cabssq` is generally
+different.  `cabssq` is implemented in C++ with the inner loop functions
+implemented "by hand", with no NumPy templating.  `cabssq` is generally
 faster than `abs_squared`, because it avoids some of the overhead that occurs
 in the code generated in the implementation of `abs_squared`, and it allows
 the compiler to optimize the code more effectively.
