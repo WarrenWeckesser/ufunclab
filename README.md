@@ -42,9 +42,9 @@ Most of the element-wise ufuncs are implemented by writing the core
 calculation as a templated C++ function, and using some Python code to
 automate the generation of all the necessary boilerplate and wrappers
 that implement a ufunc around the core calculation.  The exceptions
-are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, `issnan`, and
-`cabssq`, which are implemented in C, with all boilerplate code written
-"by hand" in the C file.
+are `debye1`, `logfactorial`, `log1p`, `loggamma1p`, and `issnan`, which
+are written in C, and `cabssq`, which is implemented in C++;  these ufuncs
+are written "by hand", with all boilerplate code written in the source file.
 
 | Function                                      | Description                                                   |
 | --------                                      | -----------                                                   |
