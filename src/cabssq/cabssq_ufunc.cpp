@@ -14,88 +14,36 @@
 // The ufunc "inner loops". The type signatures of the cabssq ufunc are
 //     >>> cabssq.types
 //     ['F->f', 'D->d', 'G->g']
-// There is obviously a lot of repeated code here, with only the types
-// changed.  Eventually this can be cleaned up with the use of an
-// appropriate templating tool or code generation.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-static void cabssq_F_f_contig(npy_intp n, float *in, float *out)
+template <typename Real>
+static void cabssq_complex_contig(npy_intp n, Real *in, Real *out)
 {
     for (npy_intp i = 0; i < n; ++i) {
         out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
     }
 }
 
-static void cabssq_F_f_loop(char **args, const npy_intp *dimensions,
-                            const npy_intp* steps, void* data)
+template <typename Real>
+static void cabssq_complex_loop(char **args, const npy_intp *dimensions,
+                                const npy_intp* steps, void* data)
 {
     char *in = args[0];
     char *out = args[1];
     npy_intp in_step = steps[0];
     npy_intp out_step = steps[1];
 
-    if (in_step == 2*sizeof(float) && out_step == sizeof(float)) {
-        cabssq_F_f_contig(dimensions[0], (float *)in, (float *)out);
+    if (in_step == 2*sizeof(Real) && out_step == sizeof(Real)) {
+        cabssq_complex_contig(dimensions[0], reinterpret_cast<Real *>(in), reinterpret_cast<Real *>(out));
         return;
     }
     for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        float x = (float) *(float *)in;
-        float y = (float) *(float *)(in + sizeof(float));
-        *((float *) out) = x*x + y*y;
+        Real x = *reinterpret_cast<Real *>(in);
+        Real y = *reinterpret_cast<Real *>(in + sizeof(Real));
+        *(reinterpret_cast<Real *>(out)) = x*x + y*y;
     }
 }
 
-static void cabssq_D_d_contig(npy_intp n, double *in, double *out)
-{
-    for (npy_intp i = 0; i < n; ++i) {
-        out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
-    }
-}
-
-static void cabssq_D_d_loop(char **args, const npy_intp *dimensions,
-                            const npy_intp* steps, void* data)
-{
-    char *in = args[0];
-    char *out = args[1];
-    npy_intp in_step = steps[0];
-    npy_intp out_step = steps[1];
-
-    if (in_step == 2*sizeof(double) && out_step == sizeof(double)) {
-        cabssq_D_d_contig(dimensions[0], (double *)in, (double *)out);
-        return;
-    }
-    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        double x = (double) *(double *)in;
-        double y = (double) *(double *)(in + sizeof(double));
-        *((double *) out) = x*x + y*y;
-    }
-}
-
-static void cabssq_G_g_contig(npy_intp n, long double *in, long double *out)
-{
-    for (npy_intp i = 0; i < n; ++i) {
-        out[i] = in[2*i]*in[2*i] + in[2*i+1]*in[2*i+1];
-    }
-}
-
-static void cabssq_G_g_loop(char **args, const npy_intp *dimensions,
-                            const npy_intp* steps, void* data)
-{
-    char *in = args[0];
-    char *out = args[1];
-    npy_intp in_step = steps[0];
-    npy_intp out_step = steps[1];
-
-    if (in_step == 2*sizeof(long double) && out_step == sizeof(long double)) {
-        cabssq_G_g_contig(dimensions[0], (long double *)in, (long double *)out);
-        return;
-    }
-    for (npy_intp i = 0; i < dimensions[0]; ++i, in += in_step, out += out_step) {
-        long double x = (long double) *(long double *)in;
-        long double y = (long double) *(long double *)(in + sizeof(long double));
-        *((long double *) out) = x*x + y*y;
-    }
-}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // ufunc configuration data.
@@ -104,9 +52,9 @@ static void cabssq_G_g_loop(char **args, const npy_intp *dimensions,
 // This array of loop function pointers will be passed to PyUFunc_FromFuncAndData,
 // along with the arrays cabssq_typecodes and cabssq_data.
 PyUFuncGenericFunction cabssq_funcs[] = {
-    (PyUFuncGenericFunction) &cabssq_F_f_loop,
-    (PyUFuncGenericFunction) &cabssq_D_d_loop,
-    (PyUFuncGenericFunction) &cabssq_G_g_loop
+    (PyUFuncGenericFunction) &cabssq_complex_loop<float>,
+    (PyUFuncGenericFunction) &cabssq_complex_loop<double>,
+    (PyUFuncGenericFunction) &cabssq_complex_loop<long double>
 };
 
 #define CABSSQ_NLOOPS \

@@ -283,8 +283,6 @@ modules = [
         ['../src/debye1/debye1_ufunc.c',
          '../src/debye1/debye1_generated.h',
          '../src/debye1/debye1_generated.c']],
-    ['_cabssq',
-        ['../src/cabssq/cabssq_ufunc.c']],
     ['_log1p',
         ['../src/log1p/log1p_ufunc.c']],
     ['_logfact',
@@ -299,6 +297,29 @@ modules = [
         ['../src/gendot/gendotmodule.c']],
     ['_ufunc_inspector',
         ['../src/ufunc-inspector/ufunc_inspector.c']]
+]
+
+foreach mod : modules
+
+    py3.extension_module(
+        mod[0],
+        mod[1],
+        include_directories: [inc_np],
+        dependencies: [np_dep, npymath_lib],
+        link_args: ['-lm'],
+        install: true,
+        subdir: 'ufunclab'
+    )
+
+endforeach
+
+#----------------------------------------------------------------------
+# Pure C++ extension modules (no code generation).
+#----------------------------------------------------------------------
+
+modules = [
+    ['_cabssq',
+        ['../src/cabssq/cabssq_ufunc.cpp']]
 ]
 
 foreach mod : modules
