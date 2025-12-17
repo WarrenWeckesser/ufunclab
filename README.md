@@ -238,6 +238,14 @@ in floating point arrays with a given value.
 array([  3.  ,  -1.  , 100.  ,   0.25,  -1.  ])
 ```
 
+To operate on an array in-place, use the `out` parameter.
+
+```
+>>> nan_to_num(x, -1.0, out=x)
+>>> x
+array([  3.  ,  -1.  , 100.  ,   0.25,  -1.  ])
+```
+
 #### `next_less`
 
 `next_less` is an element-wise ufunc with a single input that
