@@ -242,6 +242,7 @@ To operate on an array in-place, use the `out` parameter.
 
 ```
 >>> nan_to_num(x, -1.0, out=x)
+array([  3.  ,  -1.  , 100.  ,   0.25,  -1.  ])
 >>> x
 array([  3.  ,  -1.  , 100.  ,   0.25,  -1.  ])
 ```
