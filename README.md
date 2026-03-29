@@ -722,6 +722,10 @@ array([1.48662366e+0695, 5.00898008e+0000, 1.00000000e+0000,
        5.64189301e-0004, 4.51351667e-2001], dtype=float128)
 ```
 
+A plot of `erfcx(x)` on the interval `-0.5` < `x` < `7.5`:
+
+![erfcx plot](https://github.com/WarrenWeckesser/ufunclab/blob/main/examples/erfcx_plot.png)
+
 #### Normal
 
 The submodule `normal` defines several functions for the standard normal
