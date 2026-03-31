@@ -42,7 +42,7 @@ jobs:
         # need is pip.
         meson setup --vsenv build
         ninja -v -j 1 -C build
-        pip -v install --no-build-isolation .
+        pip -v install --no-build-isolation -Csetup-args="--vsenv" .
 
     - name: Test
       run: |
