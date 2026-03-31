@@ -26,7 +26,7 @@ softmax_core(
     npy_intp nposinf = 0;
     npy_intp posinf_index = 0;  // Initialize to appease compiler.
     bool has_nan = false;
-    T xmax;
+    T xmax = static_cast<T>(0);  // Initialize to avoid compiler warning about unitialized.
     for (npy_intp k = 0; k < n; ++k) {
         T x = get(p_x, x_stride, k);
         if (std::isnan(x)) {
