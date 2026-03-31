@@ -1,0 +1,43 @@
+
+name: Run on windows-2025-vs2026
+
+on: workflow_dispatch
+
+jobs:
+  windows-msvc:
+
+    strategy:
+      matrix:
+        numpy-version: ['2.2.6', '2.3.5', '2.4.4']
+      fail-fast: false
+
+    runs-on: windows-2025-vs2026
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.14'
+        architecture: 'x64'
+        cache: 'pip'
+        cache-dependency-path: 'environment.yml'
+
+    - name: Install Python dependencies
+      run: |
+        pip install numpy==${{ matrix.numpy-version }} meson ninja meson-python pytest toml
+
+    - name: Build
+      run: |
+        # Running meson and ninja before pip is only here for debugging
+        # visibility.  Eventually those commands will be removed--all we
+        # need is pip.
+        meson setup build
+        ninja -v -j 1 -C build
+        pip -v install --no-build-isolation .
+
+    - name: Test
+      run: |
+        pytest --pyargs ufunclab
