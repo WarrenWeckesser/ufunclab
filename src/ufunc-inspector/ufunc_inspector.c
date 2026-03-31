@@ -150,7 +150,7 @@ ufunc_inspector(PyObject *self, PyObject *arg)
         }
         printf("...op_flags (flags for each op when called by nditer) = [");
         for (int i = 0; i < ufunc->nargs; ++i) {
-            printf("%u", ufunc->op_flags[i]);
+            printf("%lu", (unsigned long) ufunc->op_flags[i]);
             if (i == ufunc->nargs-1) {
                 printf("]\n");
             }
