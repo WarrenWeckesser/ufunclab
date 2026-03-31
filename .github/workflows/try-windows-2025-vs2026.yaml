@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        numpy-version: ['2.4.4']
+        numpy-version: ['2.2.6', '2.3.5', '2.4.4']
       fail-fast: false
 
     runs-on: windows-2025-vs2026
@@ -29,19 +29,8 @@ jobs:
       run: |
         pip install numpy==${{ matrix.numpy-version }} meson ninja meson-python pytest toml
 
-    #- name: Prepare MSVC
-    #  # See https://dvdhrm.github.io/2021/04/21/meson-msvc-github-actions/
-    #  uses: bus1/cabuild/action/msdevshell@v1
-    #  with:
-    #    architecture: x64
-
-    - name: Build
+    - name: Build and install ufunclab
       run: |
-        # Running meson and ninja before pip is only here for debugging
-        # visibility.  Eventually those commands will be removed--all we
-        # need is pip.
-        #meson setup --vsenv build
-        #ninja -v -j 1 -C build
         pip -v install --no-build-isolation -Csetup-args="--vsenv" .
 
     - name: Test
