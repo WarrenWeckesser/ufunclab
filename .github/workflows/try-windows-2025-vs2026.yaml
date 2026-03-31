@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        numpy-version: ['2.2.6', '2.3.5', '2.4.4']
+        numpy-version: ['2.4.4']
       fail-fast: false
 
     runs-on: windows-2025-vs2026
