@@ -130,6 +130,18 @@ def test_yeo_johnson_basic():
     assert_allclose(y, expected, rtol=2e-15)
 
 
+def test_inv_yeo_johnson():
+    y = np.array([0.5, 3.0, 25.0, 500.0])
+    lam = np.array([2.5, 0.125, 5.0, 0.75])
+    # Reference values computed with mpsci.
+    ref = np.array([0.38316186722259166,
+                    11.77678495645523,
+                    1.6307168652587083,
+                    2712.8372122642986])
+    x = inv_yeo_johnson(y, lam)
+    assert_allclose(x, ref, rtol=1e-15)
+
+
 @pytest.mark.parametrize('x, lam, expected, rtol', [
     ('1e-400', 2.5, '1e-400', ldeps),
     ('3.0',    0.0, '1.386294361119890618834464242916353136', ldeps)
