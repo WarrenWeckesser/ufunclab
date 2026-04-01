@@ -131,10 +131,11 @@ def test_yeo_johnson_basic():
 
 
 def test_inv_yeo_johnson():
-    y = np.array([0.5, 3.0, 25.0, 500.0])
-    lam = np.array([2.5, 0.125, 5.0, 0.75])
+    y = np.array([-8.0, 0.5, 3.0, 25.0, 500.0])
+    lam = np.array([1.5, 2.5, 0.125, 5.0, 0.75])
     # Reference values computed with mpsci.
-    ref = np.array([0.38316186722259166,
+    ref = np.array([-24.0,
+                    0.38316186722259166,
                     11.77678495645523,
                     1.6307168652587083,
                     2712.8372122642986])
