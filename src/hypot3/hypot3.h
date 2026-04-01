@@ -10,8 +10,10 @@ T hypot3(T x, T y, T z)
 {
     //
     // Not all standard libraries handle inf as expected; std::hypot(x, y, z)
-    // might return nan when an input is inf.  So we check for inf in the
-    // wrapper to maintain consistent behavior across different libs.
+    // might return nan when an input is inf.  See, for example,
+    //     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=77776
+    // So we check for inf in the wrapper to maintain consistent behavior
+    // across different libs.
     //
     // When at least one input is inf, this function returns inf (even
     // if another input is nan).
