@@ -22,7 +22,7 @@ template<typename T>
 struct is_complex_t<std::complex<T>> : public std::true_type {};
 
 //
-// KBNSummer implements Kahan–Babuska-Neumaier summation.
+// KBNSummer implements Kahan-Babuska-Neumaier summation.
 //
 // It is initialized to 0.0 when constructed.
 // Values are added to the summer with the += operator.

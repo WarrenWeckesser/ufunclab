@@ -5,7 +5,7 @@ from ufunc_config_types import UFuncExtMod, UFunc, UFuncSource
 KBNSUM_DOCSTRING = """\
 kbnsum(x, /, ...)
 
-Compute the Kahan–Babuska-Neumaier summation of the input `x`.
+Compute the Kahan-Babuska-Neumaier summation of the input `x`.
 
 Parameters
 ----------
