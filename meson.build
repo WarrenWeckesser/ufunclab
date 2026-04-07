@@ -13,12 +13,6 @@ project(
 cc = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
 
-if host_machine.system() == 'windows'
-  if cc.get_id() == 'msvc'
-    add_global_arguments('/utf-8', language : 'cpp')
-  endif
-endif
-
 # https://mesonbuild.com/Python-module.html
 py_mod = import('python')
 py3 = py_mod.find_installation(pure: false)
