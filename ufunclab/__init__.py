@@ -69,6 +69,7 @@ _name_to_module = {
     'pmean': '._means',
     'pmeanw': '._means',
     'meanvar': '._meanvar',
+    'kbnsum': '._kbnsum',
     'pearson_corr': '._corr',
     'wjaccard': '._wjaccard',
     'mad': '._mad',

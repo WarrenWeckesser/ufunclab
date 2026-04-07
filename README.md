@@ -107,6 +107,7 @@ processed with the script in `ufunclab/tools/conv_template.py`.
 | [`ordered`](#ordered)                           | Check that a 1-d array is ordered.                          |
 | [`peaktopeak`](#peaktopeak)                     | Alternative to `numpy.ptp`                                  |
 | [`all_same`](#all_same)                         | Check all values are the same                               |
+| [`kbnsum`](#kbnsum)                             | Kahan–Babuška-Neumaier summation                            |
 | [`gmean`](#gmean)                               | Geometric mean                                              |
 | [`gmeanw`](#gmeanw)                             | Weighted geometric mean                                     |
 | [`hmean`](#hmean)                               | Harmonic mean                                               |
@@ -1211,6 +1212,28 @@ array([[None, 'foo', 99],
 
 >>> all_same(a, axis=0)
 array([ True, False, False])
+```
+
+#### `kbnsum`
+
+`kbnsum` is a gufunc (signature `(n)->()`) that computes Kahan–Babuška-Neumaier summation.
+
+```
+>>> import numpy as np
+>>> from ufunclab import kbnsum
+
+>>> x = np.array([100.0, -1e-13, -25.0, -4.5e-15, 5.0, -80, 1e-23])
+
+The correct double precision floating point sum of `x` is -1.0449999999e-13.
+The numpy `sum` function loses precision:
+
+>>> np.sum(x)
+np.float64(-9.947598299641402e-14)
+
+In this example, `kbnsum()` gives the expected result:
+
+>>> kbnsum(x)
+np.float64(-1.0449999999e-13)
 ```
 
 #### `gmean`

@@ -55,6 +55,7 @@ gufunc_cxx_src_dirs = [
     'fillnan1d',
     'first',
     'hysteresis_relay',
+    'kbnsum',
     'mad',
     'meanvar',
     'minmax',
