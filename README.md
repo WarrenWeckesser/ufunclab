@@ -2417,6 +2417,51 @@ the signatures of the ufunc loop functions for `np.minimum` and
  'DD->D', 'GG->G', 'mm->m', 'MM->M']
 ```
 
+In this second example, the SciPy function `scipy.special.rel_entr`
+is composed with `ufunclab.kbnsum` to create an implementation of the
+Kullback-Leibler divergence. (The function `numpy.add` could be used
+instead of `ufunclab.kbnsum`.)
+
+```
+>>> from scipy.special import rel_entr
+>>> from ufunclab import kbnsum
+```
+
+Take a look at some of the attributes of the ufuncs `rel_entr` and `kbnsum`.
+
+```
+>>> rel_entr.types
+['ff->f', 'dd->d']
+>>> kbnsum.types
+['f->f', 'd->d']
+>>> kbnsum.signature
+'(n)->()'
+```
+
+Create the new function:
+
+```
+>>> kldiv = gendot(rel_entr, kn)
+```
+
+`kldiv` is a gufunc:
+
+```
+>>> kldiv.types
+['ff->f', 'dd->d']
+>>> kldiv.signature
+'(n),(n)->()'
+```
+
+For example,
+
+```
+>>> p = np.array([0.25, 0.25, 0.3, 0.1, 0.1])
+>>> q = np.array([0.2, 0.2, 0.3, 0.25, 0.05])
+>>> kldiv(p, q)
+np.float64(0.08925742052568388)
+```
+
 `gendot` is experimental, and might not be useful in many applications.
 We could do the same calculation as `minmaxdot` with, for example,
 `np.maximum.reduce(np.minimum(a, b))`, and in fact, the pure NumPy
