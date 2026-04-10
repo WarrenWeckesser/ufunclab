@@ -1,0 +1,38 @@
+name: Test ufunclab with numpy main development branch
+
+on: workflow_dispatch
+
+jobs:
+
+  main-numpy:
+    strategy:
+      matrix:
+        python-version: ['3.13', '3.14']
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libopenblas-dev
+          python -m pip install --upgrade pip wheel
+          python -m pip install --upgrade setuptools
+          python -m pip install ninja meson-python toml pytest
+          pushd .
+          cd ..
+          git clone --shallow-submodules --recurse-submodules https://github.com/numpy/numpy.git
+          cd numpy
+          python -m pip install .
+          popd
+      - name: Install ufunclab
+        run: |
+          python -m pip install --no-build-isolation .
+      - name: Test with pytest
+        run: |
+          pytest --pyargs ufunclab
