@@ -84,8 +84,52 @@ ufunc = UFunc(
     nonzero_coredims=['n'],  # n must be at least 1.
 )
 
+meanvar_2pass_ufunc_src = UFuncSource(
+    funcname='meanvar_twopass_core',
+    typesignatures=int_type_sigs + float_type_sigs,
+)
+
+meanvar_2pass_ufunc = UFunc(
+    name='meanvar_twopass',
+    header='meanvar_gufunc.h',
+    docstring=MEANVAR_DOCSTRING,
+    signature='(n),()->(2)',
+    sources=[meanvar_2pass_ufunc_src],
+    nonzero_coredims=['n'],
+)
+
+cov_ufunc_src = UFuncSource(
+    funcname='covariance_matrix_core',
+    typesignatures=int_type_sigs + float_type_sigs,
+)
+
+cov_ufunc = UFunc(
+    name='covariance_matrix',
+    header='meanvar_gufunc.h',
+    docstring='''covariance_matrix(arr, ddof, /, ...)
+
+    Calculate the covariance matrix of the n_samples by n_features array.
+
+    Parameters
+    ----------
+    arr : array_like
+        The n_samples by n_features array
+        NB: This is the reverse of the np.cov convention
+    ddof : int
+        The degrees of freedom for the denominator in the covariance
+        calculation.
+
+    Returns
+    -------
+    out : ndarray
+    ''',
+    signature='(n,m),()->(m,m)',
+    sources=[cov_ufunc_src],
+    process_core_dims_func="preprocess_cov_core_dims",
+)
+
 extmod = UFuncExtMod(
     module='_meanvar',
     docstring="This extension module defines the gufunc 'meanvar'.",
-    ufuncs=[ufunc],
+    ufuncs=[ufunc, meanvar_2pass_ufunc, cov_ufunc],
 )
